@@ -11,6 +11,12 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile = rootProject.file("keystore/debug.keystore")
+        }
+    }
+
     namespace = "com.mskwak.gardendailylog"
     compileSdk {
         version = release(libs.versions.compileSdk.get().toInt())
@@ -24,11 +30,17 @@ android {
         versionName = "1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        setProperty("archivesBaseName", "${rootProject.name} $versionName($versionCode)")
     }
 
     buildTypes {
-        release {
+        debug {
+            applicationIdSuffix = ".dev"
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        release {
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -50,6 +62,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":design"))
     implementation(project(":data"))
     implementation(project(":domain"))
     implementation(project(":presentation"))
