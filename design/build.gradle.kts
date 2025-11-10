@@ -35,8 +35,13 @@ android {
             jvmTarget = JvmTarget.JVM_17
         }
     }
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.bundles.compose)
 }

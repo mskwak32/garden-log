@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="save">저장</string>
+    <string name="cancel">취소</string>
+    <string name="none">없음</string>
+    <string name="complete">완료</string>
+    <string name="edit">수정</string>
+    <string name="delete">삭제</string>
+    <string name="menu">메뉴</string>
+    <string name="close">닫기</string>
+    <string name="date">날짜</string>
+    <string name="this_month">이번달</string>
+    <string name="today">오늘</string>
+    <string name="yesterday">어제</string>
+    <string name="select_all">모두</string>
+    <string name="photo_image">이미지</string>
+    <string name="photo_camera">카메라</string>
+    <string name="permission_setting_action">권한 설정</string>
+    <string name="view_more">더보기</string>
+    <string name="new_diary">일기쓰기</string>
+    <string name="memo">메모</string>
+    <string name="watering">물주기</string>
+
+    <string name="bottom_nav_home">홈</string>
+    <string name="bottom_nav_diary">일기</string>
+    <string name="bottom_nav_setting">설정</string>
+
+    <string name="home_title">내 텃밭</string>
+    <string-array name="home_sort_array">
+        <item>심은날짜 최근순</item>
+        <item>심은날짜 오래된순</item>
+        <item>급수일 가까운순</item>
+    </string-array>
+    <string-array name="diary_sort_array">
+        <item>최신순</item>
+        <item>오래된순</item>
+    </string-array>
+    <string name="plant_list_empty">아직 등록된 식물이 없어요</string>
+    <string name="new_plant">식물 추가하기</string>
+    <string name="plant_name">식물 이름</string>
+    <string name="plant_date">심은 날짜</string>
+    <string name="plant_diary">가꾸기 일기</string>
+
+    <string name="watering_last_date">마지막으로 물준 날짜</string>
+    <string name="watering_period">물주기 간격</string>
+    <string name="watering_period_unit">%d일마다</string>
+    <string name="watering_period_unit_dialog">일마다</string>
+    <string name="watering_d_day_plus_format">D+%02d</string>
+    <string name="watering_d_day_minus_format">D-%02d</string>
+    <string name="watering_alarm">물주기 알림</string>
+
+    <string name="message_input_required_field">필수항목을 입력해주세요.</string>
+    <string name="message_no_more_picture">더이상 이미지를 추가할 수 없습니다.</string>
+    <string name="message_input_picture_or_content">사진이나 내용을 입력해주세요.</string>
+    <string name="message_photo_image_permission">이미지를 가져오려면 권한이 필요합니다.</string>
+    <string name="message_photo_camera_permission">카메라를 사용하려면 권한이 필요합니다.</string>
+    <string name="message_notification_permission">물주기 알람을 사용하려면 권한이 필요합니다.</string>
+    <string name="message_delete_confirm">정말 삭제하시겠습니까?</string>
+    <string name="message_not_ready">준비중이에요</string>
+    <string name="message_finish_app">종료하려면 한 번 더 눌러주세요.</string>
+
+    <string name="diary_list_empty_with_plantName">아직 %s에 대한 일기가 없어요</string>
+    <string name="diary_list_empty">해당하는 일기가 없어요</string>
+    <string name="diary_content_hint">내용을 입력해주세요.</string>
+    <string name="diary_content_empty">기록된 내용이 없습니다.</string>
+
+    <string name="setting_version">버전정보</string>
+    <string name="setting_version_update">업데이트</string>
+    <string name="setting_update_content">업데이트 내용</string>
+    <string name="setting_app_estimation">앱 평가하기</string>
+    <string name="setting_update_content_title">%s 버전</string>
+
+    <string name="noti_watering_title">물주기 알림</string>
+    <string name="noti_watering_message">%s에 물을 줄 시간이에요</string>
+    <string name="noti_watering_channel_name">물주기 알림</string>
+</resources>
