@@ -7,7 +7,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-internal class DatabaseConverter {
+internal class GardenDatabaseConverter {
     @TypeConverter
     fun dateToString(date: LocalDate): String {
         return date.toString()

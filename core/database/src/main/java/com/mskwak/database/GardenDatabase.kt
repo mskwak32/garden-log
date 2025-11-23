@@ -13,7 +13,7 @@ import com.mskwak.database.entity.PlantEntity
     version = 4,
     exportSchema = true
 )
-@TypeConverters(DatabaseConverter::class)
+@TypeConverters(GardenDatabaseConverter::class)
 abstract class GardenDatabase : RoomDatabase() {
     abstract fun plantDao(): PlantDao
     abstract fun diaryDao(): DiaryDao

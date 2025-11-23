@@ -34,7 +34,7 @@ interface PlantDao {
     suspend fun updateWateringAlarmActivation(isActive: Boolean, plantId: Int)
 
     @Query("SELECT name FROM plant WHERE id = :plantId")
-    suspend fun getPlantName(plantId: String): String
+    suspend fun getPlantName(plantId: Int): String
 
     @Query("SELECT id AS plantId, name AS plantName FROM plant")
     suspend fun getPlantNames(): Map<
@@ -42,7 +42,7 @@ interface PlantDao {
             @MapColumn(columnName = "plantName") String>
 
     @Query("SELECT id AS plantId, watering_alarm_isActive AS alarmActivation FROM plant")
-    suspend fun getPlantIdWithAlarmActivation(): Map<
+    suspend fun getPlantIdsWithAlarmActivation(): Map<
             @MapColumn(columnName = "plantId") Int,
             @MapColumn(columnName = "alarmActivation") Boolean>
 }

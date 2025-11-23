@@ -18,5 +18,5 @@ interface PlantRepository {
      * @return Map<plantId, plantName>
      */
     suspend fun getPlantNames(): Map<Int, String>
-    suspend fun getPlantIdWithAlarmActivation(): Map<Int, Boolean>
+    suspend fun getPlantIdsWithAlarmActivation(): Map<Int, Boolean>
 }
