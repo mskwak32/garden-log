@@ -21,7 +21,6 @@ android {
     compileSdk {
         version = release(libs.versions.compileSdk.get().toInt())
     }
-
     defaultConfig {
         applicationId = "com.mskwak.gardendailylog"
         minSdk = libs.versions.minSdk.get().toInt()
@@ -32,7 +31,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "${rootProject.name} $versionName($versionCode)")
     }
-
     buildTypes {
         debug {
             applicationIdSuffix = ".dev"

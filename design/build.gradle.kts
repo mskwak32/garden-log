@@ -8,8 +8,11 @@ plugins {
 
 android {
     namespace = "com.mskwak.design"
-
+    compileSdk {
+        version = release(libs.versions.compileSdk.get().toInt())
+    }
     defaultConfig {
+        minSdk = libs.versions.minSdk.get().toInt()
         consumerProguardFiles("consumer-rules.pro")
     }
     compileOptions {

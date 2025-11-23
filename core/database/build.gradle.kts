@@ -9,15 +9,20 @@ plugins {
 
 android {
     namespace = "com.mskwak.database"
-
+    compileSdk {
+        version = release(libs.versions.compileSdk.get().toInt())
+    }
     defaultConfig {
+        minSdk = libs.versions.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
-
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlin {
         compilerOptions {
@@ -31,6 +36,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.hilt)
     ksp(libs.hilt.compiler)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)

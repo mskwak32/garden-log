@@ -35,5 +35,4 @@ class DatabaseModule {
     @Provides
     @Singleton
     fun provideDiaryDao(gardenDatabase: GardenDatabase) = gardenDatabase.diaryDao()
-
 }

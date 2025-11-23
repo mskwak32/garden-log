@@ -25,7 +25,6 @@ internal class TimberReleaseTree : Timber.Tree() {
                 recordException(t ?: Exception(message))
                 setCustomKey("log_priority", priority)
             }
-
         }
     }
 }

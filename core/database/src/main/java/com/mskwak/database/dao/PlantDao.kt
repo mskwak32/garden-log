@@ -13,7 +13,7 @@ import java.time.LocalDate
 @Dao
 interface PlantDao {
     @Insert
-    suspend fun insertPlant(plantEntity: PlantEntity): Int
+    suspend fun insertPlant(plantEntity: PlantEntity): Long
 
     @Update
     suspend fun updatePlant(plantEntity: PlantEntity)
