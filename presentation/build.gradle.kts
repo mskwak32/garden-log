@@ -10,24 +10,10 @@ plugins {
 
 android {
     namespace = "com.mskwak.presentation"
-    compileSdk {
-        version = release(libs.versions.compileSdk.get().toInt())
-    }
 
     defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildTypes {
-        debug {
-            isMinifyEnabled = false
-        }
-        release {
-            isMinifyEnabled = true
-        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
