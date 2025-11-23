@@ -8,15 +8,16 @@ plugins {
 }
 
 android {
-    namespace = "com.mskwak.data"
+    namespace = "com.mskwak.database"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlin {
         compilerOptions {
@@ -26,18 +27,14 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain"))
-    implementation(project(":core:database"))
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.hilt)
     ksp(libs.hilt.compiler)
-    implementation(libs.timber)
-    implementation(platform(libs.okhttp.bom))
-    implementation(libs.bundles.retrofit)
-    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+    implementation(libs.room.ktx)
     implementation(libs.kotlin.serialization)
 
     testImplementation(libs.junit)
