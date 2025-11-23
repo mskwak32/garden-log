@@ -21,7 +21,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "garden log"
 include(":app")
-include(":presentation")
 include(":data")
 include(":design")
 include(":domain")
+include(":presentation:plant")
