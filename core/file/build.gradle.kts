@@ -8,13 +8,12 @@ plugins {
 }
 
 android {
-    namespace = "com.mskwak.data"
+    namespace = "com.mskwak.file"
     compileSdk {
         version = release(libs.versions.compileSdk.get().toInt())
     }
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
     compileOptions {
@@ -29,11 +28,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain"))
-    implementation(project(":core:database"))
-    implementation(project(":core:remote"))
-    implementation(project(":core:file"))
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.hilt)
@@ -41,7 +35,4 @@ dependencies {
     implementation(libs.timber)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
-    implementation(libs.kotlin.serialization)
-
-    testImplementation(libs.junit)
 }

@@ -1,9 +1,11 @@
 package com.mskwak.data.mapper
 
 import com.mskwak.database.entity.AlarmEntity
+import com.mskwak.database.entity.DiaryEntity
 import com.mskwak.database.entity.PictureEntity
 import com.mskwak.database.entity.PlantEntity
 import com.mskwak.domain.model.Alarm
+import com.mskwak.domain.model.Diary
 import com.mskwak.domain.model.Picture
 import com.mskwak.domain.model.Plant
 
@@ -60,5 +62,25 @@ internal fun PictureEntity.toPicture(): Picture {
         path = path,
         fileName = fileName,
         createdAt = createdAt
+    )
+}
+
+internal fun Diary.toDiaryEntity(): DiaryEntity {
+    return DiaryEntity(
+        id = id,
+        plantId = plantId,
+        memo = memo,
+        pictureList = pictureList?.map { it.toPictureEntity() },
+        createdDate = createdDate
+    )
+}
+
+internal fun DiaryEntity.toDiary(): Diary {
+    return Diary(
+        id = id,
+        plantId = plantId,
+        memo = memo,
+        pictureList = pictureList?.map { it.toPicture() },
+        createdDate = createdDate
     )
 }
