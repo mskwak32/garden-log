@@ -8,7 +8,6 @@ import androidx.room.Query
 import androidx.room.Update
 import com.mskwak.database.entity.PlantEntity
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
 
 @Dao
 interface PlantDao {
@@ -26,9 +25,6 @@ interface PlantDao {
 
     @Query("SELECT * FROM plant WHERE id = :id")
     fun getPlant(id: Int): Flow<PlantEntity>
-
-    @Query("UPDATE plant SET lastWateringDate = :date WHERE id = :plantId")
-    suspend fun updateLastWatering(date: LocalDate, plantId: Int)
 
     @Query("UPDATE plant SET watering_alarm_isActive = :isActive WHERE id = :plantId")
     suspend fun updateWateringAlarmActivation(isActive: Boolean, plantId: Int)

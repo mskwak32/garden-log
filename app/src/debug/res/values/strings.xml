@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">텃밭 일기 dev</string>
+    <string name="noti_watering_title">물주기 알림 dev</string>
 </resources>

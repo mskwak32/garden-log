@@ -50,4 +50,8 @@ internal class PlantRepositoryImpl @Inject constructor(
     override suspend fun getPlantIdsWithAlarmActivation(): Map<Int, Boolean> {
         return plantDao.getPlantIdsWithAlarmActivation()
     }
+
+    override suspend fun updateWateringAlarmActivation(isActive: Boolean, plantId: Int) {
+        plantDao.updateWateringAlarmActivation(isActive, plantId)
+    }
 }

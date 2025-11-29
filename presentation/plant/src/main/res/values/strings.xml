@@ -69,8 +69,4 @@
     <string name="setting_update_content">업데이트 내용</string>
     <string name="setting_app_estimation">앱 평가하기</string>
     <string name="setting_update_content_title">%s 버전</string>
-
-    <string name="noti_watering_title">물주기 알림</string>
-    <string name="noti_watering_message">%s에 물을 줄 시간이에요</string>
-    <string name="noti_watering_channel_name">물주기 알림</string>
 </resources>

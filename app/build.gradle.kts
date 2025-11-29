@@ -11,12 +11,6 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        getByName("debug") {
-            storeFile = rootProject.file("keystore/debug.keystore")
-        }
-    }
-
     namespace = "com.mskwak.gardendailylog"
     compileSdk {
         version = release(libs.versions.compileSdk.get().toInt())
@@ -30,6 +24,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "${rootProject.name} $versionName($versionCode)")
+    }
+    signingConfigs {
+        getByName("debug") {
+            storeFile = rootProject.file("keystore/debug.keystore")
+        }
     }
     buildTypes {
         debug {
