@@ -1,9 +1,20 @@
 package com.mskwak.gardendailylog.di
 
+import com.mskwak.domain.repository.AppConfigRepository
 import com.mskwak.domain.repository.DiaryRepository
 import com.mskwak.domain.repository.PictureRepository
 import com.mskwak.domain.repository.PlantRepository
 import com.mskwak.domain.repository.WateringAlarmRepository
+import com.mskwak.domain.useCase.config.GetLatestAppVersionUseCase
+import com.mskwak.domain.useCase.config.GetUpdatedContent
+import com.mskwak.domain.useCase.diary.AddDiaryUseCase
+import com.mskwak.domain.useCase.diary.DeleteDiaryUseCase
+import com.mskwak.domain.useCase.diary.GetDiariesByPlantIdUseCase
+import com.mskwak.domain.useCase.diary.GetDiariesUseCase
+import com.mskwak.domain.useCase.diary.GetDiaryUseCase
+import com.mskwak.domain.useCase.diary.UpdateDiaryUseCase
+import com.mskwak.domain.useCase.picture.DeletePictureUseCase
+import com.mskwak.domain.useCase.picture.SavePictureUseCase
 import com.mskwak.domain.useCase.plant.AddPlantUseCase
 import com.mskwak.domain.useCase.plant.DeletePlantUseCase
 import com.mskwak.domain.useCase.plant.GetPlantNameUseCase
@@ -24,7 +35,7 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 class UseCaseModule {
 
-    // Watering UseCases
+    /* Watering UseCases */
     @Provides
     fun provideGetRemainWateringDateUseCase(): GetRemainWateringDateUseCase {
         return GetRemainWateringDateUseCase()
@@ -63,7 +74,7 @@ class UseCaseModule {
         return WateringNowUseCase(plantRepository, setWateringAlarmUseCase)
     }
 
-    // Plant UseCases
+    /* Plant UseCases */
     @Provides
     fun provideGetPlantWithSortOrderUseCase(
         plantRepository: PlantRepository,
@@ -111,5 +122,79 @@ class UseCaseModule {
     @Provides
     fun provideGetPlantNameUseCase(plantRepository: PlantRepository): GetPlantNameUseCase {
         return GetPlantNameUseCase(plantRepository)
+    }
+
+    /* Config UseCases */
+    @Provides
+    fun provideGetLatestAppVersionUseCase(
+        appConfigRepository: AppConfigRepository
+    ): GetLatestAppVersionUseCase {
+        return GetLatestAppVersionUseCase(appConfigRepository)
+    }
+
+    @Provides
+    fun provideGetUpdatedContentUseCase(
+        appConfigRepository: AppConfigRepository
+    ): GetUpdatedContent {
+        return GetUpdatedContent(appConfigRepository)
+    }
+
+    /* Picture UseCases */
+    @Provides
+    fun provideSavePictureUseCase(
+        pictureRepository: PictureRepository
+    ): SavePictureUseCase {
+        return SavePictureUseCase(pictureRepository)
+    }
+
+    @Provides
+    fun provideDeletePictureUseCase(
+        pictureRepository: PictureRepository
+    ): DeletePictureUseCase {
+        return DeletePictureUseCase(pictureRepository)
+    }
+
+    /* Diary UseCases */
+    @Provides
+    fun provideAddDiaryUseCase(
+        diaryRepository: DiaryRepository
+    ): AddDiaryUseCase {
+        return AddDiaryUseCase(diaryRepository)
+    }
+
+    @Provides
+    fun provideDeleteDiaryUseCase(
+        diaryRepository: DiaryRepository,
+        pictureRepository: PictureRepository
+    ): DeleteDiaryUseCase {
+        return DeleteDiaryUseCase(diaryRepository, pictureRepository)
+    }
+
+    @Provides
+    fun provideGetDiariesByPlantIdUseCase(
+        diaryRepository: DiaryRepository
+    ): GetDiariesByPlantIdUseCase {
+        return GetDiariesByPlantIdUseCase(diaryRepository)
+    }
+
+    @Provides
+    fun provideGetDiaryUseCase(
+        diaryRepository: DiaryRepository
+    ): GetDiaryUseCase {
+        return GetDiaryUseCase(diaryRepository)
+    }
+
+    @Provides
+    fun provideGetDiariesUseCase(
+        diaryRepository: DiaryRepository
+    ): GetDiariesUseCase {
+        return GetDiariesUseCase(diaryRepository)
+    }
+
+    @Provides
+    fun provideUpdateDiaryUseCase(
+        diaryRepository: DiaryRepository
+    ): UpdateDiaryUseCase {
+        return UpdateDiaryUseCase(diaryRepository)
     }
 }
