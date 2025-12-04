@@ -12,7 +12,8 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.mskwak.domain.repository.PlantRepository
+import com.mskwak.domain.useCase.plant.GetPlantNameUseCase
+import com.mskwak.domain.useCase.watering.SetWateringAlarmUseCase
 import com.mskwak.gardendailylog.MainActivity
 import com.mskwak.gardendailylog.R
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,20 +26,20 @@ import javax.inject.Inject
 class WateringAlarmReceiver : BroadcastReceiver() {
 
     @Inject
-    lateinit var plantUseCase: PlantUseCase
+    lateinit var getPlantNameUseCase: GetPlantNameUseCase
 
     @Inject
-    lateinit var wateringUseCase: WateringUseCase
+    lateinit var setWateringAlarmUseCase: SetWateringAlarmUseCase
 
     override fun onReceive(context: Context, intent: Intent) {
         val plantId = intent.getIntExtra(PLANT_ID_KEY, DEFAULT_PLANT_ID)
 
         createNotificationChannel(context)
         CoroutineScope(Dispatchers.Default).takeIf { plantId != DEFAULT_PLANT_ID }?.launch {
-            val plantName = PlantRepository.getPlant(plantId)?.first()?.name
+            val plantName = getPlantNameUseCase.getName(plantId)
 
             showNotification(context, plantName, plantId)
-            wateringUseCase.setWateringAlarm(plantId, true)
+            setWateringAlarmUseCase(plantId, true)
         }
     }
 

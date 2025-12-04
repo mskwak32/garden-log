@@ -15,10 +15,12 @@ import javax.inject.Inject
  * 부팅 후 또는 앱 업데이트 후 리시버
  */
 @AndroidEntryPoint
-class BootReceiver @Inject constructor(
-    private val plantRepository: PlantRepository,
-    private val setWateringAlarmUseCase: SetWateringAlarmUseCase
-) : BroadcastReceiver() {
+class BootReceiver : BroadcastReceiver() {
+    @Inject
+    lateinit var plantRepository: PlantRepository
+
+    @Inject
+    lateinit var setWateringAlarmUseCase: SetWateringAlarmUseCase
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent?.action?.equals(Intent.ACTION_BOOT_COMPLETED) == true ||

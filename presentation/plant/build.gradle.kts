@@ -38,7 +38,6 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     debugImplementation(libs.bundles.debug.compose)
     implementation(libs.hilt)
     ksp(libs.hilt.compiler)

@@ -21,10 +21,6 @@
     <string name="memo">메모</string>
     <string name="watering">물주기</string>
 
-    <string name="bottom_nav_home">홈</string>
-    <string name="bottom_nav_diary">일기</string>
-    <string name="bottom_nav_setting">설정</string>
-
     <string name="home_title">내 텃밭</string>
     <string-array name="home_sort_array">
         <item>심은날짜 최근순</item>
@@ -54,10 +50,8 @@
     <string name="message_input_picture_or_content">사진이나 내용을 입력해주세요.</string>
     <string name="message_photo_image_permission">이미지를 가져오려면 권한이 필요합니다.</string>
     <string name="message_photo_camera_permission">카메라를 사용하려면 권한이 필요합니다.</string>
-    <string name="message_notification_permission">물주기 알람을 사용하려면 권한이 필요합니다.</string>
     <string name="message_delete_confirm">정말 삭제하시겠습니까?</string>
     <string name="message_not_ready">준비중이에요</string>
-    <string name="message_finish_app">종료하려면 한 번 더 눌러주세요.</string>
 
     <string name="diary_list_empty_with_plantName">아직 %s에 대한 일기가 없어요</string>
     <string name="diary_list_empty">해당하는 일기가 없어요</string>

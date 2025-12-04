@@ -18,49 +18,49 @@ private val defaultTextStyle = TextStyle(
 
 val XLarge_bold = defaultTextStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 25.sp
+    fontSize = 20.sp
 )
 val XLarge_medium = defaultTextStyle.copy(
     fontWeight = FontWeight.Medium,
-    fontSize = 25.sp
+    fontSize = 20.sp
 )
 val XLarge_regular = defaultTextStyle.copy(
     fontWeight = FontWeight.Normal,
-    fontSize = 25.sp
+    fontSize = 20.sp
 )
 val Large_bold = defaultTextStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 20.sp
+    fontSize = 16.sp
 )
 val Large_medium = defaultTextStyle.copy(
     fontWeight = FontWeight.Medium,
-    fontSize = 20.sp
+    fontSize = 16.sp
 )
 val Large_regular = defaultTextStyle.copy(
     fontWeight = FontWeight.Normal,
-    fontSize = 20.sp
+    fontSize = 16.sp
 )
 val Medium_bold = defaultTextStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 16.sp
+    fontSize = 14.sp
 )
 val Medium_medium = defaultTextStyle.copy(
     fontWeight = FontWeight.Medium,
-    fontSize = 16.sp
+    fontSize = 14.sp
 )
 val Medium_regular = defaultTextStyle.copy(
     fontWeight = FontWeight.Normal,
-    fontSize = 16.sp
+    fontSize = 14.sp
 )
 val Body_bold = defaultTextStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 14.sp
+    fontSize = 12.sp
 )
 val Body_medium = defaultTextStyle.copy(
     fontWeight = FontWeight.Medium,
-    fontSize = 14.sp
+    fontSize = 12.sp
 )
 val Body_regular = defaultTextStyle.copy(
     fontWeight = FontWeight.Normal,
-    fontSize = 14.sp
+    fontSize = 12.sp
 )

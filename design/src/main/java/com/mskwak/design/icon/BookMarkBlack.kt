@@ -7,13 +7,13 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.mskwak.design.IconPack
 
-val IconPack.BookBlack: ImageVector
+val IconPack.BookMarkBlack: ImageVector
     get() {
-        if (_BookBlack != null) {
-            return _BookBlack!!
+        if (_BookMarkBlack != null) {
+            return _BookMarkBlack!!
         }
-        _BookBlack = ImageVector.Builder(
-            name = "BookBlack",
+        _BookMarkBlack = ImageVector.Builder(
+            name = "BookMarkBlack",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
             viewportWidth = 24f,
@@ -51,8 +51,8 @@ val IconPack.BookBlack: ImageVector
             }
         }.build()
 
-        return _BookBlack!!
+        return _BookMarkBlack!!
     }
 
 @Suppress("ObjectPropertyName")
-private var _BookBlack: ImageVector? = null
+private var _BookMarkBlack: ImageVector? = null
