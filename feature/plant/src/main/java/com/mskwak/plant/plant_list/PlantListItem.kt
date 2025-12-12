@@ -1,0 +1,226 @@
+package com.mskwak.plant.plant_list
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.animateTo
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import com.mskwak.design.Blue400
+import com.mskwak.design.Blue500
+import com.mskwak.design.Gray100
+import com.mskwak.design.Gray600
+import com.mskwak.design.Gray800
+import com.mskwak.design.IconPack
+import com.mskwak.design.Large_medium
+import com.mskwak.design.Medium_medium
+import com.mskwak.design.Regular_regular
+import com.mskwak.design.icon.WaterDropBlue
+import com.mskwak.design.icon.WaterDropRed
+import com.mskwak.design.icon.WaterDropWhite
+import com.mskwak.design.util.clickableWithoutRipple
+import com.mskwak.design.util.toDateString
+import com.mskwak.plant.R
+import kotlinx.coroutines.launch
+import java.time.LocalDate
+
+@Composable
+fun PlantListItem(
+    uiModel: PlantListItemUiModel,
+    onEvent: (PlantListEvent) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val revealState = rememberSwipeToRevealState(80.dp)
+    val scope = rememberCoroutineScope()
+
+    SwipeToRevealCard(
+        modifier = modifier.height(IntrinsicSize.Min),
+        state = revealState,
+        backgroundContent = {
+            BackgroundCard(
+                onClick = {
+                    scope.launch { revealState.animateTo(RevealState.CLOSED) }
+                    onEvent(PlantListEvent.OnWateringClicked(uiModel.plantId))
+                }
+            )
+        },
+        cardContent = {
+            ForegroundCard(
+                uiModel = uiModel,
+                onClick = {
+                    scope.launch { revealState.animateTo(RevealState.CLOSED) }
+                    onEvent(PlantListEvent.OnPlantClicked(uiModel.plantId))
+                }
+            )
+        }
+    )
+}
+
+@Composable
+private fun BackgroundCard(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(Blue500, shape = RoundedCornerShape(10.dp))
+            .clickableWithoutRipple(onClick = onClick),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        Text(
+            text = stringResource(R.string.watering),
+            style = Large_medium,
+            color = Gray100,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.width(80.dp)
+        )
+    }
+}
+
+@Composable
+private fun ForegroundCard(
+    modifier: Modifier = Modifier,
+    uiModel: PlantListItemUiModel,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Gray100, shape = RoundedCornerShape(10.dp))
+            .clickableWithoutRipple(onClick = onClick)
+            .padding(vertical = 8.dp, horizontal = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        AsyncImage(
+            model = uiModel.imagePath ?: R.drawable.ic_flower_pot,
+            contentDescription = null,
+            placeholder = painterResource(R.drawable.ic_flower_pot),
+            error = painterResource(R.drawable.ic_flower_pot),
+            alignment = Alignment.BottomCenter,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(50.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color.White)
+                .padding(if (uiModel.imagePath == null) 8.dp else 0.dp)
+
+        )
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 8.dp)
+        ) {
+            Text(
+                text = uiModel.name,
+                style = Medium_medium,
+                color = Gray800,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = uiModel.createdAt.toDateString(),
+                style = Regular_regular,
+                color = Gray600
+            )
+        }
+
+        Image(
+            imageVector = when (uiModel.status) {
+                WateringStatus.OVERDUE -> IconPack.WaterDropRed
+                WateringStatus.TODAY_DONE -> IconPack.WaterDropWhite
+                else -> IconPack.WaterDropBlue
+            },
+            contentDescription = null,
+            modifier = Modifier
+                .size(30.dp)
+                .then(
+                    if (uiModel.status == WateringStatus.TODAY_DONE) {
+                        Modifier
+                            .background(Blue400, shape = CircleShape)
+                            .padding(4.dp)
+                    } else {
+                        Modifier
+                    }
+                )
+        )
+
+        Spacer(Modifier.width(6.dp))
+        Text(
+            text = when (uiModel.status) {
+                WateringStatus.TODAY, WateringStatus.TODAY_DONE -> {
+                    stringResource(R.string.today)
+                }
+
+                WateringStatus.OVERDUE -> {
+                    stringResource(R.string.watering_d_day_plus_format, uiModel.dDay)
+                }
+
+                WateringStatus.UPCOMING -> {
+                    stringResource(R.string.watering_d_day_minus_format, uiModel.dDay)
+                }
+            },
+            style = Large_medium,
+            color = Gray800
+        )
+    }
+}
+
+private class WateringStatusPreviewProvider : PreviewParameterProvider<WateringStatus> {
+    override val values: Sequence<WateringStatus> = sequenceOf(
+        WateringStatus.OVERDUE,
+        WateringStatus.TODAY,
+        WateringStatus.TODAY_DONE,
+        WateringStatus.UPCOMING
+    )
+}
+
+@Preview
+@Composable
+private fun PlantListItemPreview(
+    @PreviewParameter(WateringStatusPreviewProvider::class) status: WateringStatus
+) {
+    val sampleData = PlantListItemUiModel(
+        plantId = 1,
+        name = "몬스테라",
+        imagePath = null,
+        dDay = 1,
+        status = status,
+        createdAt = LocalDate.now()
+    )
+    PlantListItem(
+        uiModel = sampleData,
+        onEvent = {}
+    )
+}

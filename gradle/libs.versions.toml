@@ -22,7 +22,7 @@ ksp = "2.2.21-2.0.4"
 #compose
 composeBom = "2025.11.00"
 compose-navigation = "2.9.6"
-compose-coil = "2.7.0"
+compose-coil = "3.3.0"
 compose-lottie = "6.7.1"
 compose-viewmodel = "2.9.4"
 
@@ -51,7 +51,8 @@ compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-compose-coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "compose-coil" }
+compose-coil = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "compose-coil" }
+compose-coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "compose-coil" }
 compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "compose-navigation" }
 compose-lottie = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "compose-lottie" }
 compose-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "compose-viewmodel" }
@@ -97,8 +98,8 @@ jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrai
 
 [bundles]
 compose = ["compose-ui", "compose-ui-graphics", "compose-ui-tooling-preview",
-    "compose-lifecycle-viewmodel", "compose-material3", "compose-coil", "compose-navigation",
-    "compose-lottie", "activity-compose"]
+    "compose-lifecycle-viewmodel", "compose-material3", "compose-coil", "compose-coil-network",
+    "compose-navigation", "compose-lottie", "activity-compose"]
 debug-compose = ["compose-ui-test-manifest", "compose-ui-tooling"]
 test = ["androidx-junit"]
 androidTest = ["androidx-junit", "androidx-espresso-core", "androidx-compose-ui-test-junit4"]

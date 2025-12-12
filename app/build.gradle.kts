@@ -63,7 +63,7 @@ dependencies {
     implementation(project(":design"))
     implementation(project(":data"))
     implementation(project(":domain"))
-    implementation(project(":presentation:plant"))
+    implementation(project(":feature:plant"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

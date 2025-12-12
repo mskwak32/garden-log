@@ -71,9 +71,7 @@ fun MainScreen(
         bottomBar = {
             // 현재 경로가 탭 메뉴 중 하나일 때만 BottomBar 표시
             if (items.any { it.route == currentRoute }) {
-                NavigationBar(
-                    containerColor = Color.White
-                ) {
+                NavigationBar(containerColor = Color.White) {
                     val currentDestination = navBackStackEntry?.destination
                     items.forEach { screen ->
                         NavigationBarItem(screen, currentDestination, navController)

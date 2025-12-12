@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mskwak.presentation"
+    namespace = "com.mskwak.plant"
     compileSdk {
         version = release(libs.versions.compileSdk.get().toInt())
     }
@@ -26,6 +26,9 @@ android {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_17
         }
+    }
+    buildFeatures {
+        compose = true
     }
 }
 
