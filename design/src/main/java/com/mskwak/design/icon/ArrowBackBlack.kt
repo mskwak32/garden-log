@@ -1,10 +1,10 @@
 package com.mskwak.design.icon
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
-import com.mskwak.design.Gray600
 import com.mskwak.design.IconPack
 
 val IconPack.ArrowBackBlack: ImageVector
@@ -19,7 +19,7 @@ val IconPack.ArrowBackBlack: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            path(fill = SolidColor(Gray600)) {
+            path(fill = SolidColor(Color.Black)) {
                 moveTo(20f, 11f)
                 horizontalLineTo(7.83f)
                 lineToRelative(5.59f, -5.59f)

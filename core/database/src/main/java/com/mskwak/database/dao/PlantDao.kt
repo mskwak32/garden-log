@@ -24,13 +24,16 @@ interface PlantDao {
     fun getPlants(): Flow<List<PlantEntity>>
 
     @Query("SELECT * FROM plant WHERE id = :id")
-    fun getPlant(id: Int): Flow<PlantEntity>
+    fun getPlantFlow(id: Int): Flow<PlantEntity?>
+
+    @Query("SELECT * FROM plant WHERE id = :id")
+    suspend fun getPlant(id: Int): PlantEntity?
 
     @Query("UPDATE plant SET watering_alarm_isActive = :isActive WHERE id = :plantId")
     suspend fun updateWateringAlarmActivation(isActive: Boolean, plantId: Int)
 
     @Query("SELECT name FROM plant WHERE id = :plantId")
-    suspend fun getPlantName(plantId: Int): String
+    suspend fun getPlantName(plantId: Int): String?
 
     @Query("SELECT id AS plantId, name AS plantName FROM plant")
     suspend fun getPlantNames(): Map<

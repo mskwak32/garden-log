@@ -19,7 +19,7 @@ import com.mskwak.domain.useCase.plant.AddPlantUseCase
 import com.mskwak.domain.useCase.plant.DeletePlantUseCase
 import com.mskwak.domain.useCase.plant.GetPlantNameUseCase
 import com.mskwak.domain.useCase.plant.GetPlantUseCase
-import com.mskwak.domain.useCase.plant.GetPlantWithSortOrderUseCase
+import com.mskwak.domain.useCase.plant.GetPlantsWithSortOrderUseCase
 import com.mskwak.domain.useCase.plant.UpdatePlantUseCase
 import com.mskwak.domain.useCase.watering.GetRemainWateringDateUseCase
 import com.mskwak.domain.useCase.watering.GetWateringDaysUseCase
@@ -76,11 +76,11 @@ class UseCaseModule {
 
     /* Plant UseCases */
     @Provides
-    fun provideGetPlantWithSortOrderUseCase(
+    fun provideGetPlantsWithSortOrderUseCase(
         plantRepository: PlantRepository,
         getRemainWateringDateUseCase: GetRemainWateringDateUseCase
-    ): GetPlantWithSortOrderUseCase {
-        return GetPlantWithSortOrderUseCase(plantRepository, getRemainWateringDateUseCase)
+    ): GetPlantsWithSortOrderUseCase {
+        return GetPlantsWithSortOrderUseCase(plantRepository, getRemainWateringDateUseCase)
     }
 
     @Provides

@@ -1,6 +1,5 @@
 package com.mskwak.domain.useCase.watering
 
-import com.mskwak.domain.model.Plant
 import com.mskwak.domain.repository.PlantRepository
 import java.time.LocalDate
 
@@ -8,8 +7,10 @@ class WateringNowUseCase(
     private val plantRepository: PlantRepository,
     private val setWateringAlarmUseCase: SetWateringAlarmUseCase
 ) {
-    suspend operator fun invoke(plant: Plant) {
+    suspend operator fun invoke(plantId: Int) {
         val now = LocalDate.now()
+        val plant = plantRepository.getPlant(plantId) ?: return
+
         plantRepository.updatePlant(
             plant.copy(lastWateringDate = now)
         )

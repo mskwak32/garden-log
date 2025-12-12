@@ -2,7 +2,6 @@ package com.mskwak.domain.useCase.watering
 
 import com.mskwak.domain.repository.PlantRepository
 import com.mskwak.domain.repository.WateringAlarmRepository
-import kotlinx.coroutines.flow.first
 import java.time.LocalDateTime
 
 class SetWateringAlarmUseCase(
@@ -21,9 +20,9 @@ class SetWateringAlarmUseCase(
     }
 
     private suspend fun getNextAlarmDateTime(plantId: Int): LocalDateTime? {
-        val plant = plantRepository.getPlant(plantId).first().also {
+        val plant = plantRepository.getPlant(plantId)?.also {
             if (it.waterPeriod == 0) return null
-        }
+        } ?: return null
         val nextDate = plant.lastWateringDate.plusDays(plant.waterPeriod.toLong())
         var nextDateTime = LocalDateTime.of(nextDate, plant.wateringAlarm.time)
 

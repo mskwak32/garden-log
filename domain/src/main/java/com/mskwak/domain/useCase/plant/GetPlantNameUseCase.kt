@@ -5,7 +5,7 @@ import com.mskwak.domain.repository.PlantRepository
 class GetPlantNameUseCase(
     private val plantRepository: PlantRepository
 ) {
-    suspend fun getName(plantId: Int): String {
+    suspend fun getName(plantId: Int): String? {
         return plantRepository.getPlantName(plantId)
     }
 

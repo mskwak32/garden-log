@@ -29,8 +29,12 @@ internal class PlantRepositoryImpl @Inject constructor(
         Timber.d("delete plant id= ${plant.id}")
     }
 
-    override fun getPlant(plantId: Int): Flow<Plant> {
-        return plantDao.getPlant(plantId).map { it.toPlant() }
+    override fun getPlantFlow(plantId: Int): Flow<Plant?> {
+        return plantDao.getPlantFlow(plantId).map { it?.toPlant() }
+    }
+
+    override suspend fun getPlant(plantId: Int): Plant? {
+        return plantDao.getPlant(plantId)?.toPlant()
     }
 
     override fun getPlants(): Flow<List<Plant>> {
@@ -39,7 +43,7 @@ internal class PlantRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getPlantName(plantId: Int): String {
+    override suspend fun getPlantName(plantId: Int): String? {
         return plantDao.getPlantName(plantId)
     }
 

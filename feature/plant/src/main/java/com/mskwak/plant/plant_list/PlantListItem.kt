@@ -53,9 +53,9 @@ import java.time.LocalDate
 
 @Composable
 fun PlantListItem(
+    modifier: Modifier = Modifier,
     uiModel: PlantListItemUiModel,
-    onEvent: (PlantListEvent) -> Unit,
-    modifier: Modifier = Modifier
+    onEvent: (PlantListEvent) -> Unit
 ) {
     val revealState = rememberSwipeToRevealState(80.dp)
     val scope = rememberCoroutineScope()
@@ -120,20 +120,30 @@ private fun ForegroundCard(
             .padding(vertical = 8.dp, horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AsyncImage(
-            model = uiModel.imagePath ?: R.drawable.ic_flower_pot,
-            contentDescription = null,
-            placeholder = painterResource(R.drawable.ic_flower_pot),
-            error = painterResource(R.drawable.ic_flower_pot),
-            alignment = Alignment.BottomCenter,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(50.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color.White)
-                .padding(if (uiModel.imagePath == null) 8.dp else 0.dp)
+        val imageModifier = Modifier
+            .size(50.dp)
+            .clip(RoundedCornerShape(10.dp))
 
-        )
+        if (uiModel.imagePath == null) {
+            Image(
+                painterResource(R.drawable.ic_flower_pot),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = imageModifier
+                    .background(Color.White)
+                    .padding(8.dp)
+            )
+        } else {
+            AsyncImage(
+                model = uiModel.imagePath,
+                contentDescription = null,
+                placeholder = painterResource(R.drawable.ic_flower_pot),
+                error = painterResource(R.drawable.ic_flower_pot),
+                alignment = Alignment.BottomCenter,
+                contentScale = ContentScale.Crop,
+                modifier = imageModifier
+            )
+        }
 
         Column(
             modifier = Modifier

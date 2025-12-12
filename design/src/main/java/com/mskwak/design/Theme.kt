@@ -12,7 +12,10 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = Color.White,
     secondary = Teal300,
     secondaryContainer = Teal100,
-    onSecondary = Color.Black
+    onSecondary = Color.Black,
+    surface = Color.White,
+    surfaceTint = Color.Transparent,
+    background = Color.White
 )
 
 @Composable

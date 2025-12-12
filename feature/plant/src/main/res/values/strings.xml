@@ -20,6 +20,7 @@
     <string name="new_diary">일기쓰기</string>
     <string name="memo">메모</string>
     <string name="watering">물주기</string>
+    <string name="sort">정렬</string>
 
     <string name="home_title">내 텃밭</string>
     <string-array name="home_sort_array">
