@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,18 +34,12 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.mskwak.design.Blue400
-import com.mskwak.design.Blue500
-import com.mskwak.design.Gray100
-import com.mskwak.design.Gray600
-import com.mskwak.design.Gray800
 import com.mskwak.design.IconPack
-import com.mskwak.design.Large_medium
-import com.mskwak.design.Medium_medium
-import com.mskwak.design.Regular_regular
 import com.mskwak.design.icon.WaterDropBlue
 import com.mskwak.design.icon.WaterDropRed
 import com.mskwak.design.icon.WaterDropWhite
+import com.mskwak.design.theme.Blue400
+import com.mskwak.design.theme.GardenLogTheme
 import com.mskwak.design.util.clickableWithoutRipple
 import com.mskwak.design.util.toDateString
 import com.mskwak.plant.R
@@ -92,14 +87,17 @@ private fun BackgroundCard(
         modifier = modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(Blue500, shape = RoundedCornerShape(10.dp))
+            .background(
+                MaterialTheme.colorScheme.tertiary,
+                shape = RoundedCornerShape(10.dp)
+            )
             .clickableWithoutRipple(onClick = onClick),
         contentAlignment = Alignment.CenterEnd
     ) {
         Text(
             text = stringResource(R.string.watering),
-            style = Large_medium,
-            color = Gray100,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onTertiary,
             textAlign = TextAlign.Center,
             modifier = Modifier.width(80.dp)
         )
@@ -115,7 +113,10 @@ private fun ForegroundCard(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(Gray100, shape = RoundedCornerShape(10.dp))
+            .background(
+                MaterialTheme.colorScheme.surfaceContainerLow,
+                shape = RoundedCornerShape(10.dp)
+            )
             .clickableWithoutRipple(onClick = onClick)
             .padding(vertical = 8.dp, horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -152,8 +153,8 @@ private fun ForegroundCard(
         ) {
             Text(
                 text = uiModel.name,
-                style = Medium_medium,
-                color = Gray800,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -161,8 +162,8 @@ private fun ForegroundCard(
             Spacer(Modifier.height(6.dp))
             Text(
                 text = uiModel.createdAt.toDateString(),
-                style = Regular_regular,
-                color = Gray600
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
@@ -201,8 +202,8 @@ private fun ForegroundCard(
                     stringResource(R.string.watering_d_day_minus_format, uiModel.dDay)
                 }
             },
-            style = Large_medium,
-            color = Gray800
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -216,7 +217,7 @@ private class WateringStatusPreviewProvider : PreviewParameterProvider<WateringS
     )
 }
 
-@Preview
+@Preview(showBackground = false)
 @Composable
 private fun PlantListItemPreview(
     @PreviewParameter(WateringStatusPreviewProvider::class) status: WateringStatus
@@ -229,8 +230,10 @@ private fun PlantListItemPreview(
         status = status,
         createdAt = LocalDate.now()
     )
-    PlantListItem(
-        uiModel = sampleData,
-        onEvent = {}
-    )
+    GardenLogTheme {
+        PlantListItem(
+            uiModel = sampleData,
+            onEvent = {}
+        )
+    }
 }

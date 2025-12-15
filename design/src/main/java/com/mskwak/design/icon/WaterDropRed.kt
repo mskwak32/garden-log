@@ -1,11 +1,11 @@
 package com.mskwak.design.icon
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.mskwak.design.IconPack
-import com.mskwak.design.Red300
 
 val IconPack.WaterDropRed: ImageVector
     get() {
@@ -19,7 +19,7 @@ val IconPack.WaterDropRed: ImageVector
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
-            path(fill = SolidColor(Red300)) {
+            path(fill = SolidColor(Color(0xFFE57373))) {
                 moveTo(12f, 2f)
                 curveToRelative(-5.33f, 4.55f, -8f, 8.48f, -8f, 11.8f)
                 curveToRelative(0f, 4.98f, 3.8f, 8.2f, 8f, 8.2f)

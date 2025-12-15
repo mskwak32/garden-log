@@ -24,6 +24,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -45,17 +46,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.mskwak.design.Gray500
-import com.mskwak.design.Gray800
-import com.mskwak.design.Green300
-import com.mskwak.design.Green600
 import com.mskwak.design.IconPack
-import com.mskwak.design.Large_bold
-import com.mskwak.design.Medium_regular
-import com.mskwak.design.Regular_regular
-import com.mskwak.design.Teal600
 import com.mskwak.design.icon.AddWhite
 import com.mskwak.design.icon.CaretDown
+import com.mskwak.design.theme.GardenLogTheme
 import com.mskwak.domain.model.PlantListSortOrder
 import com.mskwak.plant.R
 import java.time.LocalDate
@@ -99,8 +93,8 @@ private fun Content(
                 title = {
                     Text(
                         text = stringResource(R.string.home_title),
-                        style = Large_bold,
-                        color = Gray800
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 },
                 actions = {
@@ -115,7 +109,8 @@ private fun Content(
             if (state.plants.isNotEmpty()) {
                 AddPlantButton(onEvent = onEvent)
             }
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         if (state.plants.isEmpty()) {
             EmptyList(
@@ -153,7 +148,7 @@ fun SortMenu(
                 text = sortLabels.getOrElse(currentOrder.ordinal) {
                     stringResource(R.string.sort)
                 },
-                style = Regular_regular
+                style = MaterialTheme.typography.bodyMedium
             )
 
             Spacer(Modifier.width(4.dp))
@@ -169,7 +164,7 @@ fun SortMenu(
             onDismissRequest = { expanded = false },
             shape = RoundedCornerShape(10.dp),
             containerColor = Color.White,
-            border = BorderStroke(width = 1.dp, color = Gray500)
+            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline)
         ) {
             PlantListSortOrder.entries.forEachIndexed { index, order ->
                 DropdownMenuItem(
@@ -182,7 +177,9 @@ fun SortMenu(
                     },
                     // 현재 선택된 항목 강조
                     colors = if (order == currentOrder) {
-                        MenuDefaults.itemColors(textColor = Teal600)
+                        MenuDefaults.itemColors(
+                            textColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     } else {
                         MenuDefaults.itemColors()
                     }
@@ -198,7 +195,7 @@ private fun AddPlantButton(
 ) {
     FloatingActionButton(
         shape = CircleShape,
-        containerColor = Green300,
+        containerColor = MaterialTheme.colorScheme.secondary,
         onClick = { onEvent(PlantListEvent.OnAddPlantClicked) }
     ) {
         Image(
@@ -251,20 +248,20 @@ private fun EmptyList(
         Spacer(Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.plant_list_empty),
-            style = Medium_regular,
-            color = Gray800
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(Modifier.height(16.dp))
         Button(
             colors = ButtonDefaults.buttonColors().copy(
-                containerColor = Green600
+                containerColor = MaterialTheme.colorScheme.secondary
             ),
             onClick = { onEvent(PlantListEvent.OnAddPlantClicked) }
         ) {
             Text(
                 text = stringResource(R.string.new_plant),
-                style = Regular_regular
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
@@ -291,11 +288,13 @@ private fun Preview() {
             createdAt = LocalDate.now()
         )
     )
-    Content(
-        state = PlantListState(
-            plants = uiModels,
-            sortOrder = PlantListSortOrder.CREATED_LATEST
-        ),
-        onEvent = {}
-    )
+    GardenLogTheme {
+        Content(
+            state = PlantListState(
+                plants = uiModels,
+                sortOrder = PlantListSortOrder.CREATED_LATEST
+            ),
+            onEvent = {}
+        )
+    }
 }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -40,7 +41,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.mskwak.design.Medium_regular
 import com.mskwak.gardendailylog.R
 import com.mskwak.gardendailylog.ui.bottom_nav.BottomNavItem
 import kotlinx.coroutines.launch
@@ -105,7 +105,7 @@ private fun RowScope.NavigationBarItem(
         label = {
             Text(
                 text = title,
-                style = Medium_regular
+                style = MaterialTheme.typography.titleMedium
             )
         },
         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
