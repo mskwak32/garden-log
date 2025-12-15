@@ -4,18 +4,15 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
 }
 
 android {
-    namespace = "com.mskwak.plant"
+    namespace = "com.mskwak.common_ui"
     compileSdk {
         version = release(libs.versions.compileSdk.get().toInt())
     }
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
     compileOptions {
@@ -33,25 +30,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain"))
     implementation(project(":design"))
-    implementation(project(":core:common_ui"))
 
-    implementation(platform(libs.compose.bom))
-    implementation(libs.bundles.compose)
-    implementation(libs.timber)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.bundles.compose)
     debugImplementation(libs.bundles.debug.compose)
-    implementation(libs.hilt)
-    ksp(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.crashlytics)
-
-    testImplementation(libs.bundles.test)
-    androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.bundles.androidTest)
-    androidTestImplementation(platform(libs.compose.bom))
 }

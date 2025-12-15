@@ -56,23 +56,24 @@ import java.time.LocalDate
 
 @Composable
 fun PlantListScreen(
-    viewModel: PlantListViewModel = hiltViewModel()
+    viewModel: PlantListViewModel = hiltViewModel(),
+    navigate: (PlantListEffect.Navigation) -> Unit
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.viewState.collectAsStateWithLifecycle()
 
     Content(
         state = state,
-        onEvent = viewModel::handleEvent
+        onEvent = viewModel::setEvent
     )
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is PlantListEffect.NavigateToAddPlant -> {
+                is PlantListEffect.Navigation.ToAddPlant -> {
 
                 }
 
-                is PlantListEffect.NavigateToPlantDetail -> {
+                is PlantListEffect.Navigation.ToPlantDetail -> {
 
                 }
             }
@@ -93,7 +94,7 @@ private fun Content(
                 title = {
                     Text(
                         text = stringResource(R.string.home_title),
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 },
@@ -196,7 +197,7 @@ private fun AddPlantButton(
     FloatingActionButton(
         shape = CircleShape,
         containerColor = MaterialTheme.colorScheme.secondary,
-        onClick = { onEvent(PlantListEvent.OnAddPlantClicked) }
+        onClick = { onEvent(PlantListEvent.AddPlant) }
     ) {
         Image(
             imageVector = IconPack.AddWhite,
@@ -257,7 +258,7 @@ private fun EmptyList(
             colors = ButtonDefaults.buttonColors().copy(
                 containerColor = MaterialTheme.colorScheme.secondary
             ),
-            onClick = { onEvent(PlantListEvent.OnAddPlantClicked) }
+            onClick = { onEvent(PlantListEvent.AddPlant) }
         ) {
             Text(
                 text = stringResource(R.string.new_plant),
