@@ -52,6 +52,7 @@ import com.mskwak.design.icon.CaretDown
 import com.mskwak.design.theme.GardenLogTheme
 import com.mskwak.domain.model.PlantListSortOrder
 import com.mskwak.plant.R
+import com.mskwak.plant.model.WateringStatus
 import java.time.LocalDate
 
 @Composable

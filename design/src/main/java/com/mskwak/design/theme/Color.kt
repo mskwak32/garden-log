@@ -219,4 +219,4 @@ val surfaceContainerHighDarkHighContrast = Color(0xFF383D37)
 val surfaceContainerHighestDarkHighContrast = Color(0xFF444842)
 
 val DimColor = Color(0x7518181C)
-val Blue400 = Color(0xFF42A5F5)
+val SkyBlue = Color(0xFF81CFE2)

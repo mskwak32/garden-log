@@ -1,9 +1,12 @@
 package com.mskwak.plant.plant_list
 
+import androidx.compose.runtime.Immutable
 import com.mskwak.domain.model.Plant
 import com.mskwak.domain.model.WateringDays
+import com.mskwak.plant.model.WateringStatus
 import java.time.LocalDate
 
+@Immutable
 data class PlantListItemUiModel(
     val plantId: Int,
     val name: String,
@@ -12,20 +15,6 @@ data class PlantListItemUiModel(
     val status: WateringStatus,
     val createdAt: LocalDate
 )
-
-/**
- * 물주기 ui의 상태를 결정
- * TODAY: 오늘 물을 줘야함
- * TODAY_DONE, 오늘 물을 줌
- * OVERDUE: 물주기가 지난 경우
- * UPCOMING: 다음 물주기까지 아직 남음
- */
-enum class WateringStatus {
-    TODAY,
-    TODAY_DONE,
-    OVERDUE,
-    UPCOMING
-}
 
 fun Plant.toPlantListItemUiModel(
     getWateringDays: (Plant) -> WateringDays

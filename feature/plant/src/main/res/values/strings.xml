@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="back">뒤로가기</string>
     <string name="save">저장</string>
     <string name="cancel">취소</string>
     <string name="none">없음</string>
@@ -37,14 +38,15 @@
     <string name="plant_name">식물 이름</string>
     <string name="plant_date">심은 날짜</string>
     <string name="plant_diary">가꾸기 일기</string>
+    <string name="days_ago_format">%d일 전</string>
 
-    <string name="watering_last_date">마지막으로 물준 날짜</string>
+    <string name="watering_last_date">마지막 물준 날짜</string>
     <string name="watering_period">물주기 간격</string>
     <string name="watering_period_unit">%d일마다</string>
     <string name="watering_period_unit_dialog">일마다</string>
     <string name="watering_d_day_plus_format">D+%02d</string>
     <string name="watering_d_day_minus_format">D-%02d</string>
-    <string name="watering_alarm">물주기 알림</string>
+    <string name="watering_alarm">알림 시간</string>
 
     <string name="message_input_required_field">필수항목을 입력해주세요.</string>
     <string name="message_no_more_picture">더이상 이미지를 추가할 수 없습니다.</string>

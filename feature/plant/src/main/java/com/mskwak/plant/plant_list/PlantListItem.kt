@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,12 +36,12 @@ import coil3.compose.AsyncImage
 import com.mskwak.design.IconPack
 import com.mskwak.design.icon.WaterDropBlue
 import com.mskwak.design.icon.WaterDropRed
-import com.mskwak.design.icon.WaterDropWhite
-import com.mskwak.design.theme.Blue400
+import com.mskwak.design.icon.WaterDropWithBackground
 import com.mskwak.design.theme.GardenLogTheme
 import com.mskwak.design.util.clickableWithoutRipple
 import com.mskwak.design.util.toDateString
 import com.mskwak.plant.R
+import com.mskwak.plant.model.WateringStatus
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -62,7 +61,7 @@ fun PlantListItem(
             BackgroundCard(
                 onClick = {
                     scope.launch { revealState.animateTo(RevealState.CLOSED) }
-                    onEvent(PlantListEvent.OnWateringClicked(uiModel.plantId))
+                    onEvent(PlantListEvent.Watering(uiModel.plantId))
                 }
             )
         },
@@ -140,7 +139,6 @@ private fun ForegroundCard(
                 contentDescription = null,
                 placeholder = painterResource(R.drawable.ic_flower_pot),
                 error = painterResource(R.drawable.ic_flower_pot),
-                alignment = Alignment.BottomCenter,
                 contentScale = ContentScale.Crop,
                 modifier = imageModifier
             )
@@ -170,21 +168,11 @@ private fun ForegroundCard(
         Image(
             imageVector = when (uiModel.status) {
                 WateringStatus.OVERDUE -> IconPack.WaterDropRed
-                WateringStatus.TODAY_DONE -> IconPack.WaterDropWhite
+                WateringStatus.TODAY_DONE -> IconPack.WaterDropWithBackground
                 else -> IconPack.WaterDropBlue
             },
             contentDescription = null,
-            modifier = Modifier
-                .size(30.dp)
-                .then(
-                    if (uiModel.status == WateringStatus.TODAY_DONE) {
-                        Modifier
-                            .background(Blue400, shape = CircleShape)
-                            .padding(4.dp)
-                    } else {
-                        Modifier
-                    }
-                )
+            modifier = Modifier.size(30.dp)
         )
 
         Spacer(Modifier.width(6.dp))
