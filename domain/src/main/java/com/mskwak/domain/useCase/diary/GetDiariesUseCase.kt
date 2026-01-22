@@ -1,7 +1,7 @@
 package com.mskwak.domain.useCase.diary
 
 import com.mskwak.domain.model.Diary
-import com.mskwak.domain.model.DiaryListSortOder
+import com.mskwak.domain.model.DiaryListSortOrder
 import com.mskwak.domain.repository.DiaryRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +14,7 @@ class GetDiariesUseCase(
     operator fun invoke(
         year: Int,
         month: Int,
-        sortOder: DiaryListSortOder,
+        sortOder: DiaryListSortOrder,
         plantId: Int? = null
     ): Flow<List<Diary>> {
         return diaryRepository.getDiaries(year, month, plantId).map { list ->
@@ -22,13 +22,13 @@ class GetDiariesUseCase(
         }.flowOn(Dispatchers.IO)
     }
 
-    private fun List<Diary>.applySort(sortOder: DiaryListSortOder): List<Diary> {
+    private fun List<Diary>.applySort(sortOder: DiaryListSortOrder): List<Diary> {
         return when (sortOder) {
-            DiaryListSortOder.CREATED_LATEST -> {
+            DiaryListSortOrder.CREATED_LATEST -> {
                 sortedByDescending { it.createdDate }
             }
 
-            DiaryListSortOder.CREATED_EARLIEST -> {
+            DiaryListSortOrder.CREATED_EARLIEST -> {
                 sortedBy { it.createdDate }
             }
         }

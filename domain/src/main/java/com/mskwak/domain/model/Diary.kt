@@ -10,7 +10,7 @@ data class Diary(
     val createdDate: LocalDate
 )
 
-enum class DiaryListSortOder {
+enum class DiaryListSortOrder {
     CREATED_LATEST,
     CREATED_EARLIEST
 }

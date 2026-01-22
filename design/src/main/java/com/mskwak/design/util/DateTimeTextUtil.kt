@@ -17,3 +17,7 @@ fun LocalTime?.toTimeString(): String {
     return this?.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)) ?: ""
 }
 
+fun LocalDate?.toDateWithDayOfWeek(): String {
+    return this?.format(DateTimeFormatter.ofPattern("MM. dd E")) ?: ""
+}
+

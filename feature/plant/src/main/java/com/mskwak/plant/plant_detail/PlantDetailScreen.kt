@@ -1,5 +1,6 @@
 package com.mskwak.plant.plant_detail
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -55,6 +56,7 @@ import com.mskwak.design.util.toDateString
 import com.mskwak.design.util.toTimeString
 import com.mskwak.domain.Constant
 import com.mskwak.plant.R
+import com.mskwak.plant.model.DiaryListItemUiModel
 import com.mskwak.plant.model.WateringStatus
 import java.time.LocalDate
 import java.time.LocalTime
@@ -147,7 +149,7 @@ private fun PlantImage(
             Box(
                 modifier = modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surfaceContainerLowest),
+                    .background(MaterialTheme.colorScheme.surfaceContainerLow),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -378,7 +380,7 @@ private fun WateringBox(
 private fun DiaryBox(
     modifier: Modifier = Modifier,
     plantName: String,
-    diaryList: List<DiaryUiModel>,
+    diaryList: List<DiaryListItemUiModel>,
     onEvent: (PlantDetailEvent) -> Unit
 ) {
     Column(
@@ -473,7 +475,8 @@ private fun DiaryEmpty(
 }
 
 
-@Preview
+@Preview(showBackground = true, name = "Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PreviewContent() {
     val state = PlantDetailState(
@@ -496,19 +499,21 @@ private fun PreviewContent() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, name = "Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PreviewDiaryBox() {
+    val now = LocalDate.now()
     val diaryList = listOf(
-        DiaryUiModel(
+        DiaryListItemUiModel(
             id = 1,
-            date = "2024.10.27",
+            date = now,
             content = "오늘은 물을 주었습니다. 새 싹이 나기 시작했어요.",
             imagePath = null
         ),
-        DiaryUiModel(
+        DiaryListItemUiModel(
             id = 2,
-            date = "2024.10.28",
+            date = now.minusDays(4),
             content = "햇빛이 잘 드는 곳으로 옮겨주었습니다.",
             imagePath = null
         )

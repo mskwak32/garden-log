@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.mskwak.common_ui.ViewEffect
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.ViewState
+import com.mskwak.plant.model.DiaryListItemUiModel
 import com.mskwak.plant.model.WateringStatus
 import java.time.LocalDate
 import java.time.LocalTime
@@ -23,16 +24,8 @@ data class PlantDetailState(
     val wateringAlarmTime: LocalTime? = null,
     val isWateringActive: Boolean = false,
     val memo: String? = null,
-    val diaries: List<DiaryUiModel> = emptyList()
+    val diaries: List<DiaryListItemUiModel> = emptyList()
 ) : ViewState
-
-@Immutable
-data class DiaryUiModel(
-    val id: Int,
-    val date: String,
-    val content: String,
-    val imagePath: String?
-)
 
 sealed interface PlantDetailEvent : ViewEvent {
     data object OnBackClicked : PlantDetailEvent

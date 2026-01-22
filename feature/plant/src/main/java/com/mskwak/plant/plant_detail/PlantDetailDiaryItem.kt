@@ -1,7 +1,9 @@
 package com.mskwak.plant.plant_detail
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,20 +26,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mskwak.design.theme.GardenLogTheme
+import com.mskwak.design.util.toDateWithDayOfWeek
 import com.mskwak.plant.R
+import com.mskwak.plant.model.DiaryListItemUiModel
+import java.time.LocalDate
 
 @Composable
 fun PlantDetailDiaryItem(
     modifier: Modifier = Modifier,
-    diary: DiaryUiModel,
-    onClick: (DiaryUiModel) -> Unit
+    diary: DiaryListItemUiModel,
+    onClick: (DiaryListItemUiModel) -> Unit
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceContainerLowest)
     ) {
-        Row {
+        Row(
+            modifier = Modifier.clickable(
+                onClick = { onClick(diary) }
+            )
+        ) {
             if (diary.imagePath == null) {
                 Image(
                     painter = painterResource(R.drawable.ic_flower_pot),
@@ -65,7 +74,7 @@ fun PlantDetailDiaryItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = diary.date,
+                    text = diary.date.toDateWithDayOfWeek(),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -86,14 +95,15 @@ fun PlantDetailDiaryItem(
     }
 }
 
-@Preview
+@Preview(showBackground = true, name = "Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PlantDetailDiaryItemPreview() {
     GardenLogTheme {
         PlantDetailDiaryItem(
-            diary = DiaryUiModel(
+            diary = DiaryListItemUiModel(
                 id = 0,
-                date = "2024/01/01",
+                date = LocalDate.now(),
                 content = "content",
                 imagePath = null
             ),

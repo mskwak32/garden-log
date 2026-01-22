@@ -1,5 +1,6 @@
 package com.mskwak.plant.plant_list
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateTo
@@ -22,7 +23,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -41,6 +41,7 @@ import com.mskwak.design.theme.GardenLogTheme
 import com.mskwak.design.util.clickableWithoutRipple
 import com.mskwak.design.util.toDateString
 import com.mskwak.plant.R
+import com.mskwak.plant.model.PlantListItemUiModel
 import com.mskwak.plant.model.WateringStatus
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -130,7 +131,7 @@ private fun ForegroundCard(
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 modifier = imageModifier
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surfaceContainerLowest)
                     .padding(8.dp)
             )
         } else {
@@ -205,7 +206,8 @@ private class WateringStatusPreviewProvider : PreviewParameterProvider<WateringS
     )
 }
 
-@Preview(showBackground = false)
+@Preview(showBackground = true, name = "Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PlantListItemPreview(
     @PreviewParameter(WateringStatusPreviewProvider::class) status: WateringStatus

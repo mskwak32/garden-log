@@ -1,9 +1,8 @@
-package com.mskwak.plant.plant_list
+package com.mskwak.plant.model
 
 import androidx.compose.runtime.Immutable
 import com.mskwak.domain.model.Plant
 import com.mskwak.domain.model.WateringDays
-import com.mskwak.plant.model.WateringStatus
 import java.time.LocalDate
 
 @Immutable
