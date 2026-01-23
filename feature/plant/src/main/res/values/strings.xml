@@ -3,6 +3,7 @@
     <string name="back">뒤로가기</string>
     <string name="save">저장</string>
     <string name="cancel">취소</string>
+    <string name="confirm">확인</string>
     <string name="none">없음</string>
     <string name="complete">완료</string>
     <string name="edit">수정</string>
@@ -13,6 +14,11 @@
     <string name="this_month">이번달</string>
     <string name="previous_month">이전달</string>
     <string name="next_month">다음달"</string>
+    <string name="select_year_month">년/월 선택</string>
+    <string name="year">년</string>
+    <string name="month">월</string>
+    <string name="year_format">%d년</string>
+    <string name="month_format">%d월</string>
     <string name="today">오늘</string>
     <string name="yesterday">어제</string>
     <string name="select_all">전체</string>

@@ -14,13 +14,13 @@ data class DiaryListState(
     val currentPlant: DiaryListPlantFilterUiModel? = null,
     val plantFilterList: List<DiaryListPlantFilterUiModel> = emptyList(),
     val sortOder: DiaryListSortOrder = DiaryListSortOrder.CREATED_LATEST,
-    val diaries: List<DiaryListItemUiModel>
+    val diaries: List<DiaryListItemUiModel> = emptyList()
 ) : ViewState
 
 sealed interface DiaryListEvent : ViewEvent {
     data class PlantFilterChanged(val plantFilter: DiaryListPlantFilterUiModel?) : DiaryListEvent
     data class SortOderChanged(val sortOder: DiaryListSortOrder) : DiaryListEvent
-    data class MonthChanged(val yearMonth: YearMonth) : DiaryListEvent
+    data class YearMonthChanged(val yearMonth: YearMonth) : DiaryListEvent
     data object OnThisMonthClicked : DiaryListEvent
     data object OnNextMonthClicked : DiaryListEvent
     data object OnPreviousMonthClicked : DiaryListEvent
@@ -30,8 +30,8 @@ sealed interface DiaryListEvent : ViewEvent {
 
 sealed interface DiaryListEffect : ViewEffect {
     sealed interface Navigation : DiaryListEffect {
-        data class GoToDiaryDetail(val diaryId: Long) : Navigation
+        data class GoToDiaryDetail(val diaryId: Int) : Navigation
     }
 
-    data class ShowSelectMonth(val yearMonth: YearMonth) : DiaryListEffect
+    data class ShowSelectYearMonth(val yearMonth: YearMonth) : DiaryListEffect
 }

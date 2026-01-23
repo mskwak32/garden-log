@@ -24,7 +24,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -52,7 +57,38 @@ fun DiaryListScreen(
     viewModel: DiaryListViewModel = hiltViewModel(),
     navigate: (DiaryListEffect.Navigation) -> Unit
 ) {
+    val state by viewModel.viewState.collectAsStateWithLifecycle()
+    var selectYearMonthDialogState: YearMonth? by remember { mutableStateOf(null) }
 
+    Content(
+        state = state,
+        onEvent = viewModel::setEvent
+    )
+
+    selectYearMonthDialogState?.let { yearMonth ->
+        SelectYearMonthDialog(
+            initialYearMonth = yearMonth,
+            onDismiss = { selectYearMonthDialogState = null },
+            onConfirm = { selectedYearMonth ->
+                viewModel.setEvent(DiaryListEvent.YearMonthChanged(selectedYearMonth))
+                selectYearMonthDialogState = null
+            }
+        )
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is DiaryListEffect.ShowSelectYearMonth -> {
+                    selectYearMonthDialogState = effect.yearMonth
+                }
+
+                is DiaryListEffect.Navigation -> {
+                    navigate(effect)
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -215,8 +251,7 @@ private fun ContentPreview() {
             date = now,
             content = "Watered the rose plant and it seems to be doing well. The leaves are very green and healthy.",
             imagePath = null,
-            plantName = "Rose",
-            createdDate = now
+            plantName = "Rose"
         )
         val sampleState = DiaryListState(
             currentYearMonth = YearMonth.of(2023, 10),
