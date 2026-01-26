@@ -1,6 +1,7 @@
 package com.mskwak.gardendailylog.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Build
@@ -25,24 +26,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.ui.NavDisplay
+import com.mskwak.common_ui.Screen
 import com.mskwak.gardendailylog.R
 import com.mskwak.gardendailylog.ui.bottom_nav.BottomNavItem
+import com.mskwak.plant.diary_list.DiaryListScreen
+import com.mskwak.plant.plant_list.PlantListScreen
+import com.mskwak.plant.setting.SettingScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -50,80 +49,103 @@ fun MainScreen(
     openAppSetting: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val navController = rememberNavController()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-    val items = listOf(
-        BottomNavItem.DiaryList,
-        BottomNavItem.PlantList,
-        BottomNavItem.Setting
-    )
+
+    // Navigation 3: 단일 백스택 사용
+    val backStack = remember { mutableStateListOf(BottomNavItem.PlantList.screen) }
+
+    // 현재 화면이 탭 메뉴인지 확인
+    val currentScreen = backStack.lastOrNull()
+    val tabScreens = BottomNavItem.items.map { it.screen }
+    val isTabScreen = currentScreen in tabScreens
 
     NotificationPermission(
         snackbarHostState = snackbarHostState,
         openAppSetting = openAppSetting
     )
 
-    BackPressFinish(currentRoute)
+    BackPressFinish(currentScreen)
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            // 현재 경로가 탭 메뉴 중 하나일 때만 BottomBar 표시
-            if (items.any { it.route == currentRoute }) {
-                NavigationBar(containerColor = Color.White) {
-                    val currentDestination = navBackStackEntry?.destination
-                    items.forEach { screen ->
-                        NavigationBarItem(screen, currentDestination, navController)
+            // 탭 메뉴 화면일 때만 BottomBar 표시
+            if (isTabScreen) {
+                NavigationBar {
+                    BottomNavItem.items.forEach { item ->
+                        NavigationBarItem(
+                            item = item,
+                            selected = currentScreen == item.screen,
+                            onClick = {
+                                // 현재 탭과 다른 탭을 선택한 경우에만 네비게이션
+                                if (currentScreen != item.screen) {
+                                    // 홈탭만 남기고 나머지 탭 제거
+                                    while (
+                                        backStack.size > 1 &&
+                                        backStack.lastOrNull() in tabScreens
+                                    ) {
+                                        backStack.removeLastOrNull()
+                                    }
+                                    // 홈탭이 아닌 경우에만 추가 (홈탭은 이미 백스택 맨 아래에 있음)
+                                    if (item.screen != BottomNavItem.PlantList.screen) {
+                                        backStack.add(item.screen)
+                                    }
+                                }
+                            }
+                        )
                     }
                 }
             }
-        },
-        modifier = Modifier.fillMaxSize()
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = BottomNavItem.PlantList.route,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(BottomNavItem.DiaryList.route) {}
-            composable(BottomNavItem.PlantList.route) {}
-            composable(BottomNavItem.Setting.route) {}
         }
+    ) { innerPadding ->
+        NavDisplay(
+            backStack = backStack,
+            onBack = { backStack.removeLastOrNull() },
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = innerPadding.calculateBottomPadding()),
+            entryProvider = entryProvider {
+                entry<DiaryListScreen> {
+                    DiaryListScreen(
+                        navigate = { /* TODO */ }
+                    )
+                }
+                entry<PlantListScreen> {
+                    PlantListScreen(
+                        navigate = { /* TODO */ }
+                    )
+                }
+                entry<SettingScreen> {
+                    SettingScreen()
+                }
+            }
+        )
     }
 }
 
 @Composable
 private fun RowScope.NavigationBarItem(
-    screen: BottomNavItem,
-    currentDestination: NavDestination?,
-    navController: NavHostController
+    item: BottomNavItem,
+    selected: Boolean,
+    onClick: () -> Unit
 ) {
-    val title = stringResource(screen.titleRes)
+    val title = stringResource(item.titleRes)
     NavigationBarItem(
-        icon = { Icon(screen.icon, contentDescription = title) },
+        icon = { Icon(item.icon, contentDescription = title) },
         label = {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium
             )
         },
-        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-        onClick = {
-            navController.navigate(screen.route) {
-                popUpTo(navController.graph.findStartDestination().id) {
-                    saveState = true
-                }
-                launchSingleTop = true
-                restoreState = true
-            }
-        }
+        selected = selected,
+        onClick = onClick
     )
 }
 
 /**
  * 알림 권한 체크 및 요청
  */
+@SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 private fun NotificationPermission(
     snackbarHostState: SnackbarHostState,
@@ -165,18 +187,19 @@ private fun NotificationPermission(
 
 /**
  * 백버튼 2번 눌러 종료.
- * 홈 화면에 있을 때에만 앱 종료 로직이 동작하도록 설정.
+ * 홈 화면(PlantList)에 있을 때에만 앱 종료 로직이 동작하도록 설정.
  * 다른 탭이나 상세화면에서는 기본 뒤로가기 동작
  */
+@SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 private fun BackPressFinish(
-    currentRoute: String?
+    currentScreen: Screen?
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
     var backPressedTime by remember { mutableLongStateOf(0L) }
 
-    BackHandler(enabled = currentRoute == BottomNavItem.PlantList.route) {
+    BackHandler(enabled = currentScreen == PlantListScreen) {
         if (System.currentTimeMillis() > backPressedTime + 2000) {
             backPressedTime = System.currentTimeMillis()
             Toast.makeText(

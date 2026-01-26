@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -48,6 +49,7 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
+    implementation(libs.kotlin.serialization)
 
     testImplementation(libs.bundles.test)
     androidTestImplementation(platform(libs.compose.bom))

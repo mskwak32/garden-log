@@ -43,6 +43,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.mskwak.common_ui.Screen
 import com.mskwak.design.IconPack
 import com.mskwak.design.icon.ArrowBackBlack
 import com.mskwak.design.icon.WaterDropBlue
@@ -58,9 +59,13 @@ import com.mskwak.domain.Constant
 import com.mskwak.plant.R
 import com.mskwak.plant.model.DiaryListItemUiModel
 import com.mskwak.plant.model.WateringStatus
+import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
+
+@Serializable
+data class PlantDetailScreen(val plantId: Int) : Screen
 
 @Composable
 fun PlantDetailScreen(
