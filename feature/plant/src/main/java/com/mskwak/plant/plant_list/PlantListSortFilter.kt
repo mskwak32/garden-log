@@ -1,6 +1,5 @@
 package com.mskwak.plant.plant_list
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -9,10 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.mskwak.common_ui.dropdown_menu.AppDropDownMenu
 import com.mskwak.design.IconPack
 import com.mskwak.design.icon.CaretDown
 import com.mskwak.domain.model.PlantListSortOrder
@@ -66,33 +63,15 @@ fun PlantListSortFilter(
             )
         }
 
-        // 2. 드롭다운 메뉴
-        DropdownMenu(
+        AppDropDownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            shape = RoundedCornerShape(10.dp),
-            containerColor = MaterialTheme.colorScheme.surfaceBright,
-            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline)
-        ) {
-            PlantListSortOrder.entries.forEachIndexed { index, order ->
-                DropdownMenuItem(
-                    text = {
-                        Text(text = getSortText(order))
-                    },
-                    onClick = {
-                        onEvent(PlantListEvent.OnSortChanged(order))
-                        expanded = false
-                    },
-                    // 현재 선택된 항목 강조
-                    colors = if (order == currentOrder) {
-                        MenuDefaults.itemColors(
-                            textColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    } else {
-                        MenuDefaults.itemColors()
-                    }
-                )
+            items = PlantListSortOrder.entries,
+            selectedItem = currentOrder,
+            itemText = { getSortText(it) },
+            onItemClick = {
+                onEvent(PlantListEvent.OnSortChanged(it))
             }
-        }
+        )
     }
 }

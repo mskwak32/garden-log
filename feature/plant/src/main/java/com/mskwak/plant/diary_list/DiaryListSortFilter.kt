@@ -3,7 +3,6 @@ package com.mskwak.plant.diary_list
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -13,10 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mskwak.common_ui.PreviewTheme
+import com.mskwak.common_ui.dropdown_menu.AppDropDownMenu
 import com.mskwak.design.IconPack
 import com.mskwak.design.icon.CaretDown
 import com.mskwak.domain.model.DiaryListSortOrder
@@ -52,53 +49,40 @@ fun DiaryListSortFilter(
     }
 
     Box(modifier = modifier.fillMaxWidth()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .clip(RoundedCornerShape(8.dp))
-                .border(
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                    shape = RoundedCornerShape(8.dp)
+        Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .border(
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clickable { expanded = true }
+                    .padding(8.dp)
+            ) {
+                Text(
+                    text = getSortText(currentSortOrder),
+                    style = MaterialTheme.typography.bodyMedium
                 )
-                .clickable { expanded = true }
-                .padding(8.dp)
-        ) {
-            Text(
-                text = getSortText(currentSortOrder),
-                style = MaterialTheme.typography.bodyMedium
-            )
 
-            Spacer(Modifier.width(4.dp))
-            Image(
-                imageVector = IconPack.CaretDown,
-                contentDescription = stringResource(R.string.sort)
-            )
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-        ) {
-            DiaryListSortOrder.entries.forEach { order ->
-                DropdownMenuItem(
-                    text = {
-                        Text(text = getSortText(order))
-                    },
-                    onClick = {
-                        onEvent(DiaryListEvent.SortOderChanged(order))
-                        expanded = false
-                    },
-                    colors = if (order == currentSortOrder) {
-                        MenuDefaults.itemColors(
-                            textColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    } else {
-                        MenuDefaults.itemColors()
-                    }
+                Spacer(Modifier.width(4.dp))
+                Image(
+                    imageVector = IconPack.CaretDown,
+                    contentDescription = stringResource(R.string.sort)
                 )
             }
+
+            AppDropDownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                items = DiaryListSortOrder.entries,
+                selectedItem = currentSortOrder,
+                itemText = { getSortText(it) },
+                onItemClick = {
+                    onEvent(DiaryListEvent.SortOderChanged(it))
+                }
+            )
         }
     }
 }

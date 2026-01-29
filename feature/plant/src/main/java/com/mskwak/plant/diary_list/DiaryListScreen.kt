@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -124,7 +125,9 @@ private fun Content(
                 onEvent = onEvent
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(4.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(8.dp))
             if (state.diaries.isEmpty()) {
                 ListEmptyView(modifier = Modifier.weight(1f))
             } else {
