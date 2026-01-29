@@ -3,6 +3,15 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this
 repository.
 
+## Project Context
+
+이 프로젝트는 기존 프로젝트(`~/Android Projects/gerden-daily-log`)를 리뉴얼하는 작업입니다.
+
+- 기존 프로젝트의 기능을 새 아키텍처로 재구현한 후, 새 기능을 추가할 예정
+- 기존: XML View + Navigation Component + LiveData + 단일 모듈
+- 신규: Compose + Navigation 3 + StateFlow/MVI + 멀티모듈 (Clean Architecture)
+- 기능 구현 시 기존 프로젝트의 코드를 참고하되, 새 프로젝트 패턴에 맞게 변환
+
 ## Build Commands
 
 ```bash

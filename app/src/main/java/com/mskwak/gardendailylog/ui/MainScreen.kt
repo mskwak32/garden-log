@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -39,9 +40,8 @@ import androidx.navigation3.ui.NavDisplay
 import com.mskwak.common_ui.Screen
 import com.mskwak.gardendailylog.R
 import com.mskwak.gardendailylog.ui.bottom_nav.BottomNavItem
-import com.mskwak.plant.diary_list.DiaryListScreen
+import com.mskwak.plant.plantNavGraph
 import com.mskwak.plant.plant_list.PlantListScreen
-import com.mskwak.plant.setting.SettingScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -70,30 +70,7 @@ fun MainScreen(
         bottomBar = {
             // 탭 메뉴 화면일 때만 BottomBar 표시
             if (isTabScreen) {
-                NavigationBar {
-                    BottomNavItem.items.forEach { item ->
-                        NavigationBarItem(
-                            item = item,
-                            selected = currentScreen == item.screen,
-                            onClick = {
-                                // 현재 탭과 다른 탭을 선택한 경우에만 네비게이션
-                                if (currentScreen != item.screen) {
-                                    // 홈탭만 남기고 나머지 탭 제거
-                                    while (
-                                        backStack.size > 1 &&
-                                        backStack.lastOrNull() in tabScreens
-                                    ) {
-                                        backStack.removeLastOrNull()
-                                    }
-                                    // 홈탭이 아닌 경우에만 추가 (홈탭은 이미 백스택 맨 아래에 있음)
-                                    if (item.screen != BottomNavItem.PlantList.screen) {
-                                        backStack.add(item.screen)
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
+                BottomNavigationBar(currentScreen, backStack, tabScreens)
             }
         }
     ) { innerPadding ->
@@ -104,21 +81,41 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(bottom = innerPadding.calculateBottomPadding()),
             entryProvider = entryProvider {
-                entry<DiaryListScreen> {
-                    DiaryListScreen(
-                        navigate = { /* TODO */ }
-                    )
-                }
-                entry<PlantListScreen> {
-                    PlantListScreen(
-                        navigate = { /* TODO */ }
-                    )
-                }
-                entry<SettingScreen> {
-                    SettingScreen()
-                }
+                plantNavGraph(backStack)
             }
         )
+    }
+}
+
+@Composable
+private fun BottomNavigationBar(
+    currentScreen: Screen?,
+    backStack: SnapshotStateList<Screen>,
+    tabScreens: List<Screen>
+) {
+    NavigationBar {
+        BottomNavItem.items.forEach { item ->
+            NavigationBarItem(
+                item = item,
+                selected = currentScreen == item.screen,
+                onClick = {
+                    // 현재 탭과 다른 탭을 선택한 경우에만 네비게이션
+                    if (currentScreen != item.screen) {
+                        // 홈탭만 남기고 나머지 탭 제거
+                        while (
+                            backStack.size > 1 &&
+                            backStack.lastOrNull() in tabScreens
+                        ) {
+                            backStack.removeLastOrNull()
+                        }
+                        // 홈탭이 아닌 경우에만 추가 (홈탭은 이미 백스택 맨 아래에 있음)
+                        if (item.screen != BottomNavItem.PlantList.screen) {
+                            backStack.add(item.screen)
+                        }
+                    }
+                }
+            )
+        }
     }
 }
 

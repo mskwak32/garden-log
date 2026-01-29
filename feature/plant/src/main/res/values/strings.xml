@@ -61,6 +61,7 @@
     <string name="message_photo_camera_permission">카메라를 사용하려면 권한이 필요합니다.</string>
     <string name="message_delete_confirm">정말 삭제하시겠습니까?</string>
     <string name="message_not_ready">준비중이에요</string>
+    <string name="message_save_failed">저장에 실패했습니다.</string>
 
     <string name="diary_list_empty_with_plantName">아직 %s에 대한 일기가 없어요</string>
     <string name="diary_list_empty">해당하는 일기가 없어요</string>
