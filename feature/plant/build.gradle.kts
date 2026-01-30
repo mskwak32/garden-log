@@ -50,6 +50,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
     implementation(libs.kotlin.serialization)
+    implementation(libs.exifinterface)
 
     testImplementation(libs.bundles.test)
     androidTestImplementation(platform(libs.compose.bom))

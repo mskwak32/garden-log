@@ -19,6 +19,7 @@ timber = "5.0.1"
 room = "2.8.3"
 ksp = "2.2.21-2.0.4"
 material = "1.12.0"
+exifinterface = "1.4.1"
 
 #compose
 composeBom = "2025.11.00"
@@ -46,6 +47,7 @@ androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecyc
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 kotlin-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exifinterface" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 compose-ui = { group = "androidx.compose.ui", name = "ui" }

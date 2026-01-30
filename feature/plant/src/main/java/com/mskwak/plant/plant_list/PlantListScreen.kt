@@ -59,13 +59,7 @@ fun PlantListScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is PlantListEffect.Navigation.ToAddPlant -> {
-
-                }
-
-                is PlantListEffect.Navigation.ToPlantDetail -> {
-
-                }
+                is PlantListEffect.Navigation -> navigate(effect)
             }
         }
     }

@@ -1,5 +1,11 @@
 package com.mskwak.plant.plant_edit
 
+import android.app.Application
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.net.Uri
+import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.mskwak.common_ui.ViewEvent
@@ -22,6 +28,7 @@ import timber.log.Timber
 
 @HiltViewModel
 class PlantEditViewModel @Inject constructor(
+    private val application: Application,
     savedStateHandle: SavedStateHandle,
     private val getPlantUseCase: GetPlantUseCase,
     private val addPlantUseCase: AddPlantUseCase,
@@ -83,9 +90,11 @@ class PlantEditViewModel @Inject constructor(
 
             is PlantEditEvent.OnPictureChanged -> {
                 viewModelScope.launch {
+                    val bytes = readBytesFromUri(event.uri) ?: return@launch
+                    cleanupCameraCache()
                     // 이전에 새로 추가한 사진이 있으면 삭제
                     newPicture?.let { deletePictureUseCase(it) }
-                    val picture = savePictureUseCase(event.pictureBytes)
+                    val picture = savePictureUseCase(bytes)
                     newPicture = picture
                     setState { copy(plantImagePath = picture.path) }
                 }
@@ -134,6 +143,64 @@ class PlantEditViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             deletePictureUseCase(picture)
         }
+    }
+
+    private fun readBytesFromUri(uri: Uri): ByteArray? {
+        return try {
+            val bytes = application.contentResolver.openInputStream(uri)
+                ?.use { it.readBytes() } ?: return null
+            val rotation = getExifRotation(uri)
+            if (rotation == 0) return bytes
+
+            val original = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                ?: return bytes
+            val matrix = Matrix().apply { postRotate(rotation.toFloat()) }
+            val rotated = Bitmap.createBitmap(
+                original, 0, 0, original.width, original.height, matrix, true
+            )
+            val output = java.io.ByteArrayOutputStream()
+            rotated.compress(Bitmap.CompressFormat.JPEG, 100, output)
+            rotated.recycle()
+            original.recycle()
+            output.toByteArray()
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to read bytes from uri")
+            null
+        }
+    }
+
+    private fun getExifRotation(uri: Uri): Int {
+        return try {
+            val exif = ExifInterface(
+                application.contentResolver.openInputStream(uri) ?: return 0
+            )
+            when (exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+            )) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                else -> 0
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to read exif orientation")
+            0
+        }
+    }
+
+    fun createCameraUri(): Uri {
+        val cameraDir = application.cacheDir.resolve("camera").also { it.mkdirs() }
+        val photoFile = java.io.File(cameraDir, "photo_${System.currentTimeMillis()}.jpg")
+        return androidx.core.content.FileProvider.getUriForFile(
+            application,
+            "${application.packageName}.fileprovider",
+            photoFile
+        )
+    }
+
+    private fun cleanupCameraCache() {
+        application.cacheDir.resolve("camera").listFiles()?.forEach { it.delete() }
     }
 
     private fun loadPlant(plantId: Int) {

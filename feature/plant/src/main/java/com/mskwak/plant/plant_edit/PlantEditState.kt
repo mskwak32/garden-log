@@ -1,5 +1,6 @@
 package com.mskwak.plant.plant_edit
 
+import android.net.Uri
 import androidx.compose.runtime.Immutable
 import com.mskwak.common_ui.ViewEffect
 import com.mskwak.common_ui.ViewEvent
@@ -30,7 +31,7 @@ sealed interface PlantEditEvent : ViewEvent {
     data class OnWateringPeriodChanged(val period: Int) : PlantEditEvent
     data class OnWateringAlarmTimeChanged(val time: LocalTime) : PlantEditEvent
     data class OnWateringAlarmToggled(val isActive: Boolean) : PlantEditEvent
-    data class OnPictureChanged(val pictureBytes: ByteArray) : PlantEditEvent
+    data class OnPictureChanged(val uri: Uri) : PlantEditEvent
     data object OnPictureRemoved : PlantEditEvent
     data object OnPhotoClicked : PlantEditEvent
     data object OnCreatedDateClicked : PlantEditEvent
