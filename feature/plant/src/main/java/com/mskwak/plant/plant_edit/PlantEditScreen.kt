@@ -1,6 +1,7 @@
 package com.mskwak.plant.plant_edit
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
@@ -25,15 +26,23 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -65,15 +74,21 @@ import com.mskwak.design.util.clickableWithoutRipple
 import com.mskwak.design.util.toDateString
 import com.mskwak.design.util.toTimeString
 import com.mskwak.plant.R
+import com.mskwak.plant.dialog.ExactAlarmPermissionDialog
 import com.mskwak.plant.dialog.PhotoAction
 import com.mskwak.plant.dialog.SelectPhotoDialog
+import com.mskwak.plant.dialog.WateringPeriodDialog
 import kotlinx.serialization.Serializable
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 
 @Serializable
 data class PlantEditScreen(val plantId: Int? = null) : Screen
 
+@SuppressLint("LocalContextGetResourceValueCall")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlantEditScreen(
     viewModel: PlantEditViewModel = hiltViewModel(),
@@ -81,6 +96,12 @@ fun PlantEditScreen(
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     var showPhotoDialog by remember { mutableStateOf(false) }
+    var showCreatedDatePicker by remember { mutableStateOf(false) }
+    var showLastWateringDatePicker by remember { mutableStateOf(false) }
+    var showWateringPeriodDialog by remember { mutableStateOf(false) }
+    var showAlarmTimePicker by remember { mutableStateOf(false) }
+    var showExactAlarmPermissionDialog by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -98,7 +119,6 @@ fun PlantEditScreen(
     }
 
     val context = LocalContext.current
-
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -118,6 +138,7 @@ fun PlantEditScreen(
     Content(
         state = state,
         onEvent = viewModel::setEvent,
+        snackbarHostState = snackbarHostState,
     )
 
     if (showPhotoDialog) {
@@ -155,12 +176,133 @@ fun PlantEditScreen(
         )
     }
 
+    if (showCreatedDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = state.createdDate
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+        )
+        DatePickerDialog(
+            onDismissRequest = { showCreatedDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val date = Instant.ofEpochMilli(millis)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+                        viewModel.setEvent(PlantEditEvent.OnCreatedDateChanged(date))
+                    }
+                    showCreatedDatePicker = false
+                }) {
+                    Text(stringResource(R.string.confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCreatedDatePicker = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
+    if (showLastWateringDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = state.lastWateringDate
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+        )
+        DatePickerDialog(
+            onDismissRequest = { showLastWateringDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val date = Instant.ofEpochMilli(millis)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+                        viewModel.setEvent(PlantEditEvent.OnLastWateringDateChanged(date))
+                    }
+                    showLastWateringDatePicker = false
+                }) {
+                    Text(stringResource(R.string.confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLastWateringDatePicker = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
+    if (showWateringPeriodDialog) {
+        WateringPeriodDialog(
+            initialPeriod = state.wateringPeriod,
+            onDismiss = { showWateringPeriodDialog = false },
+            onConfirm = { period ->
+                viewModel.setEvent(PlantEditEvent.OnWateringPeriodChanged(period))
+                showWateringPeriodDialog = false
+            }
+        )
+    }
+
+    if (showExactAlarmPermissionDialog) {
+        ExactAlarmPermissionDialog(
+            onDismiss = { showExactAlarmPermissionDialog = false }
+        )
+    }
+
+    if (showAlarmTimePicker) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = state.wateringAlarmTime.hour,
+            initialMinute = state.wateringAlarmTime.minute,
+            is24Hour = false
+        )
+        TimePickerDialog(
+            onDismissRequest = { showAlarmTimePicker = false },
+            title = { Text(stringResource(R.string.watering_alarm)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.setEvent(
+                        PlantEditEvent.OnWateringAlarmTimeChanged(
+                            LocalTime.of(timePickerState.hour, timePickerState.minute)
+                        )
+                    )
+                    showAlarmTimePicker = false
+                }) {
+                    Text(stringResource(R.string.confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showAlarmTimePicker = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        ) {
+            TimePicker(state = timePickerState)
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is PlantEditEffect.Navigation -> navigate(effect)
                 is PlantEditEffect.ShowPhotoPickerDialog -> showPhotoDialog = true
-                else -> {}
+                is PlantEditEffect.ShowCreatedDatePicker -> showCreatedDatePicker = true
+                is PlantEditEffect.ShowLastWateringDatePicker -> showLastWateringDatePicker = true
+                is PlantEditEffect.ShowWateringPeriodDialog -> showWateringPeriodDialog = true
+                is PlantEditEffect.ShowWateringAlarmTimePicker -> showAlarmTimePicker = true
+                is PlantEditEffect.ShowExactAlarmPermissionDialog -> showExactAlarmPermissionDialog =
+                    true
+
+                is PlantEditEffect.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(context.getString(effect.messageResId))
+                }
             }
         }
     }
@@ -170,11 +312,13 @@ fun PlantEditScreen(
 private fun Content(
     state: PlantEditState,
     onEvent: (PlantEditEvent) -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Scaffold(
         topBar = {
             TopBar(state, onEvent)
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
         Column(
@@ -221,8 +365,8 @@ private fun Content(
                 value = state.memo,
                 onValueChange = { onEvent(PlantEditEvent.OnMemoChanged(it)) },
                 label = { Text(stringResource(R.string.memo)) },
-                minLines = 3,
-                maxLines = 5,
+                minLines = 2,
+                maxLines = 4,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
             )
@@ -266,6 +410,7 @@ private fun TopBar(
         },
         actions = {
             TextButton(
+                enabled = state.isSaveEnabled,
                 onClick = { onEvent(PlantEditEvent.OnSaveClicked) }
             ) {
                 Text(

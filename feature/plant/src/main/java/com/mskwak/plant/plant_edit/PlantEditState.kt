@@ -19,7 +19,8 @@ data class PlantEditState(
     val wateringPeriod: Int = 0,
     val wateringAlarmTime: LocalTime = LocalTime.of(9, 0),
     val isWateringAlarmActive: Boolean = false,
-    val isNameError: Boolean = false
+    val isNameError: Boolean = false,
+    val isSaveEnabled: Boolean = true
 ) : ViewState
 
 sealed interface PlantEditEvent : ViewEvent {
@@ -52,5 +53,6 @@ sealed interface PlantEditEffect : ViewEffect {
     data object ShowLastWateringDatePicker : PlantEditEffect
     data object ShowWateringPeriodDialog : PlantEditEffect
     data object ShowWateringAlarmTimePicker : PlantEditEffect
+    data object ShowExactAlarmPermissionDialog : PlantEditEffect
     data class ShowSnackbar(val messageResId: Int) : PlantEditEffect
 }

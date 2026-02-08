@@ -1,8 +1,7 @@
-package com.mskwak.common_ui
+package com.mskwak.design.theme
 
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import com.mskwak.design.theme.GardenLogTheme
 
 @Composable
 fun PreviewTheme(

@@ -26,7 +26,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,6 +61,7 @@ import com.mskwak.design.util.toDateString
 import com.mskwak.design.util.toTimeString
 import com.mskwak.domain.Constant
 import com.mskwak.plant.R
+import com.mskwak.plant.dialog.ExactAlarmPermissionDialog
 import com.mskwak.plant.model.DiaryListItemUiModel
 import com.mskwak.plant.model.WateringStatus
 import kotlinx.serialization.Serializable
@@ -72,7 +77,24 @@ fun PlantDetailScreen(
     viewModel: PlantDetailViewModel = hiltViewModel(),
     navigate: (PlantDetailEffect.Navigation) -> Unit
 ) {
+    var showExactAlarmPermissionDialog by remember { mutableStateOf(false) }
 
+    if (showExactAlarmPermissionDialog) {
+        ExactAlarmPermissionDialog(
+            onDismiss = { showExactAlarmPermissionDialog = false }
+        )
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is PlantDetailEffect.Navigation -> navigate(effect)
+                is PlantDetailEffect.ShowExactAlarmPermissionDialog -> {
+                    showExactAlarmPermissionDialog = true
+                }
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -316,7 +338,7 @@ private fun WateringInfo(
 
                 Switch(
                     checked = isWateringActive,
-                    onCheckedChange = { onEvent(PlantDetailEvent.ToggleWateringActive(it)) },
+                    onCheckedChange = { onEvent(PlantDetailEvent.ToggleWateringAlarmActive(it)) },
                     width = 36.dp
                 )
             }
@@ -346,7 +368,7 @@ private fun WateringBox(
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
                 .clickableWithoutRipple {
-                    onEvent(PlantDetailEvent.Watering)
+                    onEvent(PlantDetailEvent.OnWateringClicked)
                 }
                 .padding(vertical = 10.dp),
             horizontalArrangement = Arrangement.Center

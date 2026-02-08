@@ -32,8 +32,8 @@ sealed interface PlantDetailEvent : ViewEvent {
     data object EditPlant : PlantDetailEvent
     data object DeletePlant : PlantDetailEvent
     data object DeleteConfirmClicked : PlantDetailEvent
-    data class ToggleWateringActive(val isActive: Boolean) : PlantDetailEvent
-    data object Watering : PlantDetailEvent
+    data class ToggleWateringAlarmActive(val isActive: Boolean) : PlantDetailEvent
+    data object OnWateringClicked : PlantDetailEvent
     data class OnDiaryClicked(val diaryId: Int) : PlantDetailEvent
     data object NewDiary : PlantDetailEvent
     data object ShowMoreDiary : PlantDetailEvent
@@ -47,4 +47,6 @@ sealed interface PlantDetailEffect : ViewEffect {
         data object ToDiaryDetail : Navigation
         data object ToMoreDiaries : Navigation
     }
+
+    data object ShowExactAlarmPermissionDialog : PlantDetailEffect
 }

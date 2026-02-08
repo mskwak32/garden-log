@@ -5,6 +5,7 @@ import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import com.mskwak.domain.repository.WateringAlarmRepository
 import timber.log.Timber
 import java.time.LocalDateTime
@@ -18,6 +19,11 @@ internal class WateringAlarmRepositoryImpl @Inject constructor(
         application.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     override fun setWateringAlarm(plantId: Int, nextAlarmDateTime: LocalDateTime) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+            Timber.e("Cannot schedule exact alarm: permission not granted")
+            return
+        }
+
         val intent = Intent(application, WateringAlarmReceiver::class.java).apply {
             putExtra(WateringAlarmReceiver.PLANT_ID_KEY, plantId)
         }
