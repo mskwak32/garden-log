@@ -1,4 +1,4 @@
-package com.mskwak.common_ui.dropdown_menu
+package com.mskwak.design.ui_component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.RoundedCornerShape

@@ -69,6 +69,7 @@ import com.mskwak.design.icon.AddPhotoBlack
 import com.mskwak.design.icon.ArrowBackBlack
 import com.mskwak.design.icon.ArrowForwardIosBlack
 import com.mskwak.design.theme.GardenLogTheme
+import com.mskwak.design.ui_component.LabeledClickableField
 import com.mskwak.design.ui_component.Switch
 import com.mskwak.design.util.clickableWithoutRipple
 import com.mskwak.design.util.toDateString
@@ -469,49 +470,6 @@ private fun PlantPhotoSection(
 }
 
 @Composable
-private fun LabeledClickableField(
-    label: String,
-    value: String,
-    onClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .border(
-                1.dp,
-                MaterialTheme.colorScheme.outline,
-                RoundedCornerShape(12.dp)
-            )
-            .padding(horizontal = 16.dp, vertical = 14.dp)
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(Modifier.height(4.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = value,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.weight(1f)
-            )
-            Icon(
-                imageVector = IconPack.ArrowForwardIosBlack,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-@Composable
 private fun WateringSection(
     lastWateringDate: LocalDate,
     wateringPeriod: Int,
@@ -625,18 +583,6 @@ private fun FieldRow(
             contentDescription = null,
             modifier = Modifier.size(16.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Light - Add", uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(showBackground = true, name = "Dark - Add", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun PreviewAdd() {
-    GardenLogTheme {
-        Content(
-            state = PlantEditState(),
-            onEvent = {},
         )
     }
 }
