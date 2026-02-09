@@ -75,8 +75,6 @@ class PlantListViewModel : BaseViewModel<PlantListState, PlantListEvent, PlantLi
 }
 ```
 
-State 클래스는 `@Immutable` 어노테이션 필수, `ViewState` 인터페이스 구현 필요.
-
 ### Dependency Injection
 
 Hilt 사용. 주요 모듈:
