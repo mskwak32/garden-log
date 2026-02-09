@@ -1,6 +1,7 @@
 package com.mskwak.design.ui_component
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -53,4 +54,23 @@ fun <T> AppDropDownMenu(
             }
         }
     }
+}
+
+@Composable
+fun AppDropDownMenu(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismissRequest,
+        modifier = modifier,
+        offset = DpOffset(x = 0.dp, y = 4.dp),
+        shape = RoundedCornerShape(10.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceBright,
+        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline),
+        content = content
+    )
 }
