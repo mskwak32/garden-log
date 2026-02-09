@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -42,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -50,11 +53,13 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.mskwak.common_ui.Screen
 import com.mskwak.design.IconPack
 import com.mskwak.design.icon.ArrowBackBlack
+import com.mskwak.design.icon.MoreHorizBlack
 import com.mskwak.design.icon.WaterDropBlue
 import com.mskwak.design.icon.WaterDropRed
 import com.mskwak.design.icon.WaterDropWhite
 import com.mskwak.design.icon.WaterDropWithBackground
 import com.mskwak.design.theme.GardenLogTheme
+import com.mskwak.design.ui_component.AppDropDownMenu
 import com.mskwak.design.ui_component.Switch
 import com.mskwak.design.util.clickableWithoutRipple
 import com.mskwak.design.util.toDateString
@@ -74,10 +79,13 @@ data class PlantDetailScreen(val plantId: Int) : Screen
 
 @Composable
 fun PlantDetailScreen(
-    viewModel: PlantDetailViewModel = hiltViewModel(),
+    plantId: Int,
+    viewModel: PlantDetailViewModel = hiltViewModel(key = plantId.toString()),
     navigate: (PlantDetailEffect.Navigation) -> Unit
 ) {
+    val state by viewModel.viewState.collectAsStateWithLifecycle()
     var showExactAlarmPermissionDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     if (showExactAlarmPermissionDialog) {
         ExactAlarmPermissionDialog(
@@ -85,12 +93,35 @@ fun PlantDetailScreen(
         )
     }
 
+    if (showDeleteDialog) {
+        PlantDetailDeleteDialog(
+            onConfirm = {
+                viewModel.setEvent(PlantDetailEvent.OnDeleteConfirmClicked)
+                showDeleteDialog = false
+            },
+            onDismiss = { showDeleteDialog = false }
+        )
+    }
+
+    LaunchedEffect(plantId) {
+        viewModel.initPlantId(plantId)
+    }
+
+    Content(
+        state = state,
+        onEvent = viewModel::setEvent
+    )
+
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is PlantDetailEffect.Navigation -> navigate(effect)
                 is PlantDetailEffect.ShowExactAlarmPermissionDialog -> {
                     showExactAlarmPermissionDialog = true
+                }
+
+                is PlantDetailEffect.ShowDeleteConfirmDialog -> {
+                    showDeleteDialog = true
                 }
             }
         }
@@ -103,6 +134,8 @@ private fun Content(
     state: PlantDetailState,
     onEvent: (PlantDetailEvent) -> Unit
 ) {
+    var showMenu by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -115,6 +148,36 @@ private fun Content(
                             imageVector = IconPack.ArrowBackBlack,
                             contentDescription = stringResource(R.string.back)
                         )
+                    }
+                },
+                actions = {
+                    Box {
+                        IconButton(onClick = { showMenu = true }) {
+                            Icon(
+                                imageVector = IconPack.MoreHorizBlack,
+                                contentDescription = stringResource(R.string.menu),
+                                modifier = Modifier.rotate(90f)
+                            )
+                        }
+                        AppDropDownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.edit)) },
+                                onClick = {
+                                    showMenu = false
+                                    onEvent(PlantDetailEvent.OnEditPlantClicked)
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.delete)) },
+                                onClick = {
+                                    showMenu = false
+                                    onEvent(PlantDetailEvent.OnDeletePlantClicked)
+                                }
+                            )
+                        }
                     }
                 }
             )
@@ -434,7 +497,7 @@ private fun DiaryBox(
             )
 
             Button(
-                onClick = { onEvent(PlantDetailEvent.NewDiary) },
+                onClick = { onEvent(PlantDetailEvent.OnNewDiaryClicked) },
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Text(
@@ -455,7 +518,7 @@ private fun DiaryBox(
                 )
             }
             Button(
-                onClick = { onEvent(PlantDetailEvent.ShowMoreDiary) },
+                onClick = { onEvent(PlantDetailEvent.OnMoreDiaryClicked) },
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerLowest

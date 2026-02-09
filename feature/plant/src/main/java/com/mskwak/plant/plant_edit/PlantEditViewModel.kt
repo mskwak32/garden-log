@@ -1,10 +1,7 @@
 package com.mskwak.plant.plant_edit
 
-import android.app.AlarmManager
 import android.app.Application
-import android.content.Context
 import android.net.Uri
-import android.os.Build
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.mskwak.common_ui.ViewEvent
@@ -18,6 +15,7 @@ import com.mskwak.domain.useCase.plant.AddPlantUseCase
 import com.mskwak.domain.useCase.plant.GetPlantUseCase
 import com.mskwak.domain.useCase.plant.UpdatePlantUseCase
 import com.mskwak.plant.R
+import com.mskwak.plant.util.canScheduleExactAlarms
 import com.mskwak.plant.util.cleanupCameraCache
 import com.mskwak.plant.util.createCameraUri
 import com.mskwak.plant.util.readBytesFromUri
@@ -25,13 +23,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @HiltViewModel
 class PlantEditViewModel @Inject constructor(
     private val application: Application,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val getPlantUseCase: GetPlantUseCase,
     private val addPlantUseCase: AddPlantUseCase,
     private val updatePlantUseCase: UpdatePlantUseCase,
@@ -39,17 +38,27 @@ class PlantEditViewModel @Inject constructor(
     private val deletePictureUseCase: DeletePictureUseCase
 ) : BaseViewModel<PlantEditState, PlantEditEvent, PlantEditEffect>() {
 
-    private val plantId: Int? = savedStateHandle.get<Int>("plantId")
+    private var plantId: Int? = savedStateHandle.get<Int>("plantId")
     private var originalPicture: Picture? = null
     private var newPicture: Picture? = null
+    private var loadJob: Job? = null
 
     init {
-        plantId?.let { loadPlant(it) }
+        plantId?.let { loadJob = loadPlant(it) }
     }
 
     override fun setInitialState(): PlantEditState = PlantEditState(
         isEditMode = plantId != null
     )
+
+    fun initPlantId(id: Int?) {
+        if (plantId == id) return
+        plantId = id
+        savedStateHandle["plantId"] = id
+        setState { PlantEditState(isEditMode = id != null) }
+        loadJob?.cancel()
+        id?.let { loadJob = loadPlant(it) }
+    }
 
     override fun handleEvents(viewEvent: ViewEvent) {
         val event = viewEvent as? PlantEditEvent ?: return
@@ -87,7 +96,7 @@ class PlantEditViewModel @Inject constructor(
             }
 
             is PlantEditEvent.OnWateringAlarmToggled -> {
-                if (event.isActive && !canScheduleExactAlarms()) {
+                if (event.isActive && !canScheduleExactAlarms(application)) {
                     setEffect(PlantEditEffect.ShowExactAlarmPermissionDialog)
                 } else {
                     setState { copy(isWateringAlarmActive = event.isActive) }
@@ -152,16 +161,10 @@ class PlantEditViewModel @Inject constructor(
         }
     }
 
-    private fun canScheduleExactAlarms(): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return true
-        val alarmManager = application.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        return alarmManager.canScheduleExactAlarms()
-    }
-
     fun createCameraUri(): Uri = createCameraUri(application)
 
-    private fun loadPlant(plantId: Int) {
-        viewModelScope.launch {
+    private fun loadPlant(plantId: Int): Job {
+        return viewModelScope.launch {
             getPlantUseCase(plantId).collect { plant ->
                 plant ?: return@collect
                 originalPicture = plant.picture

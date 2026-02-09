@@ -92,7 +92,8 @@ data class PlantEditScreen(val plantId: Int? = null) : Screen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlantEditScreen(
-    viewModel: PlantEditViewModel = hiltViewModel(),
+    plantId: Int? = null,
+    viewModel: PlantEditViewModel = hiltViewModel(key = plantId?.toString() ?: "new"),
     navigate: (PlantEditEffect.Navigation) -> Unit
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
@@ -134,6 +135,10 @@ fun PlantEditScreen(
                 Toast.LENGTH_SHORT
             ).show()
         }
+    }
+
+    LaunchedEffect(plantId) {
+        viewModel.initPlantId(plantId)
     }
 
     Content(

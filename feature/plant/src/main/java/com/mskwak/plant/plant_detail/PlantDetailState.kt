@@ -29,14 +29,14 @@ data class PlantDetailState(
 
 sealed interface PlantDetailEvent : ViewEvent {
     data object OnBackClicked : PlantDetailEvent
-    data object EditPlant : PlantDetailEvent
-    data object DeletePlant : PlantDetailEvent
-    data object DeleteConfirmClicked : PlantDetailEvent
+    data object OnEditPlantClicked : PlantDetailEvent
+    data object OnDeletePlantClicked : PlantDetailEvent
+    data object OnDeleteConfirmClicked : PlantDetailEvent
     data class ToggleWateringAlarmActive(val isActive: Boolean) : PlantDetailEvent
     data object OnWateringClicked : PlantDetailEvent
     data class OnDiaryClicked(val diaryId: Int) : PlantDetailEvent
-    data object NewDiary : PlantDetailEvent
-    data object ShowMoreDiary : PlantDetailEvent
+    data object OnNewDiaryClicked : PlantDetailEvent
+    data object OnMoreDiaryClicked : PlantDetailEvent
 }
 
 sealed interface PlantDetailEffect : ViewEffect {
@@ -49,4 +49,5 @@ sealed interface PlantDetailEffect : ViewEffect {
     }
 
     data object ShowExactAlarmPermissionDialog : PlantDetailEffect
+    data object ShowDeleteConfirmDialog : PlantDetailEffect
 }

@@ -32,6 +32,7 @@ fun EntryProviderScope<Screen>.plantNavGraph(
 
     entry<PlantDetailScreen> {
         PlantDetailScreen(
+            plantId = it.plantId,
             navigate = { nav ->
                 when (nav) {
                     is PlantDetailEffect.Navigation.Back -> {
@@ -51,6 +52,7 @@ fun EntryProviderScope<Screen>.plantNavGraph(
 
     entry<PlantEditScreen> {
         PlantEditScreen(
+            plantId = it.plantId,
             navigate = { backStack.removeLastOrNull() }
         )
     }

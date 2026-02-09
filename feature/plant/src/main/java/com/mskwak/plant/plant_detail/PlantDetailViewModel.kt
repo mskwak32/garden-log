@@ -1,20 +1,153 @@
 package com.mskwak.plant.plant_detail
 
+import android.app.Application
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
+import com.mskwak.domain.repository.PlantRepository
+import com.mskwak.domain.useCase.diary.GetDiariesByPlantIdUseCase
+import com.mskwak.domain.useCase.plant.DeletePlantUseCase
+import com.mskwak.domain.useCase.plant.GetPlantUseCase
+import com.mskwak.domain.useCase.watering.GetWateringDaysUseCase
+import com.mskwak.domain.useCase.watering.UpdateWateringAlarmActivationUseCase
+import com.mskwak.domain.useCase.watering.WateringNowUseCase
+import com.mskwak.plant.model.toDiaryListItemUiModel
+import com.mskwak.plant.model.toPlantListItemUiModel
+import com.mskwak.plant.util.canScheduleExactAlarms
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class PlantDetailViewModel @Inject constructor(
-
+    private val application: Application,
+    private val savedStateHandle: SavedStateHandle,
+    private val getPlantUseCase: GetPlantUseCase,
+    private val getWateringDaysUseCase: GetWateringDaysUseCase,
+    private val getDiariesByPlantIdUseCase: GetDiariesByPlantIdUseCase,
+    private val wateringNowUseCase: WateringNowUseCase,
+    private val updateWateringAlarmActivationUseCase: UpdateWateringAlarmActivationUseCase,
+    private val deletePlantUseCase: DeletePlantUseCase,
+    private val plantRepository: PlantRepository
 ) : BaseViewModel<PlantDetailState, PlantDetailEvent, PlantDetailEffect>() {
 
-    override fun setInitialState(): PlantDetailState {
-        TODO("Not yet implemented")
+    private var plantId: Int = savedStateHandle["plantId"] ?: -1
+    private var observeJob: Job? = null
+
+    init {
+        if (plantId != -1) {
+            observeJob = observePlant()
+        }
+    }
+
+    override fun setInitialState(): PlantDetailState = PlantDetailState()
+
+    fun initPlantId(id: Int) {
+        if (plantId == id) return
+        plantId = id
+        savedStateHandle["plantId"] = id
+        setState { PlantDetailState() }
+        observeJob?.cancel()
+        observeJob = observePlant()
+    }
+
+    private fun observePlant(): Job {
+        return combine(
+            getPlantUseCase(plantId).filterNotNull(),
+            getDiariesByPlantIdUseCase(plantId)
+        ) { plant, diaries ->
+            plant to diaries
+        }.onEach { (plant, diaries) ->
+            val uiModel = plant.toPlantListItemUiModel { getWateringDaysUseCase(it) }
+            setState {
+                copy(
+                    plantImagePath = uiModel.imagePath,
+                    plantName = uiModel.name,
+                    createdAt = uiModel.createdAt,
+                    dDays = uiModel.dDay,
+                    hasWateringPeriod = plant.waterPeriod > 0,
+                    wateringStatus = uiModel.status,
+                    lastWateringDate = plant.lastWateringDate,
+                    wateringAlarmTime = plant.wateringAlarm.time,
+                    isWateringActive = plant.wateringAlarm.isActive,
+                    memo = plant.memo,
+                    diaries = diaries.map { it.toDiaryListItemUiModel() }
+                )
+            }
+        }
+            .launchIn(viewModelScope)
     }
 
     override fun handleEvents(viewEvent: ViewEvent) {
-        TODO("Not yet implemented")
+        val event = viewEvent as? PlantDetailEvent ?: return
+
+        when (event) {
+            is PlantDetailEvent.OnBackClicked -> {
+                setEffect(PlantDetailEffect.Navigation.Back)
+            }
+
+            is PlantDetailEvent.OnEditPlantClicked -> {
+                setEffect(PlantDetailEffect.Navigation.ToEditPlant)
+            }
+
+            is PlantDetailEvent.OnDeletePlantClicked -> {
+                setEffect(PlantDetailEffect.ShowDeleteConfirmDialog)
+            }
+
+            is PlantDetailEvent.OnDeleteConfirmClicked -> {
+                deletePlant()
+            }
+
+            is PlantDetailEvent.ToggleWateringAlarmActive -> {
+                toggleWateringAlarm(event.isActive)
+            }
+
+            is PlantDetailEvent.OnWateringClicked -> {
+                waterPlant()
+            }
+
+            is PlantDetailEvent.OnDiaryClicked -> {
+                setEffect(PlantDetailEffect.Navigation.ToDiaryDetail)
+            }
+
+            is PlantDetailEvent.OnNewDiaryClicked -> {
+                setEffect(PlantDetailEffect.Navigation.ToNewDiary)
+            }
+
+            is PlantDetailEvent.OnMoreDiaryClicked -> {
+                setEffect(PlantDetailEffect.Navigation.ToMoreDiaries)
+            }
+        }
+    }
+
+    private fun toggleWateringAlarm(isActive: Boolean) {
+        if (isActive && !canScheduleExactAlarms(application)) {
+            setEffect(PlantDetailEffect.ShowExactAlarmPermissionDialog)
+            return
+        }
+
+        viewModelScope.launch {
+            updateWateringAlarmActivationUseCase(plantId, isActive)
+        }
+    }
+
+    private fun waterPlant() {
+        viewModelScope.launch {
+            wateringNowUseCase(plantId)
+        }
+    }
+
+    private fun deletePlant() {
+        viewModelScope.launch {
+            val plant = plantRepository.getPlant(plantId) ?: return@launch
+            deletePlantUseCase(plant)
+            setEffect(PlantDetailEffect.Navigation.Back)
+        }
     }
 }
