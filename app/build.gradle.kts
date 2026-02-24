@@ -82,7 +82,8 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.viewmodel)
+    implementation(libs.lifecycle.viewmodel.savedstate)
     implementation(libs.material)
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
