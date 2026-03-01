@@ -1,88 +1,46 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this
-repository.
-
 ## Project Context
 
-이 프로젝트는 기존 프로젝트(`~/Android Projects/gerden-daily-log`)를 리뉴얼하는 작업입니다.
-
-- 기존 프로젝트의 기능을 새 아키텍처로 재구현한 후, 새 기능을 추가할 예정
-- 기존: XML View + Navigation Component + LiveData + 단일 모듈
-- 신규: Compose + Navigation 3 + StateFlow/MVI + 멀티모듈 (Clean Architecture)
-- 기능 구현 시 기존 프로젝트의 코드를 참고하되, 새 프로젝트 패턴에 맞게 변환
+기존 프로젝트(`~/Android Projects/gerden-daily-log`, XML/LiveData/단일모듈) → 리뉴얼
+신규: Compose + Navigation 3 + StateFlow/MVI + 멀티모듈 (Clean Architecture)
+기능 구현 시 기존 코드를 참고하되 새 패턴에 맞게 변환.
 
 ## Build Commands
 
 ```bash
-# 프로젝트 빌드
-./gradlew assembleDebug
-
-# 디바이스에 설치 및 실행
-./gradlew installDebug
-
-# 전체 빌드 (release 포함)
-./gradlew build
-
-# 단위 테스트 실행
-./gradlew test
-
-# 특정 모듈 테스트
-./gradlew :domain:test
-./gradlew :data:test
-
-# Android Instrumented 테스트
-./gradlew connectedAndroidTest
-
-# 캐시 정리 후 빌드
-./gradlew clean assembleDebug
+./gradlew assembleDebug          # 빌드
+./gradlew installDebug           # 설치 및 실행
+./gradlew build                  # 전체 빌드
+./gradlew test                   # 단위 테스트
+./gradlew :domain:test           # 모듈별 테스트
+./gradlew connectedAndroidTest   # Instrumented 테스트
+./gradlew clean assembleDebug    # 캐시 정리 후 빌드
 ```
 
 ## Architecture
 
-이 프로젝트는 **Clean Architecture + MVVM/MVI** 패턴을 따르는 멀티모듈 구조입니다.
-
-### Module Structure
+**Clean Architecture + MVVM/MVI**, 멀티모듈.
 
 ```
-app/                    # 앱 진입점 (MainActivity, AppApplication)
-domain/                 # 순수 Kotlin - 비즈니스 로직 (UseCase, Repository 인터페이스, Model)
-data/                   # Repository 구현체, Entity-Domain Mapper
-design/                 # Compose Theme, Icon, UI Component
-feature/plant/          # Plant/Diary 기능의 UI Layer (Screen, ViewModel, State)
-core/
-  ├── database/         # Room DB (Entity, DAO, Migration)
-  ├── remote/           # Retrofit/OkHttp
-  ├── file/             # 파일 관리
-  └── common_ui/        # BaseViewModel, ViewState/Event/Effect 인터페이스
+app/              # 진입점 (MainActivity, AppApplication)
+domain/           # UseCase, Repository 인터페이스, Model (순수 Kotlin)
+data/             # RepositoryImpl, Entity-Domain Mapper
+design/           # Compose Theme, Icon, UI Component
+feature/plant/    # Screen, ViewModel, State (UI Layer)
+core/database/    # Room DB (Entity, DAO, Migration)
+core/remote/      # Retrofit/OkHttp
+core/file/        # 파일 관리
+core/common_ui/   # BaseViewModel, ViewState/Event/Effect 인터페이스
 ```
 
-### Data Flow
+**Data Flow:** `Screen → ViewModel → UseCase → Repository(interface) → RepositoryImpl → DAO/API`
 
-```
-Screen (Compose) → ViewModel → UseCase → Repository (interface) → RepositoryImpl → DAO/API
-```
+**BaseViewModel:** `core/common_ui`의 `BaseViewModel<UiState, Event, Effect>` 상속.
+- `viewState: StateFlow<UiState>`, `setEvent(event)`, `effect: Flow<Effect>`
 
-### BaseViewModel Pattern
-
-`core/common_ui`의 `BaseViewModel<UiState, Event, Effect>`를 상속하여 MVI 패턴 구현:
-
-```kotlin
-class PlantListViewModel : BaseViewModel<PlantListState, PlantListEvent, PlantListEffect>() {
-    // viewState: StateFlow<UiState> - UI 상태
-    // setEvent(event) - 이벤트 발행
-    // effect: Flow<Effect> - 일회성 Side Effect (Navigation 등)
-}
-```
-
-### Dependency Injection
-
-Hilt 사용. 주요 모듈:
-
-- `data/di/RepositoryModule.kt` - Repository 바인딩
-- `core/database/di/DatabaseModule.kt` - Room DB 제공
-
-ViewModel은 `@HiltViewModel` + `@Inject constructor` 패턴.
+**DI:** Hilt, `@HiltViewModel` + `@Inject constructor`.
+- `data/di/RepositoryModule.kt`, `core/database/di/DatabaseModule.kt`
 
 ## Tech Stack
 
@@ -92,22 +50,18 @@ ViewModel은 `@HiltViewModel` + `@Inject constructor` 패턴.
 - **Hilt**: 2.57.2, KSP
 - **Room**: 2.8.3 (DB 버전 4, migration 필수)
 - **Retrofit**: 3.0.0, OkHttp 5.3.0, Kotlin Serialization
-- **Coil 3**: 이미지 로딩
-- **Timber**: 로깅
-- **Firebase**: Analytics, Crashlytics (Debug에서 비활성화)
+- **Coil**: 3.3.0 (이미지 로딩)
+- **Timber**: 5.0.1 (로깅)
+- **Firebase BOM**: 34.5.0, Analytics, Crashlytics (Debug 비활성화)
 
 ## Key Conventions
 
-- Feature 모듈의 UI 모델은 `model/` 패키지에 `*UiModel.kt`로 작성
-- Domain 모델과 Entity는 `data/mapper/`에서 변환
-- Compose Preview는 `design` 모듈의 Theme 사용
+- UI 모델: `feature/.../model/*UiModel.kt`
+- Domain↔Entity 변환: `data/mapper/`
+- Compose Preview: `design` 모듈 Theme 사용
 - 버전 카탈로그: `gradle/libs.versions.toml`
-- Debug 빌드는 `.dev` suffix 적용
 
 ## Database
 
-Room DB 파일: `garden.db` (버전 4)
-
-- Entity: `PlantEntity`, `DiaryEntity`
-- Migration: `core/database/migration/` 참조
-- 스키마 export 활성화됨
+`garden.db` (Room v4) — Entity: `PlantEntity`, `DiaryEntity`
+Migration: `core/database/migration/`, 스키마 export 활성화
