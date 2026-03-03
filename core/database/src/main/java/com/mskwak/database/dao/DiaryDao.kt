@@ -12,7 +12,7 @@ import java.time.LocalDate
 @Dao
 interface DiaryDao {
     @Insert
-    suspend fun insertDiary(diaryEntity: DiaryEntity)
+    suspend fun insertDiary(diaryEntity: DiaryEntity): Long
 
     @Update
     suspend fun updateDiary(diaryEntity: DiaryEntity)
@@ -38,4 +38,7 @@ interface DiaryDao {
 
     @Query("SELECT * FROM diary WHERE createdDate BETWEEN :startDate AND :endDate ORDER BY createdDate DESC")
     fun getDiaries(startDate: LocalDate, endDate: LocalDate): Flow<List<DiaryEntity>>
+
+    @Query("SELECT id FROM diary WHERE plantId = :plantId")
+    suspend fun getDiaryIdsByPlantId(plantId: Int): List<Int>
 }
