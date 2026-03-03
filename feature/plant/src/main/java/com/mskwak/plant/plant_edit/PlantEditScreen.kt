@@ -63,7 +63,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.mskwak.common_ui.Screen
+import androidx.navigation3.runtime.NavKey
 import com.mskwak.design.IconPack
 import com.mskwak.design.icon.AddPhotoBlack
 import com.mskwak.design.icon.ArrowBackBlack
@@ -86,7 +86,7 @@ import java.time.LocalTime
 import java.time.ZoneId
 
 @Serializable
-data class PlantEditScreen(val plantId: Int? = null) : Screen
+data class PlantEditScreen(val plantId: Int? = null) : NavKey
 
 @SuppressLint("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)

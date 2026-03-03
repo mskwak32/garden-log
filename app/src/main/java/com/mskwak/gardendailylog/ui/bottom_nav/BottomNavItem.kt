@@ -1,7 +1,7 @@
 package com.mskwak.gardendailylog.ui.bottom_nav
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.mskwak.common_ui.Screen
+import androidx.navigation3.runtime.NavKey
 import com.mskwak.design.IconPack
 import com.mskwak.design.icon.BookMarkBlack
 import com.mskwak.design.icon.HomeBlack
@@ -17,24 +17,24 @@ import com.mskwak.plant.setting.SettingScreen
 sealed interface BottomNavItem {
     val titleRes: Int
     val icon: ImageVector
-    val screen: Screen
+    val screen: NavKey
 
     data object DiaryList : BottomNavItem {
         override val titleRes: Int = R.string.bottom_nav_diary
         override val icon: ImageVector = IconPack.BookMarkBlack
-        override val screen: Screen = DiaryListScreen
+        override val screen: NavKey = DiaryListScreen
     }
 
     data object PlantList : BottomNavItem {
         override val titleRes: Int = R.string.bottom_nav_home
         override val icon: ImageVector = IconPack.HomeBlack
-        override val screen: Screen = PlantListScreen
+        override val screen: NavKey = PlantListScreen
     }
 
     data object Setting : BottomNavItem {
         override val titleRes: Int = R.string.bottom_nav_setting
         override val icon: ImageVector = IconPack.SettingsBlack
-        override val screen: Screen = SettingScreen
+        override val screen: NavKey = SettingScreen
     }
 
     companion object {

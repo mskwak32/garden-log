@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.mskwak.common_ui.Screen
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
 
-data object SettingScreen : Screen
+@Serializable
+data object SettingScreen : NavKey
 
 @Composable
 fun SettingScreen(

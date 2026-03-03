@@ -26,18 +26,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.mskwak.common_ui.Screen
 import com.mskwak.gardendailylog.R
 import com.mskwak.gardendailylog.ui.bottom_nav.BottomNavItem
 import com.mskwak.plant.plantNavGraph
@@ -51,7 +53,7 @@ fun MainScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Navigation 3: 단일 백스택 사용
-    val backStack = remember { mutableStateListOf(BottomNavItem.PlantList.screen) }
+    val backStack = rememberNavBackStack(BottomNavItem.PlantList.screen)
 
     // 현재 화면이 탭 메뉴인지 확인
     val currentScreen = backStack.lastOrNull()
@@ -82,16 +84,20 @@ fun MainScreen(
                 .padding(bottom = innerPadding.calculateBottomPadding()),
             entryProvider = entryProvider {
                 plantNavGraph(backStack)
-            }
+            },
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            )
         )
     }
 }
 
 @Composable
 private fun BottomNavigationBar(
-    currentScreen: Screen?,
-    backStack: SnapshotStateList<Screen>,
-    tabScreens: List<Screen>
+    currentScreen: NavKey?,
+    backStack: NavBackStack<NavKey>,
+    tabScreens: List<NavKey>
 ) {
     NavigationBar {
         BottomNavItem.items.forEach { item ->
@@ -190,7 +196,7 @@ private fun NotificationPermission(
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 private fun BackPressFinish(
-    currentScreen: Screen?
+    currentScreen: NavKey?
 ) {
     val context = LocalContext.current
     val activity = context as? Activity

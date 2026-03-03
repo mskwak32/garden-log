@@ -50,7 +50,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.mskwak.common_ui.Screen
+import androidx.navigation3.runtime.NavKey
 import com.mskwak.design.IconPack
 import com.mskwak.design.icon.ArrowBackBlack
 import com.mskwak.design.icon.MoreHorizBlack
@@ -75,7 +75,7 @@ import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
 @Serializable
-data class PlantDetailScreen(val plantId: Int) : Screen
+data class PlantDetailScreen(val plantId: Int) : NavKey
 
 @Composable
 fun PlantDetailScreen(

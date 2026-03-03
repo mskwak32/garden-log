@@ -1,8 +1,8 @@
 package com.mskwak.plant
 
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
-import com.mskwak.common_ui.Screen
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
 import com.mskwak.plant.diary_list.DiaryListScreen
 import com.mskwak.plant.plant_detail.PlantDetailEffect
 import com.mskwak.plant.plant_detail.PlantDetailScreen
@@ -11,8 +11,8 @@ import com.mskwak.plant.plant_list.PlantListEffect
 import com.mskwak.plant.plant_list.PlantListScreen
 import com.mskwak.plant.setting.SettingScreen
 
-fun EntryProviderScope<Screen>.plantNavGraph(
-    backStack: SnapshotStateList<Screen>
+fun EntryProviderScope<NavKey>.plantNavGraph(
+    backStack: NavBackStack<NavKey>
 ) {
     entry<PlantListScreen> {
         PlantListScreen(
