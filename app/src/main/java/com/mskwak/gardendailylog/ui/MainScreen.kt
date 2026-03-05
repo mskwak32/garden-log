@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,23 +17,29 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.mskwak.design.ui_component.LocalNavBottomBarPadding
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
@@ -67,29 +74,49 @@ fun MainScreen(
 
     BackPressFinish(currentScreen)
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        bottomBar = {
+    val density = LocalDensity.current
+    var navBarHeight by remember { mutableStateOf(0.dp) }
+    val bottomBarPadding = if (isTabScreen) navBarHeight else 0.dp
+
+    CompositionLocalProvider(LocalNavBottomBarPadding provides bottomBarPadding) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            NavDisplay(
+                backStack = backStack,
+                onBack = { backStack.removeLastOrNull() },
+                modifier = Modifier.fillMaxSize(),
+                entryProvider = entryProvider {
+                    plantNavGraph(backStack)
+                },
+                entryDecorators = listOf(
+                    rememberSaveableStateHolderNavEntryDecorator(),
+                    rememberViewModelStoreNavEntryDecorator()
+                )
+            )
+
+            // Snackbar: NavigationBar 위에 표시
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = if (isTabScreen) navBarHeight + 8.dp else 8.dp)
+            )
+
             // 탭 메뉴 화면일 때만 BottomBar 표시
             if (isTabScreen) {
-                BottomNavigationBar(currentScreen, backStack, tabScreens)
+                BottomNavigationBar(
+                    currentScreen = currentScreen,
+                    backStack = backStack,
+                    tabScreens = tabScreens,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .onGloballyPositioned { coordinates ->
+                            with(density) {
+                                navBarHeight = coordinates.size.height.toDp()
+                            }
+                        }
+                )
             }
         }
-    ) { innerPadding ->
-        NavDisplay(
-            backStack = backStack,
-            onBack = { backStack.removeLastOrNull() },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = innerPadding.calculateBottomPadding()),
-            entryProvider = entryProvider {
-                plantNavGraph(backStack)
-            },
-            entryDecorators = listOf(
-                rememberSaveableStateHolderNavEntryDecorator(),
-                rememberViewModelStoreNavEntryDecorator()
-            )
-        )
     }
 }
 
@@ -97,9 +124,10 @@ fun MainScreen(
 private fun BottomNavigationBar(
     currentScreen: NavKey?,
     backStack: NavBackStack<NavKey>,
-    tabScreens: List<NavKey>
+    tabScreens: List<NavKey>,
+    modifier: Modifier = Modifier
 ) {
-    NavigationBar {
+    NavigationBar(modifier = modifier) {
         BottomNavItem.items.forEach { item ->
             NavigationBarItem(
                 item = item,
