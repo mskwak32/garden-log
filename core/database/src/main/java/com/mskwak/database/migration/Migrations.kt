@@ -14,3 +14,6 @@ internal val MIGRATION_2_3 = object : Migration(2, 3) {
         db.execSQL("CREATE INDEX IF NOT EXISTS 'index_plant_id_name' ON plant (id, name)")
     }
 }
+
+// MIGRATION_3_4 는 Migration_3_4.kt 에 정의됨
+// MIGRATION_4_5 는 Migration_4_5.kt 에 정의됨

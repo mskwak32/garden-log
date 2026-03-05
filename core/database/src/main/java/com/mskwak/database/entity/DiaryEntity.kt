@@ -13,6 +13,5 @@ data class DiaryEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val plantId: Int,
     val memo: String,
-    val pictureList: List<PictureEntity>?,
     val createdDate: LocalDate
 )

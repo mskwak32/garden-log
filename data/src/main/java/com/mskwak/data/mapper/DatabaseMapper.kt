@@ -9,7 +9,7 @@ import com.mskwak.domain.model.Diary
 import com.mskwak.domain.model.Picture
 import com.mskwak.domain.model.Plant
 
-internal fun Plant.toPlantEntity(): PlantEntity {
+internal fun Plant.toPlantEntity(pictureId: Int?): PlantEntity {
     return PlantEntity(
         id = id,
         name = name,
@@ -17,12 +17,12 @@ internal fun Plant.toPlantEntity(): PlantEntity {
         waterPeriod = waterPeriod,
         lastWateringDate = lastWateringDate,
         wateringAlarm = wateringAlarm.toAlarmEntity(),
-        picture = picture?.toPictureEntity(),
+        pictureId = pictureId,
         memo = memo
     )
 }
 
-internal fun PlantEntity.toPlant(): Plant {
+internal fun PlantEntity.toPlant(picture: PictureEntity?): Plant {
     return Plant(
         id = id,
         name = name,
@@ -70,17 +70,16 @@ internal fun Diary.toDiaryEntity(): DiaryEntity {
         id = id,
         plantId = plantId,
         memo = memo,
-        pictureList = pictureList?.map { it.toPictureEntity() },
         createdDate = createdDate
     )
 }
 
-internal fun DiaryEntity.toDiary(): Diary {
+internal fun DiaryEntity.toDiary(pictures: List<PictureEntity>): Diary {
     return Diary(
         id = id,
         plantId = plantId,
         memo = memo,
-        pictureList = pictureList?.map { it.toPicture() },
+        pictureList = pictures.map { it.toPicture() }.ifEmpty { null },
         createdDate = createdDate
     )
 }

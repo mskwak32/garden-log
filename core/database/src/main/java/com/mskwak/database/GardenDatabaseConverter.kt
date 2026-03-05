@@ -1,8 +1,6 @@
 package com.mskwak.database
 
 import androidx.room.TypeConverter
-import com.mskwak.database.entity.PictureEntity
-import kotlinx.serialization.json.Json
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -36,15 +34,5 @@ internal class GardenDatabaseConverter {
     @TypeConverter
     fun stringToDateTime(dateTimeString: String): LocalDateTime {
         return LocalDateTime.parse(dateTimeString)
-    }
-
-    @TypeConverter
-    fun pictureListToJson(pictures: List<PictureEntity>): String {
-        return Json.encodeToString(pictures)
-    }
-
-    @TypeConverter
-    fun jsonToPictureList(json: String): List<PictureEntity> {
-        return Json.decodeFromString(json)
     }
 }

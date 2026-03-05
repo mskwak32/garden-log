@@ -6,6 +6,7 @@ import com.mskwak.database.GardenDatabase
 import com.mskwak.database.migration.MIGRATION_1_2
 import com.mskwak.database.migration.MIGRATION_2_3
 import com.mskwak.database.migration.MIGRATION_3_4
+import com.mskwak.database.migration.MIGRATION_4_5
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +24,8 @@ class DatabaseModule {
             .addMigrations(
                 MIGRATION_1_2,
                 MIGRATION_2_3,
-                MIGRATION_3_4
+                MIGRATION_3_4,
+                MIGRATION_4_5
             )
             .build()
     }
@@ -35,4 +37,8 @@ class DatabaseModule {
     @Provides
     @Singleton
     fun provideDiaryDao(gardenDatabase: GardenDatabase) = gardenDatabase.diaryDao()
+
+    @Provides
+    @Singleton
+    fun providePictureDao(gardenDatabase: GardenDatabase) = gardenDatabase.pictureDao()
 }

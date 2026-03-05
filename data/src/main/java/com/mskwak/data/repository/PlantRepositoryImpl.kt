@@ -2,44 +2,81 @@ package com.mskwak.data.repository
 
 import com.mskwak.data.mapper.toPlant
 import com.mskwak.data.mapper.toPlantEntity
+import com.mskwak.data.mapper.toPictureEntity
+import com.mskwak.database.dao.PictureDao
 import com.mskwak.database.dao.PlantDao
 import com.mskwak.domain.model.Plant
 import com.mskwak.domain.repository.PlantRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class PlantRepositoryImpl @Inject constructor(
-    private val plantDao: PlantDao
+    private val plantDao: PlantDao,
+    private val pictureDao: PictureDao
 ) : PlantRepository {
+
     override suspend fun addPlant(plant: Plant): Int {
-        val id = plantDao.insertPlant(plant.toPlantEntity()).toInt()
-        Timber.d("add new plant id= $id")
+        val pictureId = plant.picture?.let { pictureDao.insertPicture(it.toPictureEntity()).toInt() }
+        val id = plantDao.insertPlant(plant.toPlantEntity(pictureId)).toInt()
+        Timber.d("add new plant id=$id")
         return id
     }
 
     override suspend fun updatePlant(plant: Plant) {
-        plantDao.updatePlant(plant.toPlantEntity())
-        Timber.d("update plant id= ${plant.id}")
+        val existing = plantDao.getPlant(plant.id)
+        existing?.pictureId?.let { pictureDao.deletePicture(it) }
+        val pictureId = plant.picture?.let { pictureDao.insertPicture(it.toPictureEntity()).toInt() }
+        plantDao.updatePlant(plant.toPlantEntity(pictureId))
+        Timber.d("update plant id=${plant.id}")
     }
 
     override suspend fun deletePlant(plant: Plant) {
-        plantDao.deletePlant(plant.toPlantEntity())
-        Timber.d("delete plant id= ${plant.id}")
+        val existing = plantDao.getPlant(plant.id)
+        existing?.pictureId?.let { pictureDao.deletePicture(it) }
+        plantDao.deletePlant(plant.toPlantEntity(existing?.pictureId))
+        Timber.d("delete plant id=${plant.id}")
     }
 
     override fun getPlantFlow(plantId: Int): Flow<Plant?> {
-        return plantDao.getPlantFlow(plantId).map { it?.toPlant() }
+        return plantDao.getPlantFlow(plantId).flatMapLatest { plantEntity ->
+            if (plantEntity == null) return@flatMapLatest flowOf(null)
+            val pictureId = plantEntity.pictureId
+            if (pictureId == null) {
+                flowOf(plantEntity.toPlant(null))
+            } else {
+                pictureDao.getPictureFlow(pictureId).map { picture ->
+                    plantEntity.toPlant(picture)
+                }
+            }
+        }
     }
 
     override suspend fun getPlant(plantId: Int): Plant? {
-        return plantDao.getPlant(plantId)?.toPlant()
+        val plantEntity = plantDao.getPlant(plantId) ?: return null
+        val picture = plantEntity.pictureId?.let { pictureDao.getPicture(it) }
+        return plantEntity.toPlant(picture)
     }
 
     override fun getPlants(): Flow<List<Plant>> {
-        return plantDao.getPlants().map { list ->
-            list.map { it.toPlant() }
+        return plantDao.getPlants().flatMapLatest { plants ->
+            if (plants.isEmpty()) return@flatMapLatest flowOf(emptyList())
+            combine(plants.map { plantEntity ->
+                val pictureId = plantEntity.pictureId
+                if (pictureId == null) {
+                    flowOf(plantEntity.toPlant(null))
+                } else {
+                    pictureDao.getPictureFlow(pictureId).map { picture ->
+                        plantEntity.toPlant(picture)
+                    }
+                }
+            }) { it.toList() }
         }
     }
 
