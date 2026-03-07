@@ -62,11 +62,12 @@ import java.time.LocalDate
 import java.time.YearMonth
 
 @Serializable
-data object DiaryListScreen : NavKey
+data class DiaryListScreen(val plantId: Int? = null) : NavKey
 
 @Composable
 fun DiaryListScreen(
-    viewModel: DiaryListViewModel = hiltViewModel(),
+    plantId: Int? = null,
+    viewModel: DiaryListViewModel = hiltViewModel(key = plantId?.toString() ?: "all"),
     navigate: (DiaryListEffect.Navigation) -> Unit
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()

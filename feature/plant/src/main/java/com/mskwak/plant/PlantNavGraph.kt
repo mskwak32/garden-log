@@ -3,6 +3,8 @@ package com.mskwak.plant
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.mskwak.plant.diary_edit.DiaryEditEffect
+import com.mskwak.plant.diary_edit.DiaryEditScreen
 import com.mskwak.plant.diary_list.DiaryListScreen
 import com.mskwak.plant.plant_detail.PlantDetailEffect
 import com.mskwak.plant.plant_detail.PlantDetailScreen
@@ -43,7 +45,16 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
                         backStack.add(PlantEditScreen(it.plantId))
                     }
 
-                    else -> { /* TODO */
+                    is PlantDetailEffect.Navigation.ToNewDiary -> {
+                        backStack.add(DiaryEditScreen(it.plantId))
+                    }
+
+                    is PlantDetailEffect.Navigation.ToDiaryDetail -> {
+                        // TODO: Navigate to DiaryDetailScreen
+                    }
+
+                    is PlantDetailEffect.Navigation.ToMoreDiaries -> {
+                        backStack.add(DiaryListScreen(it.plantId))
                     }
                 }
             }
@@ -57,8 +68,24 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
         )
     }
 
+    entry<DiaryEditScreen> {
+        DiaryEditScreen(
+            plantId = it.plantId,
+            diaryId = it.diaryId,
+            navigate = { nav ->
+                when (nav) {
+                    is DiaryEditEffect.Navigation.Back,
+                    is DiaryEditEffect.Navigation.SaveComplete -> {
+                        backStack.removeLastOrNull()
+                    }
+                }
+            }
+        )
+    }
+
     entry<DiaryListScreen> {
         DiaryListScreen(
+            plantId = it.plantId,
             navigate = { /* TODO */ }
         )
     }

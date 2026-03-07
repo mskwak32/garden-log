@@ -57,6 +57,7 @@
     <string name="message_input_required_field">필수항목을 입력해주세요.</string>
     <string name="message_no_more_picture">더이상 이미지를 추가할 수 없습니다.</string>
     <string name="message_input_picture_or_content">사진이나 내용을 입력해주세요.</string>
+    <string name="message_diary_back_confirm">작성 중인 내용이 삭제됩니다.</string>
     <string name="message_photo_image_permission">이미지를 가져오려면 권한이 필요합니다.</string>
     <string name="message_photo_camera_permission">카메라를 사용하려면 권한이 필요합니다.</string>
     <string name="message_delete_confirm">정말 삭제하시겠습니까?\n삭제 시 관련된 일기 등이 삭제되며 복구할 수 없습니다.</string>
