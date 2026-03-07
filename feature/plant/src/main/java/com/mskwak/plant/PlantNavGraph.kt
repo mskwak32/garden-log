@@ -54,7 +54,7 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
                     }
 
                     is PlantDetailEffect.Navigation.ToMoreDiaries -> {
-                        backStack.add(DiaryListScreen(it.plantId))
+                        backStack.add(DiaryListScreen)
                     }
                 }
             }
@@ -85,7 +85,6 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
 
     entry<DiaryListScreen> {
         DiaryListScreen(
-            plantId = it.plantId,
             navigate = { /* TODO */ }
         )
     }
