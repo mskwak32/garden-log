@@ -9,8 +9,6 @@ import java.time.LocalDate
 
 @Immutable
 data class DiaryEditState(
-    val plantId: Int = -1,
-    val diaryId: Int? = null,
     val plantName: String = "",
     val imagePaths: List<String> = emptyList(),
     val content: String = "",

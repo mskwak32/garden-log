@@ -51,10 +51,7 @@ class DiaryEditViewModel @Inject constructor(
         diaryId?.let { loadJob = loadDiary(it) }
     }
 
-    override fun setInitialState(): DiaryEditState = DiaryEditState(
-        plantId = plantId,
-        diaryId = diaryId
-    )
+    override fun setInitialState(): DiaryEditState = DiaryEditState()
 
     private fun loadPlantName(id: Int) {
         viewModelScope.launch {
@@ -139,6 +136,8 @@ class DiaryEditViewModel @Inject constructor(
             is DiaryEditEvent.OnSaveClicked -> {
                 saveDiary()
             }
+
+            else -> {}
         }
     }
 

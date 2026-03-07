@@ -82,9 +82,7 @@ data class DiaryEditScreen(val plantId: Int, val diaryId: Int? = null) : NavKey
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiaryEditScreen(
-    plantId: Int,
-    diaryId: Int? = null,
-    viewModel: DiaryEditViewModel = hiltViewModel(key = diaryId?.toString() ?: "new_$plantId"),
+    viewModel: DiaryEditViewModel = hiltViewModel(),
     navigate: (DiaryEditEffect.Navigation) -> Unit
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
@@ -153,7 +151,7 @@ fun DiaryEditScreen(
                         onClick = { viewModel.setEvent(DiaryEditEvent.OnSaveClicked) }
                     ) {
                         Text(
-                            text = if (state.diaryId == null) stringResource(R.string.save) else stringResource(R.string.edit),
+                        text = stringResource(R.string.save),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )

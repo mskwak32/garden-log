@@ -70,8 +70,6 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
 
     entry<DiaryEditScreen> {
         DiaryEditScreen(
-            plantId = it.plantId,
-            diaryId = it.diaryId,
             navigate = { nav ->
                 when (nav) {
                     is DiaryEditEffect.Navigation.Back,
