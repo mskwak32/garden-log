@@ -129,34 +129,11 @@ fun DiaryEditScreen(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = state.plantName,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { viewModel.setEvent(DiaryEditEvent.OnBackClicked) }) {
-                        Icon(
-                            imageVector = IconPack.ArrowBackBlack,
-                            contentDescription = stringResource(R.string.back)
-                        )
-                    }
-                },
-                actions = {
-                    TextButton(
-                        enabled = state.isSaveEnabled,
-                        onClick = { viewModel.setEvent(DiaryEditEvent.OnSaveClicked) }
-                    ) {
-                        Text(
-                        text = stringResource(R.string.save),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                }
+            DiaryEditTopBar(
+                plantName = state.plantName,
+                isSaveEnabled = state.isSaveEnabled,
+                onBackClick = { viewModel.setEvent(DiaryEditEvent.OnBackClicked) },
+                onSaveClick = { viewModel.setEvent(DiaryEditEvent.OnSaveClicked) }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -303,6 +280,45 @@ fun DiaryEditScreen(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DiaryEditTopBar(
+    plantName: String,
+    isSaveEnabled: Boolean,
+    onBackClick: () -> Unit,
+    onSaveClick: () -> Unit
+) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = plantName,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = IconPack.ArrowBackBlack,
+                    contentDescription = stringResource(R.string.back)
+                )
+            }
+        },
+        actions = {
+            TextButton(
+                enabled = isSaveEnabled,
+                onClick = onSaveClick
+            ) {
+                Text(
+                    text = stringResource(R.string.save),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+    )
 }
 
 @Composable
