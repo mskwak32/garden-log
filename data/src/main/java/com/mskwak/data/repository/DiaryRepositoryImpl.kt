@@ -6,12 +6,12 @@ import com.mskwak.data.mapper.toPictureEntity
 import com.mskwak.database.dao.DiaryDao
 import com.mskwak.database.dao.PictureDao
 import com.mskwak.database.entity.DiaryPictureCrossRef
-import com.mskwak.domain.Constant
+import com.mskwak.domain.Constants
 import com.mskwak.domain.model.Diary
 import com.mskwak.domain.model.Picture
 import com.mskwak.domain.repository.DiaryRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -61,7 +61,7 @@ internal class DiaryRepositoryImpl @Inject constructor(
     }
 
     override fun getDiariesByPlantId(plantId: Int, limit: Int?): Flow<List<Diary>> {
-        return diaryDao.getDiariesByPlantId(plantId, limit ?: Constant.PAGE_SIZE)
+        return diaryDao.getDiariesByPlantId(plantId, limit ?: Constants.PAGE_SIZE)
             .flatMapLatest { diaries ->
                 if (diaries.isEmpty()) return@flatMapLatest flowOf(emptyList())
                 combine(diaries.map { diary ->

@@ -39,7 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mskwak.design.theme.GardenLogTheme
-import com.mskwak.domain.Constant
+import com.mskwak.domain.Constants
 import com.mskwak.plant.R
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -69,7 +69,7 @@ fun WateringPeriodDialog(
             ) {
                 NumberPickerWheel(
                     value = selectedPeriod,
-                    range = 0..Constant.MAX_WATERING_PERIOD,
+                    range = 0..Constants.MAX_WATERING_PERIOD,
                     onValueChange = { selectedPeriod = it },
                     displayFormatter = { value ->
                         if (value == 0) noneText else value.toString()

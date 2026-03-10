@@ -7,7 +7,7 @@ import android.graphics.Matrix
 import android.net.Uri
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
-import com.mskwak.plant.Constant
+import com.mskwak.plant.Constants
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -57,7 +57,7 @@ private fun getExifRotation(context: Context, uri: Uri): Int {
 }
 
 fun createCameraUri(context: Context): Uri {
-    val cameraDir = context.cacheDir.resolve(Constant.CACHE_DIR_CAMERA).also { it.mkdirs() }
+    val cameraDir = context.cacheDir.resolve(Constants.CACHE_DIR_CAMERA).also { it.mkdirs() }
     val photoFile = File(cameraDir, "photo_${System.currentTimeMillis()}.jpg")
     return FileProvider.getUriForFile(
         context,
@@ -67,5 +67,5 @@ fun createCameraUri(context: Context): Uri {
 }
 
 fun cleanupCameraCache(context: Context) {
-    context.cacheDir.resolve(Constant.CACHE_DIR_CAMERA).listFiles()?.forEach { it.delete() }
+    context.cacheDir.resolve(Constants.CACHE_DIR_CAMERA).listFiles()?.forEach { it.delete() }
 }
