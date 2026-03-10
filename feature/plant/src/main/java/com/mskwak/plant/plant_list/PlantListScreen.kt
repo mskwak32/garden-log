@@ -38,8 +38,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation3.runtime.NavKey
-import kotlinx.serialization.Serializable
 import com.mskwak.design.IconPack
 import com.mskwak.design.icon.AddWhite
 import com.mskwak.design.theme.GardenLogTheme
@@ -48,9 +46,6 @@ import com.mskwak.plant.R
 import com.mskwak.plant.model.PlantListItemUiModel
 import com.mskwak.plant.model.WateringStatus
 import java.time.LocalDate
-
-@Serializable
-data object PlantListScreen : NavKey
 
 @Composable
 fun PlantListScreen(

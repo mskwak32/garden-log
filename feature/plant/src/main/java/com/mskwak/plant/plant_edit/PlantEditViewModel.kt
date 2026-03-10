@@ -2,7 +2,6 @@ package com.mskwak.plant.plant_edit
 
 import android.app.Application
 import android.net.Uri
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
@@ -19,18 +18,20 @@ import com.mskwak.plant.util.canScheduleExactAlarms
 import com.mskwak.plant.util.cleanupCameraCache
 import com.mskwak.plant.util.createCameraUri
 import com.mskwak.plant.util.readBytesFromUri
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@HiltViewModel
-class PlantEditViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = PlantEditViewModel.Factory::class)
+class PlantEditViewModel @AssistedInject constructor(
+    @Assisted navKey: PlantEditNavKey,
     private val application: Application,
-    private val savedStateHandle: SavedStateHandle,
     private val getPlantUseCase: GetPlantUseCase,
     private val addPlantUseCase: AddPlantUseCase,
     private val updatePlantUseCase: UpdatePlantUseCase,
@@ -38,7 +39,7 @@ class PlantEditViewModel @Inject constructor(
     private val deletePictureUseCase: DeletePictureUseCase
 ) : BaseViewModel<PlantEditState, PlantEditEvent, PlantEditEffect>() {
 
-    private var plantId: Int? = savedStateHandle.get<Int>("plantId")
+    private var plantId: Int? = navKey.plantId
     private var originalPicture: Picture? = null
     private var newPicture: Picture? = null
     private var loadJob: Job? = null
@@ -50,15 +51,6 @@ class PlantEditViewModel @Inject constructor(
     override fun setInitialState(): PlantEditState = PlantEditState(
         isEditMode = plantId != null
     )
-
-    fun initPlantId(id: Int?) {
-        if (plantId == id) return
-        plantId = id
-        savedStateHandle["plantId"] = id
-        setState { PlantEditState(isEditMode = id != null) }
-        loadJob?.cancel()
-        id?.let { loadJob = loadPlant(it) }
-    }
 
     override fun handleEvents(viewEvent: ViewEvent) {
         val event = viewEvent as? PlantEditEvent ?: return
@@ -162,6 +154,11 @@ class PlantEditViewModel @Inject constructor(
     }
 
     fun createCameraUri(): Uri = createCameraUri(application)
+
+    @AssistedFactory
+    interface Factory {
+        fun create(navKey: PlantEditNavKey): PlantEditViewModel
+    }
 
     private fun loadPlant(plantId: Int): Job {
         return viewModelScope.launch {

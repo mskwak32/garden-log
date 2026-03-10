@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,7 +52,6 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import androidx.navigation3.runtime.NavKey
 import com.mskwak.design.IconPack
 import com.mskwak.design.icon.ArrowBackBlack
 import com.mskwak.design.icon.MoreHorizBlack
@@ -67,23 +65,18 @@ import com.mskwak.design.ui_component.Switch
 import com.mskwak.design.util.clickableWithoutRipple
 import com.mskwak.design.util.toDateString
 import com.mskwak.design.util.toTimeString
-import com.mskwak.domain.Constant
+import com.mskwak.domain.Constants
 import com.mskwak.plant.R
 import com.mskwak.plant.dialog.ExactAlarmPermissionDialog
 import com.mskwak.plant.model.DiaryListItemUiModel
 import com.mskwak.plant.model.WateringStatus
-import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
 
-@Serializable
-data class PlantDetailScreen(val plantId: Int) : NavKey
-
 @Composable
 fun PlantDetailScreen(
-    plantId: Int,
-    viewModel: PlantDetailViewModel = hiltViewModel(key = plantId.toString()),
+    viewModel: PlantDetailViewModel = hiltViewModel(),
     navigate: (PlantDetailEffect.Navigation) -> Unit
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
@@ -104,10 +97,6 @@ fun PlantDetailScreen(
             },
             onDismiss = { showDeleteDialog = false }
         )
-    }
-
-    LaunchedEffect(plantId) {
-        viewModel.initPlantId(plantId)
     }
 
     Content(
@@ -371,7 +360,7 @@ private fun WateringInfo(
                         val today = LocalDate.now()
                         when (val daysBetween = ChronoUnit.DAYS.between(lastWateringDate, today)) {
                             0L -> stringResource(R.string.today)
-                            in 1..Constant.LAST_WATERING_TEXT_CRITERION -> {
+                            in 1..Constants.LAST_WATERING_TEXT_CRITERION -> {
                                 stringResource(R.string.days_ago_format, daysBetween)
                             }
 

@@ -69,6 +69,7 @@
     <string name="diary_list_empty">해당하는 일기가 없어요</string>
     <string name="diary_content_hint">내용을 입력해주세요.</string>
     <string name="diary_content_empty">기록된 내용이 없습니다.</string>
+    <string name="message_discard_confirm">작성 중인 내용이 삭제됩니다.</string>
 
     <string name="setting_version">버전정보</string>
     <string name="setting_version_update">업데이트</string>

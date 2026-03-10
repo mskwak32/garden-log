@@ -12,11 +12,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.mskwak.design.ui_component.LocalNavBottomBarPadding
-import androidx.navigation3.runtime.NavKey
-import kotlinx.serialization.Serializable
-
-@Serializable
-data object SettingScreen : NavKey
 
 @Composable
 fun SettingScreen(

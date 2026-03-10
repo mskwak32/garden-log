@@ -49,8 +49,6 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import androidx.navigation3.runtime.NavKey
-import kotlinx.serialization.Serializable
 import com.mskwak.design.IconPack
 import com.mskwak.design.icon.ArrowBackIosBlack
 import com.mskwak.design.icon.ArrowForwardIosBlack
@@ -60,9 +58,6 @@ import com.mskwak.plant.R
 import com.mskwak.plant.model.DiaryListItemUiModel
 import java.time.LocalDate
 import java.time.YearMonth
-
-@Serializable
-data object DiaryListScreen : NavKey
 
 @Composable
 fun DiaryListScreen(

@@ -39,8 +39,38 @@ core/common_ui/   # BaseViewModel, ViewState/Event/Effect 인터페이스
 **BaseViewModel:** `core/common_ui`의 `BaseViewModel<UiState, Event, Effect>` 상속.
 - `viewState: StateFlow<UiState>`, `setEvent(event)`, `effect: Flow<Effect>`
 
-**DI:** Hilt, `@HiltViewModel` + `@Inject constructor`.
+**DI:** Hilt, `@HiltViewModel(assistedFactory = VM.Factory::class)` + `@AssistedInject constructor`.
 - `data/di/RepositoryModule.kt`, `core/database/di/DatabaseModule.kt`
+
+## Navigation 3 패턴
+
+**NavKey:** 각 화면의 route는 `...NavKey` 이름으로, 별도 파일(`...NavKey.kt`)에 분리.
+- 파라미터 없음: `data object FooNavKey : NavKey`
+- 파라미터 있음: `data class FooNavKey(val id: Int) : NavKey`
+
+**ViewModel:** NavKey 데이터가 필요한 ViewModel은 `@AssistedInject` + `@Assisted navKey: FooNavKey` 사용.
+- `SavedStateHandle["key"]` 또는 `savedStateHandle.toRoute<T>()` 사용 금지 (Navigation 3 비호환)
+- 클래스 끝에 `@AssistedFactory interface Factory { fun create(navKey: FooNavKey): FooViewModel }` 추가
+
+**Screen 컴포저블:** NavKey/파라미터를 직접 받지 않음. ViewModel만 파라미터로 받고 기본값 유지.
+```kotlin
+fun FooScreen(
+    viewModel: FooViewModel = hiltViewModel(),
+    navigate: (FooEffect.Navigation) -> Unit
+)
+```
+
+**NavGraph:** `entry<FooNavKey>` 블록에서 ViewModel을 생성해 Screen에 전달.
+```kotlin
+entry<FooNavKey> {
+    val viewModel = hiltViewModel<FooViewModel, FooViewModel.Factory>(
+        creationCallback = { factory -> factory.create(it) }
+    )
+    FooScreen(viewModel = viewModel, navigate = { ... })
+}
+```
+
+**hiltViewModel import:** `androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel`
 
 ## Tech Stack
 
@@ -65,3 +95,7 @@ core/common_ui/   # BaseViewModel, ViewState/Event/Effect 인터페이스
 
 `garden.db` (Room v4) — Entity: `PlantEntity`, `DiaryEntity`
 Migration: `core/database/migration/`, 스키마 export 활성화
+
+## string
+ui string이 필요할 경우 strings.xml 먼저 탐색하여 적절한 string을 찾을 것.
+없을 경우 hard coding하지 말고 strings.xml에 추가할 것

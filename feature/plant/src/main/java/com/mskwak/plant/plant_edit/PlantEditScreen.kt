@@ -63,7 +63,6 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import androidx.navigation3.runtime.NavKey
 import com.mskwak.design.IconPack
 import com.mskwak.design.icon.AddPhotoBlack
 import com.mskwak.design.icon.ArrowBackBlack
@@ -79,21 +78,16 @@ import com.mskwak.plant.dialog.ExactAlarmPermissionDialog
 import com.mskwak.plant.dialog.PhotoAction
 import com.mskwak.plant.dialog.SelectPhotoDialog
 import com.mskwak.plant.dialog.WateringPeriodDialog
-import kotlinx.serialization.Serializable
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 
-@Serializable
-data class PlantEditScreen(val plantId: Int? = null) : NavKey
-
 @SuppressLint("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlantEditScreen(
-    plantId: Int? = null,
-    viewModel: PlantEditViewModel = hiltViewModel(key = plantId?.toString() ?: "new"),
+    viewModel: PlantEditViewModel = hiltViewModel(),
     navigate: (PlantEditEffect.Navigation) -> Unit
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
@@ -135,10 +129,6 @@ fun PlantEditScreen(
                 Toast.LENGTH_SHORT
             ).show()
         }
-    }
-
-    LaunchedEffect(plantId) {
-        viewModel.initPlantId(plantId)
     }
 
     Content(

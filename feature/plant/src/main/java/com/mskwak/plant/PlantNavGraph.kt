@@ -1,69 +1,96 @@
 package com.mskwak.plant
 
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.mskwak.plant.diary_edit.DiaryEditEffect
+import com.mskwak.plant.diary_edit.DiaryEditNavKey
+import com.mskwak.plant.diary_edit.DiaryEditScreen
+import com.mskwak.plant.diary_edit.DiaryEditViewModel
+import com.mskwak.plant.diary_list.DiaryListNavKey
 import com.mskwak.plant.diary_list.DiaryListScreen
 import com.mskwak.plant.plant_detail.PlantDetailEffect
+import com.mskwak.plant.plant_detail.PlantDetailNavKey
 import com.mskwak.plant.plant_detail.PlantDetailScreen
+import com.mskwak.plant.plant_detail.PlantDetailViewModel
+import com.mskwak.plant.plant_edit.PlantEditNavKey
 import com.mskwak.plant.plant_edit.PlantEditScreen
+import com.mskwak.plant.plant_edit.PlantEditViewModel
 import com.mskwak.plant.plant_list.PlantListEffect
+import com.mskwak.plant.plant_list.PlantListNavKey
 import com.mskwak.plant.plant_list.PlantListScreen
+import com.mskwak.plant.setting.SettingNavKey
 import com.mskwak.plant.setting.SettingScreen
 
 fun EntryProviderScope<NavKey>.plantNavGraph(
     backStack: NavBackStack<NavKey>
 ) {
-    entry<PlantListScreen> {
+    entry<PlantListNavKey> {
         PlantListScreen(
             navigate = { nav ->
                 when (nav) {
                     is PlantListEffect.Navigation.ToAddPlant -> {
-                        backStack.add(PlantEditScreen())
+                        backStack.add(PlantEditNavKey())
                     }
-
                     is PlantListEffect.Navigation.ToPlantDetail -> {
-                        backStack.add(PlantDetailScreen(nav.plantId))
+                        backStack.add(PlantDetailNavKey(nav.plantId))
                     }
                 }
             }
         )
     }
 
-    entry<PlantDetailScreen> {
+    entry<PlantDetailNavKey> {
+        val viewModel = hiltViewModel<PlantDetailViewModel, PlantDetailViewModel.Factory>(
+            creationCallback = { factory -> factory.create(it) }
+        )
         PlantDetailScreen(
-            plantId = it.plantId,
+            viewModel = viewModel,
             navigate = { nav ->
                 when (nav) {
                     is PlantDetailEffect.Navigation.Back -> {
                         backStack.removeLastOrNull()
                     }
-
                     is PlantDetailEffect.Navigation.ToEditPlant -> {
-                        backStack.add(PlantEditScreen(it.plantId))
+                        backStack.add(PlantEditNavKey(it.plantId))
                     }
-
-                    else -> { /* TODO */
+                    is PlantDetailEffect.Navigation.ToNewDiary -> {
+                        backStack.add(DiaryEditNavKey(it.plantId))
                     }
+                    else -> { /* TODO */ }
                 }
             }
         )
     }
 
-    entry<PlantEditScreen> {
+    entry<PlantEditNavKey> {
+        val viewModel = hiltViewModel<PlantEditViewModel, PlantEditViewModel.Factory>(
+            creationCallback = { factory -> factory.create(it) }
+        )
         PlantEditScreen(
-            plantId = it.plantId,
+            viewModel = viewModel,
             navigate = { backStack.removeLastOrNull() }
         )
     }
 
-    entry<DiaryListScreen> {
+    entry<DiaryEditNavKey> {
+        val viewModel = hiltViewModel<DiaryEditViewModel, DiaryEditViewModel.Factory>(
+            creationCallback = { factory -> factory.create(it) }
+        )
+        DiaryEditScreen(
+            viewModel = viewModel,
+            navigate = { backStack.removeLastOrNull() }
+        )
+    }
+
+    entry<DiaryListNavKey> {
         DiaryListScreen(
             navigate = { /* TODO */ }
         )
     }
 
-    entry<SettingScreen> {
+    entry<SettingNavKey> {
         SettingScreen()
     }
 }

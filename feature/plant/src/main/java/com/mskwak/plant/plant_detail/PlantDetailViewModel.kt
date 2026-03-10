@@ -1,7 +1,6 @@
 package com.mskwak.plant.plant_detail
 
 import android.app.Application
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
@@ -15,6 +14,9 @@ import com.mskwak.domain.useCase.watering.WateringNowUseCase
 import com.mskwak.plant.model.toDiaryListItemUiModel
 import com.mskwak.plant.model.toPlantListItemUiModel
 import com.mskwak.plant.util.canScheduleExactAlarms
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
@@ -22,12 +24,11 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class PlantDetailViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = PlantDetailViewModel.Factory::class)
+class PlantDetailViewModel @AssistedInject constructor(
+    @Assisted navKey: PlantDetailNavKey,
     private val application: Application,
-    private val savedStateHandle: SavedStateHandle,
     private val getPlantUseCase: GetPlantUseCase,
     private val getWateringDaysUseCase: GetWateringDaysUseCase,
     private val getDiariesByPlantIdUseCase: GetDiariesByPlantIdUseCase,
@@ -37,25 +38,14 @@ class PlantDetailViewModel @Inject constructor(
     private val plantRepository: PlantRepository
 ) : BaseViewModel<PlantDetailState, PlantDetailEvent, PlantDetailEffect>() {
 
-    private var plantId: Int = savedStateHandle["plantId"] ?: -1
+    private val plantId: Int = navKey.plantId
     private var observeJob: Job? = null
 
     init {
-        if (plantId != -1) {
-            observeJob = observePlant()
-        }
+        observeJob = observePlant()
     }
 
     override fun setInitialState(): PlantDetailState = PlantDetailState()
-
-    fun initPlantId(id: Int) {
-        if (plantId == id) return
-        plantId = id
-        savedStateHandle["plantId"] = id
-        setState { PlantDetailState() }
-        observeJob?.cancel()
-        observeJob = observePlant()
-    }
 
     private fun observePlant(): Job {
         return combine(
@@ -149,5 +139,10 @@ class PlantDetailViewModel @Inject constructor(
             deletePlantUseCase(plant)
             setEffect(PlantDetailEffect.Navigation.Back)
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(navKey: PlantDetailNavKey): PlantDetailViewModel
     }
 }
