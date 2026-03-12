@@ -9,11 +9,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,12 +29,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.union
-import com.mskwak.design.ui_component.LocalNavBottomBarPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,6 +52,7 @@ import com.mskwak.design.IconPack
 import com.mskwak.design.icon.ArrowBackIosBlack
 import com.mskwak.design.icon.ArrowForwardIosBlack
 import com.mskwak.design.theme.GardenLogTheme
+import com.mskwak.design.ui_component.LocalNavBottomBarPadding
 import com.mskwak.domain.model.DiaryListSortOrder
 import com.mskwak.plant.R
 import com.mskwak.plant.model.DiaryListItemUiModel
@@ -131,14 +131,13 @@ private fun Content(
                 onEvent = onEvent
             )
 
-            Spacer(Modifier.height(4.dp))
-            HorizontalDivider()
             Spacer(Modifier.height(8.dp))
+            HorizontalDivider()
             if (state.diaries.isEmpty()) {
                 ListEmptyView(modifier = Modifier.weight(1f))
             } else {
                 LazyColumn(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(

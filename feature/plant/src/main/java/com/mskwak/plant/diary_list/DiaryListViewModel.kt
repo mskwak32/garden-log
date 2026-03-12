@@ -3,7 +3,9 @@ package com.mskwak.plant.diary_list
 import androidx.lifecycle.viewModelScope
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
+import com.mskwak.domain.model.PlantListSortOrder
 import com.mskwak.domain.useCase.diary.GetDiariesUseCase
+import com.mskwak.domain.useCase.plant.GetPlantsWithSortOrderUseCase
 import com.mskwak.plant.model.toDiaryListItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,12 +19,29 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DiaryListViewModel @Inject constructor(
-    private val getDiariesUseCase: GetDiariesUseCase
+    private val getDiariesUseCase: GetDiariesUseCase,
+    private val getPlantsWithSortOrderUseCase: GetPlantsWithSortOrderUseCase
 ) : BaseViewModel<DiaryListState, DiaryListEvent, DiaryListEffect>() {
     override fun setInitialState(): DiaryListState = DiaryListState()
 
     init {
+        observePlants()
         observeDiaries()
+    }
+
+    private fun observePlants() {
+        getPlantsWithSortOrderUseCase(PlantListSortOrder.CREATED_LATEST)
+            .onEach { plants ->
+                setState {
+                    copy(plantFilterList = plants.map {
+                        DiaryListPlantFilterUiModel(
+                            it.id,
+                            it.name
+                        )
+                    })
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

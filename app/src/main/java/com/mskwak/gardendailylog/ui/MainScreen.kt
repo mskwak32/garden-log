@@ -39,7 +39,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.mskwak.design.ui_component.LocalNavBottomBarPadding
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
@@ -47,10 +46,11 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.mskwak.design.ui_component.LocalNavBottomBarPadding
 import com.mskwak.gardendailylog.R
 import com.mskwak.gardendailylog.ui.bottom_nav.BottomNavItem
 import com.mskwak.plant.plantNavGraph
-import com.mskwak.plant.plant_list.PlantListScreen
+import com.mskwak.plant.plant_list.PlantListNavKey
 import kotlinx.coroutines.launch
 
 @Composable
@@ -224,13 +224,13 @@ private fun NotificationPermission(
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 private fun BackPressFinish(
-    currentScreen: NavKey?
+    currentNavKey: NavKey?
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
     var backPressedTime by remember { mutableLongStateOf(0L) }
 
-    BackHandler(enabled = currentScreen == PlantListScreen) {
+    BackHandler(enabled = currentNavKey == PlantListNavKey) {
         if (System.currentTimeMillis() > backPressedTime + 2000) {
             backPressedTime = System.currentTimeMillis()
             Toast.makeText(

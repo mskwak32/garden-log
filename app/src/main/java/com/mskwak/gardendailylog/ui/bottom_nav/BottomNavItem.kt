@@ -7,9 +7,9 @@ import com.mskwak.design.icon.BookMarkBlack
 import com.mskwak.design.icon.HomeBlack
 import com.mskwak.design.icon.SettingsBlack
 import com.mskwak.gardendailylog.R
-import com.mskwak.plant.diary_list.DiaryListScreen
-import com.mskwak.plant.plant_list.PlantListScreen
-import com.mskwak.plant.setting.SettingScreen
+import com.mskwak.plant.diary_list.DiaryListNavKey
+import com.mskwak.plant.plant_list.PlantListNavKey
+import com.mskwak.plant.setting.SettingNavKey
 
 /**
  * 하단 탭 메뉴 정의
@@ -22,19 +22,19 @@ sealed interface BottomNavItem {
     data object DiaryList : BottomNavItem {
         override val titleRes: Int = R.string.bottom_nav_diary
         override val icon: ImageVector = IconPack.BookMarkBlack
-        override val screen: NavKey = DiaryListScreen
+        override val screen: NavKey = DiaryListNavKey
     }
 
     data object PlantList : BottomNavItem {
         override val titleRes: Int = R.string.bottom_nav_home
         override val icon: ImageVector = IconPack.HomeBlack
-        override val screen: NavKey = PlantListScreen
+        override val screen: NavKey = PlantListNavKey
     }
 
     data object Setting : BottomNavItem {
         override val titleRes: Int = R.string.bottom_nav_setting
         override val icon: ImageVector = IconPack.SettingsBlack
-        override val screen: NavKey = SettingScreen
+        override val screen: NavKey = SettingNavKey
     }
 
     companion object {
