@@ -254,7 +254,6 @@ private fun PreviewDiaryDetail() {
     GardenLogTheme {
         Content(
             state = DiaryDetailState(
-                isLoading = false,
                 plantName = "바질",
                 diaryDate = LocalDate.of(2025, 6, 10),
                 memo = "오늘은 바질이 많이 자랐다. 물을 줬더니 잎이 싱싱해 보인다."
