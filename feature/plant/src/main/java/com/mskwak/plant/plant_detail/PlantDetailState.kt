@@ -44,7 +44,7 @@ sealed interface PlantDetailEffect : ViewEffect {
         data object Back : Navigation
         data object ToEditPlant : Navigation
         data object ToNewDiary : Navigation
-        data object ToDiaryDetail : Navigation
+        data class ToDiaryDetail(val diaryId: Int) : Navigation
         data object ToMoreDiaries : Navigation
     }
 

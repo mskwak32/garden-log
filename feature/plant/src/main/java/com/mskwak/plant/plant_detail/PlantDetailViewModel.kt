@@ -103,7 +103,7 @@ class PlantDetailViewModel @AssistedInject constructor(
             }
 
             is PlantDetailEvent.OnDiaryClicked -> {
-                setEffect(PlantDetailEffect.Navigation.ToDiaryDetail)
+                setEffect(PlantDetailEffect.Navigation.ToDiaryDetail(event.diaryId))
             }
 
             is PlantDetailEvent.OnNewDiaryClicked -> {

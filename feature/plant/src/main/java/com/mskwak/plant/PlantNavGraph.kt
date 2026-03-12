@@ -4,10 +4,15 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.mskwak.plant.diary_detail.DiaryDetailEffect
+import com.mskwak.plant.diary_detail.DiaryDetailNavKey
+import com.mskwak.plant.diary_detail.DiaryDetailScreen
+import com.mskwak.plant.diary_detail.DiaryDetailViewModel
 import com.mskwak.plant.diary_edit.DiaryEditEffect
 import com.mskwak.plant.diary_edit.DiaryEditNavKey
 import com.mskwak.plant.diary_edit.DiaryEditScreen
 import com.mskwak.plant.diary_edit.DiaryEditViewModel
+import com.mskwak.plant.diary_list.DiaryListEffect
 import com.mskwak.plant.diary_list.DiaryListNavKey
 import com.mskwak.plant.diary_list.DiaryListScreen
 import com.mskwak.plant.plant_detail.PlantDetailEffect
@@ -58,6 +63,9 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
                     is PlantDetailEffect.Navigation.ToNewDiary -> {
                         backStack.add(DiaryEditNavKey(it.plantId))
                     }
+                    is PlantDetailEffect.Navigation.ToDiaryDetail -> {
+                        backStack.add(DiaryDetailNavKey(nav.diaryId))
+                    }
                     else -> { /* TODO */ }
                 }
             }
@@ -86,7 +94,32 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
 
     entry<DiaryListNavKey> {
         DiaryListScreen(
-            navigate = { /* TODO */ }
+            navigate = { nav ->
+                when (nav) {
+                    is DiaryListEffect.Navigation.GoToDiaryDetail -> {
+                        backStack.add(DiaryDetailNavKey(nav.diaryId))
+                    }
+                }
+            }
+        )
+    }
+
+    entry<DiaryDetailNavKey> {
+        val viewModel = hiltViewModel<DiaryDetailViewModel, DiaryDetailViewModel.Factory>(
+            creationCallback = { factory -> factory.create(it) }
+        )
+        DiaryDetailScreen(
+            viewModel = viewModel,
+            navigate = { nav ->
+                when (nav) {
+                    is DiaryDetailEffect.Navigation.Back -> {
+                        backStack.removeLastOrNull()
+                    }
+                    is DiaryDetailEffect.Navigation.GoToEdit -> {
+                        backStack.add(DiaryEditNavKey(nav.plantId, nav.diaryId))
+                    }
+                }
+            }
         )
     }
 
