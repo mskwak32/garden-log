@@ -31,6 +31,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -127,6 +130,7 @@ private fun Content(
     onEvent: (PlantDetailEvent) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
+    var wateringAnimationKey by remember { mutableIntStateOf(0) }
 
     Scaffold(
         topBar = {
@@ -198,13 +202,19 @@ private fun Content(
                 lastWateringDate = state.lastWateringDate,
                 wateringAlarm = state.wateringAlarmTime,
                 isWateringActive = state.isWateringActive,
+                wateringAnimationKey = wateringAnimationKey,
                 onEvent = onEvent
             )
 
             Spacer(Modifier.height(16.dp))
             WateringBox(
                 memo = state.memo,
-                onEvent = onEvent
+                onEvent = { event ->
+                    if (event is PlantDetailEvent.OnWateringClicked) {
+                        wateringAnimationKey++
+                    }
+                    onEvent(event)
+                }
             )
 
             Spacer(Modifier.height(16.dp))
@@ -298,6 +308,7 @@ private fun WateringInfo(
     lastWateringDate: LocalDate?,
     wateringAlarm: LocalTime?,
     isWateringActive: Boolean,
+    wateringAnimationKey: Int,
     onEvent: (PlantDetailEvent) -> Unit
 ) {
     Column(
@@ -312,18 +323,44 @@ private fun WateringInfo(
             .padding(horizontal = 16.dp)
             .padding(top = 20.dp, bottom = 16.dp)
     ) {
+        val lottieComposition by rememberLottieComposition(
+            LottieCompositionSpec.RawRes(R.raw.lottie_water_loader)
+        )
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                imageVector = when (wateringStatus) {
-                    WateringStatus.TODAY,
-                    WateringStatus.UPCOMING -> IconPack.WaterDropBlue
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(35.dp)
+            ) {
+                if (wateringAnimationKey > 0) {
+                    key(wateringAnimationKey) {
+                        LottieAnimation(
+                            composition = lottieComposition,
+                            iterations = 1,
+                            modifier = Modifier
+                                .size(35.dp)
+                                .scale(1.8f)
+                        )
+                        Image(
+                            imageVector = IconPack.WaterDropWhite,
+                            contentDescription = null,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
+                } else {
+                    Image(
+                        imageVector = when (wateringStatus) {
+                            WateringStatus.TODAY,
+                            WateringStatus.UPCOMING -> IconPack.WaterDropBlue
 
-                    WateringStatus.TODAY_DONE -> IconPack.WaterDropWithBackground
-                    WateringStatus.OVERDUE -> IconPack.WaterDropRed
-                },
-                contentDescription = null,
-                modifier = Modifier.size(30.dp)
-            )
+                            WateringStatus.TODAY_DONE -> IconPack.WaterDropWithBackground
+                            WateringStatus.OVERDUE -> IconPack.WaterDropRed
+                        },
+                        contentDescription = null,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            }
+
 
             Spacer(Modifier.width(16.dp))
             Column {
