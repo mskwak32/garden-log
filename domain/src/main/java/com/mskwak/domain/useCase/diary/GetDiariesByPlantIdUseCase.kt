@@ -8,7 +8,17 @@ import kotlinx.coroutines.flow.Flow
 class GetDiariesByPlantIdUseCase(
     private val diaryRepository: DiaryRepository
 ) {
-    operator fun invoke(plantId: Int): Flow<List<Diary>> {
-        return diaryRepository.getDiariesByPlantId(plantId, Constants.MAX_DIARY_SIZE_ON_PLANT_DETAIL)
+    operator fun invoke(
+        plantId: Int,
+        limit: Int = Constants.MAX_DIARY_SIZE_ON_PLANT_DETAIL,
+        page: Int = 0,
+        ascending: Boolean = false
+    ): Flow<List<Diary>> {
+        return diaryRepository.getDiariesByPlantId(
+            plantId = plantId,
+            limit = limit,
+            offset = page * limit,
+            ascending = ascending
+        )
     }
 }

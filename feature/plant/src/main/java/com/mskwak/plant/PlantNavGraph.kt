@@ -8,13 +8,16 @@ import com.mskwak.plant.diary_detail.DiaryDetailEffect
 import com.mskwak.plant.diary_detail.DiaryDetailNavKey
 import com.mskwak.plant.diary_detail.DiaryDetailScreen
 import com.mskwak.plant.diary_detail.DiaryDetailViewModel
-import com.mskwak.plant.diary_edit.DiaryEditEffect
 import com.mskwak.plant.diary_edit.DiaryEditNavKey
 import com.mskwak.plant.diary_edit.DiaryEditScreen
 import com.mskwak.plant.diary_edit.DiaryEditViewModel
 import com.mskwak.plant.diary_list.DiaryListEffect
 import com.mskwak.plant.diary_list.DiaryListNavKey
 import com.mskwak.plant.diary_list.DiaryListScreen
+import com.mskwak.plant.diary_more.DiaryMoreEffect
+import com.mskwak.plant.diary_more.DiaryMoreNavKey
+import com.mskwak.plant.diary_more.DiaryMoreScreen
+import com.mskwak.plant.diary_more.DiaryMoreViewModel
 import com.mskwak.plant.plant_detail.PlantDetailEffect
 import com.mskwak.plant.plant_detail.PlantDetailNavKey
 import com.mskwak.plant.plant_detail.PlantDetailScreen
@@ -38,6 +41,7 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
                     is PlantListEffect.Navigation.ToAddPlant -> {
                         backStack.add(PlantEditNavKey())
                     }
+
                     is PlantListEffect.Navigation.ToPlantDetail -> {
                         backStack.add(PlantDetailNavKey(nav.plantId))
                     }
@@ -57,16 +61,22 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
                     is PlantDetailEffect.Navigation.Back -> {
                         backStack.removeLastOrNull()
                     }
+
                     is PlantDetailEffect.Navigation.ToEditPlant -> {
                         backStack.add(PlantEditNavKey(it.plantId))
                     }
+
                     is PlantDetailEffect.Navigation.ToNewDiary -> {
                         backStack.add(DiaryEditNavKey(it.plantId))
                     }
+
                     is PlantDetailEffect.Navigation.ToDiaryDetail -> {
                         backStack.add(DiaryDetailNavKey(nav.diaryId))
                     }
-                    else -> { /* TODO */ }
+
+                    is PlantDetailEffect.Navigation.ToMoreDiaries -> {
+                        backStack.add(DiaryMoreNavKey(it.plantId))
+                    }
                 }
             }
         )
@@ -104,6 +114,26 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
         )
     }
 
+    entry<DiaryMoreNavKey> {
+        val viewModel = hiltViewModel<DiaryMoreViewModel, DiaryMoreViewModel.Factory>(
+            creationCallback = { factory -> factory.create(it) }
+        )
+        DiaryMoreScreen(
+            viewModel = viewModel,
+            navigate = { nav ->
+                when (nav) {
+                    is DiaryMoreEffect.Navigation.Back -> {
+                        backStack.removeLastOrNull()
+                    }
+
+                    is DiaryMoreEffect.Navigation.ToDiaryDetail -> {
+                        backStack.add(DiaryDetailNavKey(nav.diaryId))
+                    }
+                }
+            }
+        )
+    }
+
     entry<DiaryDetailNavKey> {
         val viewModel = hiltViewModel<DiaryDetailViewModel, DiaryDetailViewModel.Factory>(
             creationCallback = { factory -> factory.create(it) }
@@ -115,6 +145,7 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
                     is DiaryDetailEffect.Navigation.Back -> {
                         backStack.removeLastOrNull()
                     }
+
                     is DiaryDetailEffect.Navigation.GoToEdit -> {
                         backStack.add(DiaryEditNavKey(nav.plantId, nav.diaryId))
                     }

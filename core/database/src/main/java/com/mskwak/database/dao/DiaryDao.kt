@@ -23,8 +23,11 @@ interface DiaryDao {
     @Query("DELETE FROM diary WHERE plantId = :plantId")
     suspend fun deleteDiariesByPlantId(plantId: Int)
 
-    @Query("SELECT * FROM diary WHERE plantId = :plantId ORDER BY createdDate DESC LIMIT :limit")
-    fun getDiariesByPlantId(plantId: Int, limit: Int): Flow<List<DiaryEntity>>
+    @Query("SELECT * FROM diary WHERE plantId = :plantId ORDER BY createdDate DESC LIMIT :limit OFFSET :offset")
+    fun getDiariesByPlantIdDesc(plantId: Int, limit: Int, offset: Int): Flow<List<DiaryEntity>>
+
+    @Query("SELECT * FROM diary WHERE plantId = :plantId ORDER BY createdDate ASC LIMIT :limit OFFSET :offset")
+    fun getDiariesByPlantIdAsc(plantId: Int, limit: Int, offset: Int): Flow<List<DiaryEntity>>
 
     @Query("SELECT * FROM diary WHERE plantId = :plantId AND createdDate BETWEEN :startDate AND :endDate ORDER BY createdDate DESC")
     fun getDiariesByPlantId(

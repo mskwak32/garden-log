@@ -36,22 +36,29 @@ core/common_ui/   # BaseViewModel, ViewState/Event/Effect interfaces
 **Data Flow:** `Screen → ViewModel → UseCase → Repository(interface) → RepositoryImpl → DAO/API`
 
 **BaseViewModel:** Extend `BaseViewModel<UiState, Event, Effect>` from `core/common_ui`.
+
 - `viewState: StateFlow<UiState>`, `setEvent(event)`, `effect: Flow<Effect>`
 
 **DI:** Hilt, `@HiltViewModel(assistedFactory = VM.Factory::class)` + `@AssistedInject constructor`.
+
 - `data/di/RepositoryModule.kt`, `core/database/di/DatabaseModule.kt`
 
 ## Navigation 3 Pattern
 
 **NavKey:** Each screen route is named `...NavKey`, defined in a separate file (`...NavKey.kt`).
+
 - No params: `data object FooNavKey : NavKey`
 - With params: `data class FooNavKey(val id: Int) : NavKey`
 
 **ViewModel:** ViewModels needing NavKey data use `@AssistedInject` + `@Assisted navKey: FooNavKey`.
-- Do NOT use `SavedStateHandle["key"]` or `savedStateHandle.toRoute<T>()` (incompatible with Nav3)
-- Add `@AssistedFactory interface Factory { fun create(navKey: FooNavKey): FooViewModel }` at class end
 
-**Screen composable:** Does not receive NavKey/params directly. Only takes ViewModel with default value.
+- Do NOT use `SavedStateHandle["key"]` or `savedStateHandle.toRoute<T>()` (incompatible with Nav3)
+- Add `@AssistedFactory interface Factory { fun create(navKey: FooNavKey): FooViewModel }` at class
+  end
+
+**Screen composable:** Does not receive NavKey/params directly. Only takes ViewModel with default
+value.
+
 ```kotlin
 fun FooScreen(
     viewModel: FooViewModel = hiltViewModel(),
@@ -60,6 +67,7 @@ fun FooScreen(
 ```
 
 **NavGraph:** Create ViewModel in `entry<FooNavKey>` block and pass to Screen.
+
 ```kotlin
 entry<FooNavKey> {
     val viewModel = hiltViewModel<FooViewModel, FooViewModel.Factory>(
@@ -89,6 +97,7 @@ entry<FooNavKey> {
 - Domain↔Entity mapping: `data/mapper/`
 - Compose Preview: use `design` module Theme
 - Version catalog: `gradle/libs.versions.toml`
+- TopBar: Extract as `private fun TopBar(...)` Composable when possible, not inline in Scaffold
 
 ## Database
 

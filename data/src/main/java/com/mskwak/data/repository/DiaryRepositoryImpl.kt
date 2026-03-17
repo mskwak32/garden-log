@@ -6,7 +6,6 @@ import com.mskwak.data.mapper.toPictureEntity
 import com.mskwak.database.dao.DiaryDao
 import com.mskwak.database.dao.PictureDao
 import com.mskwak.database.entity.DiaryPictureCrossRef
-import com.mskwak.domain.Constants
 import com.mskwak.domain.model.Diary
 import com.mskwak.domain.model.Picture
 import com.mskwak.domain.repository.DiaryRepository
@@ -60,16 +59,25 @@ internal class DiaryRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getDiariesByPlantId(plantId: Int, limit: Int?): Flow<List<Diary>> {
-        return diaryDao.getDiariesByPlantId(plantId, limit ?: Constants.PAGE_SIZE)
-            .flatMapLatest { diaries ->
-                if (diaries.isEmpty()) return@flatMapLatest flowOf(emptyList())
-                combine(diaries.map { diary ->
-                    pictureDao.getDiaryPictures(diary.id).map { pictures ->
-                        diary.toDiary(pictures)
-                    }
-                }) { it.toList() }
-            }
+    override fun getDiariesByPlantId(
+        plantId: Int,
+        limit: Int,
+        offset: Int,
+        ascending: Boolean
+    ): Flow<List<Diary>> {
+        val diariesFlow = if (ascending) {
+            diaryDao.getDiariesByPlantIdAsc(plantId, limit, offset)
+        } else {
+            diaryDao.getDiariesByPlantIdDesc(plantId, limit, offset)
+        }
+        return diariesFlow.flatMapLatest { diaries ->
+            if (diaries.isEmpty()) return@flatMapLatest flowOf(emptyList())
+            combine(diaries.map { diary ->
+                pictureDao.getDiaryPictures(diary.id).map { pictures ->
+                    diary.toDiary(pictures)
+                }
+            }) { it.toList() }
+        }
     }
 
     override fun getDiaries(year: Int, month: Int, plantId: Int?): Flow<List<Diary>> {
