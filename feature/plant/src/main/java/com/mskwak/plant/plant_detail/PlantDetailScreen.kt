@@ -125,59 +125,62 @@ fun PlantDetailScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+private fun TopBar(onEvent: (PlantDetailEvent) -> Unit) {
+    var showMenu by remember { mutableStateOf(false) }
+    TopAppBar(
+        title = {},
+        navigationIcon = {
+            IconButton(
+                onClick = { onEvent(PlantDetailEvent.OnBackClicked) }
+            ) {
+                Icon(
+                    imageVector = IconPack.ArrowBackBlack,
+                    contentDescription = stringResource(R.string.back)
+                )
+            }
+        },
+        actions = {
+            Box {
+                IconButton(onClick = { showMenu = true }) {
+                    Icon(
+                        imageVector = IconPack.MoreHorizBlack,
+                        contentDescription = stringResource(R.string.menu),
+                        modifier = Modifier.rotate(90f)
+                    )
+                }
+                AppDropDownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.edit)) },
+                        onClick = {
+                            showMenu = false
+                            onEvent(PlantDetailEvent.OnEditPlantClicked)
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.delete)) },
+                        onClick = {
+                            showMenu = false
+                            onEvent(PlantDetailEvent.OnDeletePlantClicked)
+                        }
+                    )
+                }
+            }
+        }
+    )
+}
+
+@Composable
 private fun Content(
     state: PlantDetailState,
     onEvent: (PlantDetailEvent) -> Unit
 ) {
-    var showMenu by remember { mutableStateOf(false) }
     var wateringAnimationKey by remember { mutableIntStateOf(0) }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(
-                        onClick = { onEvent(PlantDetailEvent.OnBackClicked) }
-                    ) {
-                        Icon(
-                            imageVector = IconPack.ArrowBackBlack,
-                            contentDescription = stringResource(R.string.back)
-                        )
-                    }
-                },
-                actions = {
-                    Box {
-                        IconButton(onClick = { showMenu = true }) {
-                            Icon(
-                                imageVector = IconPack.MoreHorizBlack,
-                                contentDescription = stringResource(R.string.menu),
-                                modifier = Modifier.rotate(90f)
-                            )
-                        }
-                        AppDropDownMenu(
-                            expanded = showMenu,
-                            onDismissRequest = { showMenu = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.edit)) },
-                                onClick = {
-                                    showMenu = false
-                                    onEvent(PlantDetailEvent.OnEditPlantClicked)
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.delete)) },
-                                onClick = {
-                                    showMenu = false
-                                    onEvent(PlantDetailEvent.OnDeletePlantClicked)
-                                }
-                            )
-                        }
-                    }
-                }
-            )
-        },
+        topBar = { TopBar(onEvent = onEvent) },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Column(
