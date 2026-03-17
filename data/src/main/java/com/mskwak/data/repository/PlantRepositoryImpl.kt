@@ -31,8 +31,25 @@ internal class PlantRepositoryImpl @Inject constructor(
 
     override suspend fun updatePlant(plant: Plant) {
         val existing = plantDao.getPlant(plant.id)
-        existing?.pictureId?.let { pictureDao.deletePicture(it) }
-        val pictureId = plant.picture?.let { pictureDao.insertPicture(it.toPictureEntity()).toInt() }
+        val existingPicture = existing?.pictureId?.let { pictureDao.getPicture(it) }
+        val newPicture = plant.picture
+
+        val pictureId: Int?
+        when {
+            newPicture == null -> {
+                existing?.pictureId?.let { pictureDao.deletePicture(it) }
+                pictureId = null
+            }
+            existingPicture?.path == newPicture.path -> {
+                // 이미지가 동일하면 기존 pictureId 재사용 (삭제 후 재삽입 시 일시적 null 방지)
+                pictureId = existing.pictureId
+            }
+            else -> {
+                existing?.pictureId?.let { pictureDao.deletePicture(it) }
+                pictureId = pictureDao.insertPicture(newPicture.toPictureEntity()).toInt()
+            }
+        }
+
         plantDao.updatePlant(plant.toPlantEntity(pictureId))
         Timber.d("update plant id=${plant.id}")
     }
