@@ -21,12 +21,12 @@ fun Plant.toPlantListItemUiModel(
     val today = LocalDate.now()
     val wateringDays = getWateringDays(this)
     val (status, dDay) = when {
-        wateringDays.isOverDue -> {
-            WateringStatus.OVERDUE to wateringDays.days
-        }
-
         lastWateringDate == today -> {
             WateringStatus.TODAY_DONE to 0
+        }
+
+        wateringDays.isOverDue -> {
+            WateringStatus.OVERDUE to wateringDays.days
         }
 
         wateringDays.days == 0 -> {

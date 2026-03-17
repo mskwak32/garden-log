@@ -16,7 +16,7 @@ class GetWateringDaysUseCase(
 ) {
     operator fun invoke(plant: Plant): WateringDays {
         return if (plant.waterPeriod == 0) {
-            WateringDays(getDaysFromLastWatering(plant), true)
+            WateringDays(getDaysFromLastWatering(plant), false)
         } else {
             val days = abs(getRemainWateringDateUseCase(plant))
             WateringDays(days, days < 0)
