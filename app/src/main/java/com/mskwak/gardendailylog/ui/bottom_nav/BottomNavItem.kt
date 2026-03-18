@@ -2,10 +2,10 @@ package com.mskwak.gardendailylog.ui.bottom_nav
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
-import com.mskwak.design.IconPack
-import com.mskwak.design.icon.BookMarkBlack
-import com.mskwak.design.icon.HomeBlack
-import com.mskwak.design.icon.SettingsBlack
+import com.mskwak.common_ui.IconPack
+import com.mskwak.common_ui.icon.BookMarkBlack
+import com.mskwak.common_ui.icon.HomeBlack
+import com.mskwak.common_ui.icon.SettingsBlack
 import com.mskwak.gardendailylog.R
 import com.mskwak.plant.diary_list.DiaryListNavKey
 import com.mskwak.plant.plant_list.PlantListNavKey

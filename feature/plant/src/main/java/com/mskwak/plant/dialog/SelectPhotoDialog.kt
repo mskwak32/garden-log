@@ -20,12 +20,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.mskwak.design.IconPack
-import com.mskwak.design.icon.AddPhotoBlack
-import com.mskwak.design.icon.CloseBlack
-import com.mskwak.design.icon.ImageBlack
-import com.mskwak.design.theme.GardenLogTheme
-import com.mskwak.design.util.clickableWithoutRipple
+import com.mskwak.common_ui.IconPack
+import com.mskwak.common_ui.icon.AddPhotoBlack
+import com.mskwak.common_ui.icon.CloseBlack
+import com.mskwak.common_ui.icon.ImageBlack
+import com.mskwak.common_ui.theme.GardenLogTheme
+import com.mskwak.common_ui.util.clickableWithoutRipple
 import com.mskwak.plant.R
 
 enum class PhotoAction {

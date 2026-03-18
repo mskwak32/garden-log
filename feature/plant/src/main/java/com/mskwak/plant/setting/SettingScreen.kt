@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.mskwak.design.ui_component.LocalNavBottomBarPadding
+import com.mskwak.common_ui.ui_component.LocalNavBottomBarPadding
 
 @Composable
 fun SettingScreen(

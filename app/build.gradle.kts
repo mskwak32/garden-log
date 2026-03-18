@@ -74,7 +74,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":design"))
     implementation(project(":data"))
     implementation(project(":domain"))
     implementation(project(":feature:plant"))

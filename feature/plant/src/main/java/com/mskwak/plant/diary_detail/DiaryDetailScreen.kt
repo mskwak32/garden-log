@@ -42,13 +42,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.mskwak.design.IconPack
-import com.mskwak.design.icon.ArrowBackBlack
-import com.mskwak.design.icon.MoreHorizBlack
-import com.mskwak.design.theme.GardenLogTheme
-import com.mskwak.design.ui_component.AppDropDownMenu
-import com.mskwak.design.ui_component.PagerDotIndicator
-import com.mskwak.design.util.toDateString
+import com.mskwak.common_ui.IconPack
+import com.mskwak.common_ui.icon.ArrowBackBlack
+import com.mskwak.common_ui.icon.MoreHorizBlack
+import com.mskwak.common_ui.theme.GardenLogTheme
+import com.mskwak.common_ui.ui_component.AppDropDownMenu
+import com.mskwak.common_ui.ui_component.PagerDotIndicator
+import com.mskwak.common_ui.util.toDateString
 import com.mskwak.plant.R
 import java.time.LocalDate
 

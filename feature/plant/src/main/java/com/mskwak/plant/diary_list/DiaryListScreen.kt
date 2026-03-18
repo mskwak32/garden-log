@@ -48,11 +48,11 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.mskwak.design.IconPack
-import com.mskwak.design.icon.ArrowBackIosBlack
-import com.mskwak.design.icon.ArrowForwardIosBlack
-import com.mskwak.design.theme.GardenLogTheme
-import com.mskwak.design.ui_component.LocalNavBottomBarPadding
+import com.mskwak.common_ui.IconPack
+import com.mskwak.common_ui.icon.ArrowBackIosBlack
+import com.mskwak.common_ui.icon.ArrowForwardIosBlack
+import com.mskwak.common_ui.theme.GardenLogTheme
+import com.mskwak.common_ui.ui_component.LocalNavBottomBarPadding
 import com.mskwak.domain.model.DiaryListSortOrder
 import com.mskwak.plant.R
 import com.mskwak.plant.model.DiaryListItemUiModel

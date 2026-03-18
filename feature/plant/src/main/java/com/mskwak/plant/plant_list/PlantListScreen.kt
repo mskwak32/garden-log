@@ -26,7 +26,7 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.union
-import com.mskwak.design.ui_component.LocalNavBottomBarPadding
+import com.mskwak.common_ui.ui_component.LocalNavBottomBarPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,9 +38,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.mskwak.design.IconPack
-import com.mskwak.design.icon.AddWhite
-import com.mskwak.design.theme.GardenLogTheme
+import com.mskwak.common_ui.IconPack
+import com.mskwak.common_ui.icon.AddWhite
+import com.mskwak.common_ui.theme.GardenLogTheme
 import com.mskwak.domain.model.PlantListSortOrder
 import com.mskwak.plant.R
 import com.mskwak.plant.model.PlantListItemUiModel

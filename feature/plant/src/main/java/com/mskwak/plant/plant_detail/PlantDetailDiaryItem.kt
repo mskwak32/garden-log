@@ -25,8 +25,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.mskwak.design.theme.GardenLogTheme
-import com.mskwak.design.util.toDateWithDayOfWeek
+import com.mskwak.common_ui.theme.GardenLogTheme
+import com.mskwak.common_ui.util.toDateWithDayOfWeek
 import com.mskwak.plant.R
 import com.mskwak.plant.model.DiaryListItemUiModel
 import java.time.LocalDate

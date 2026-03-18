@@ -7,7 +7,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.mskwak.design.theme.GardenLogTheme
+import com.mskwak.common_ui.theme.GardenLogTheme
 import com.mskwak.plant.R
 
 @Composable

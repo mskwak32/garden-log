@@ -50,7 +50,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.mskwak.design.ui_component.LocalNavBottomBarPadding
+import com.mskwak.common_ui.ui_component.LocalNavBottomBarPadding
 import com.mskwak.gardendailylog.R
 import com.mskwak.gardendailylog.ui.bottom_nav.BottomNavItem
 import com.mskwak.plant.plantNavGraph

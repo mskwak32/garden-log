@@ -7,7 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.net.toUri
-import com.mskwak.design.theme.GardenLogTheme
+import com.mskwak.common_ui.theme.GardenLogTheme
 import com.mskwak.gardendailylog.ui.MainScreen
 import dagger.hilt.android.AndroidEntryPoint
 

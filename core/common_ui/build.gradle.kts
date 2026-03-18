@@ -30,11 +30,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":design"))
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
+    implementation(libs.compose.lottie)
     debugImplementation(libs.bundles.debug.compose)
 }
