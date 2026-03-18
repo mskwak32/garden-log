@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.kotlin.serialization)
     implementation(libs.exifinterface)
     implementation(libs.googleplay.review)
+    implementation(libs.telephoto.zoomable.coil3)
 
     testImplementation(libs.bundles.test)
     androidTestImplementation(platform(libs.compose.bom))

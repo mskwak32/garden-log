@@ -71,6 +71,7 @@ import com.mskwak.common_ui.util.toTimeString
 import com.mskwak.domain.Constants
 import com.mskwak.plant.R
 import com.mskwak.plant.dialog.ExactAlarmPermissionDialog
+import com.mskwak.plant.dialog.ImageZoomDialog
 import com.mskwak.plant.model.DiaryListItemUiModel
 import com.mskwak.plant.model.WateringStatus
 import java.time.LocalDate
@@ -178,6 +179,11 @@ private fun Content(
     onEvent: (PlantDetailEvent) -> Unit
 ) {
     var wateringAnimationKey by remember { mutableIntStateOf(0) }
+    var zoomImagePath by remember { mutableStateOf<String?>(null) }
+
+    zoomImagePath?.let {
+        ImageZoomDialog(imagePath = it, onDismiss = { zoomImagePath = null })
+    }
 
     Scaffold(
         topBar = { TopBar(onEvent = onEvent) },
@@ -194,7 +200,8 @@ private fun Content(
             Header(
                 imagePath = state.plantImagePath,
                 plantName = state.plantName,
-                createdAt = state.createdAt
+                createdAt = state.createdAt,
+                onImageClick = { state.plantImagePath?.let { zoomImagePath = it } }
             )
 
             Spacer(Modifier.height(16.dp))
@@ -232,13 +239,15 @@ private fun Content(
 @Composable
 private fun PlantImage(
     modifier: Modifier = Modifier,
-    imagePath: String?
+    imagePath: String?,
+    onClick: () -> Unit
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(200.dp)
             .clip(RoundedCornerShape(15.dp))
+            .then(if (imagePath != null) Modifier.clickableWithoutRipple(onClick = onClick) else Modifier)
     ) {
         if (imagePath == null) {
             Box(
@@ -269,10 +278,11 @@ private fun Header(
     modifier: Modifier = Modifier,
     imagePath: String?,
     plantName: String,
-    createdAt: LocalDate?
+    createdAt: LocalDate?,
+    onImageClick: () -> Unit
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        PlantImage(imagePath = imagePath)
+        PlantImage(imagePath = imagePath, onClick = onImageClick)
 
         Spacer(Modifier.height(12.dp))
         Column {

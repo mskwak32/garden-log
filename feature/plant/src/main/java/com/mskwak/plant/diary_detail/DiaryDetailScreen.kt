@@ -1,6 +1,7 @@
 package com.mskwak.plant.diary_detail
 
 import android.content.res.Configuration
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -32,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -50,6 +51,7 @@ import com.mskwak.common_ui.ui_component.AppDropDownMenu
 import com.mskwak.common_ui.ui_component.PagerDotIndicator
 import com.mskwak.common_ui.util.toDateString
 import com.mskwak.plant.R
+import com.mskwak.plant.dialog.ImageZoomDialog
 import java.time.LocalDate
 
 @Composable
@@ -90,6 +92,12 @@ private fun Content(
     state: DiaryDetailState,
     onEvent: (DiaryDetailEvent) -> Unit
 ) {
+    var zoomImagePath by remember { mutableStateOf<String?>(null) }
+
+    zoomImagePath?.let {
+        ImageZoomDialog(imagePath = it, onDismiss = { zoomImagePath = null })
+    }
+
     Scaffold(
         topBar = { TopBar(state, onEvent) },
         containerColor = MaterialTheme.colorScheme.background,
@@ -103,7 +111,10 @@ private fun Content(
         ) {
             // 사진 섹션
             if (state.picturePaths.isNotEmpty()) {
-                PhotoPagerSection(picturePaths = state.picturePaths)
+                PhotoPagerSection(
+                    picturePaths = state.picturePaths,
+                    onImageClick = { zoomImagePath = it }
+                )
                 Spacer(Modifier.height(16.dp))
             }
 
@@ -142,7 +153,10 @@ private fun Content(
 }
 
 @Composable
-private fun PhotoPagerSection(picturePaths: List<String>) {
+private fun PhotoPagerSection(
+    picturePaths: List<String>,
+    onImageClick: (String) -> Unit
+) {
     val pagerState = rememberPagerState(pageCount = { picturePaths.size })
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         HorizontalPager(
@@ -153,7 +167,6 @@ private fun PhotoPagerSection(picturePaths: List<String>) {
                 .fillMaxWidth()
                 .aspectRatio(1.5f)
         ) { page ->
-            // TODO: 클릭 시 전체화면 뷰어 구현
             AsyncImage(
                 model = picturePaths[page],
                 contentDescription = null,
@@ -161,6 +174,7 @@ private fun PhotoPagerSection(picturePaths: List<String>) {
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(12.dp))
+                    .clickable { onImageClick(picturePaths[page]) }
             )
         }
         if (picturePaths.size > 1) {
