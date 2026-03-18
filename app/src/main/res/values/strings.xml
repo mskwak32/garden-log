@@ -7,6 +7,10 @@
     <string name="message_notification_permission">물주기 알람을 사용하려면 권한이 필요합니다.</string>
     <string name="message_finish_app">종료하려면 한 번 더 눌러주세요.</string>
 
+    <string name="force_update_title">업데이트 필요</string>
+    <string name="force_update_message">원활한 사용을 위해 최신 버전으로\n업데이트해 주세요.</string>
+    <string name="force_update_button">업데이트</string>
+
     <string name="bottom_nav_home">홈</string>
     <string name="bottom_nav_diary">일기</string>
     <string name="bottom_nav_setting">설정</string>

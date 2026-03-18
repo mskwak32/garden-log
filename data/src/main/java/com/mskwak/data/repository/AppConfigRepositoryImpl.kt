@@ -7,11 +7,7 @@ import javax.inject.Inject
 internal class AppConfigRepositoryImpl @Inject constructor(
     private val appConfigRemoteSource: AppConfigRemoteSource
 ) : AppConfigRepository {
-    override suspend fun getLatestAppVersion(): Result<Int> {
-        return appConfigRemoteSource.getLatestAppVersion()
-    }
-
-    override suspend fun getUpdateContent(versionCode: Int): Result<String> {
-        return appConfigRemoteSource.getUpdateContent(versionCode)
+    override suspend fun getMinimumAppVersion(): Result<Int> {
+        return appConfigRemoteSource.getMinimumAppVersion()
     }
 }

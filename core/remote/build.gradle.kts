@@ -37,8 +37,7 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
-    implementation(platform(libs.okhttp.bom))
-    implementation(libs.bundles.retrofit)
+    implementation(libs.firebase.config)
+    implementation(libs.kotlin.coroutines.play.services)
     implementation(libs.timber)
-    implementation(libs.kotlin.serialization)
 }

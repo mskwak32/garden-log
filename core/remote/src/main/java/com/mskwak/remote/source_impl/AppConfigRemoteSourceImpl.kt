@@ -1,47 +1,31 @@
 package com.mskwak.remote.source_impl
 
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.mskwak.remote.AppConfigRemoteSource
 import com.mskwak.remote.BuildConfig
-import com.mskwak.remote.api.AppConfigApi
+import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
 
 internal class AppConfigRemoteSourceImpl @Inject constructor(
-    private val appConfigApi: AppConfigApi
+    private val remoteConfig: FirebaseRemoteConfig
 ) : AppConfigRemoteSource {
-    override suspend fun getLatestAppVersion(): Result<Int> {
+
+    override suspend fun getMinimumAppVersion(): Result<Int> {
         return runCatching {
-            val response = if (BuildConfig.DEBUG) {
-                appConfigApi.getDebugLatestAppVersion()
-            } else {
-                appConfigApi.getLatestAppVersion()
+            remoteConfig.fetchAndActivate().await()
+            val key = if (BuildConfig.DEBUG) KEY_MIN_VERSION_DEBUG else KEY_MIN_VERSION_RELEASE
+            remoteConfig.getLong(key).toInt().also {
+                Timber.d("getMinimumAppVersion: $it")
             }
-            if (response.isSuccessful) {
-                response.body() ?: throw Exception("Response body is null")
-            } else {
-                val exception = Exception(response.errorBody()?.string())
-                Timber.e(exception)
-                throw exception
-            }
+        }.onFailure {
+            Timber.e(it, "getMinimumAppVersion failed")
         }
     }
 
-    override suspend fun getUpdateContent(version: Int): Result<String> {
-        return runCatching {
-            val response = appConfigApi.getUpdateContent(version)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body != null && body != "null") {
-                    body
-                } else {
-                    throw Exception("Update content is null or invalid")
-                }
-            } else {
-                val exception = Exception(response.errorBody()?.string())
-                Timber.e(exception)
-                throw exception
-            }
-        }
+    companion object {
+        internal const val KEY_MIN_VERSION_DEBUG = "min_app_version_debug"
+        internal const val KEY_MIN_VERSION_RELEASE = "min_app_version_release"
+        internal const val DEFAULT_MIN_VERSION = 1L
     }
-
 }

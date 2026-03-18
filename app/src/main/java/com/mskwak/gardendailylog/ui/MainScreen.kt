@@ -3,6 +3,8 @@ package com.mskwak.gardendailylog.ui
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.widget.Toast
@@ -43,6 +45,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
@@ -53,14 +57,22 @@ import androidx.navigation3.ui.NavDisplay
 import com.mskwak.common_ui.ui_component.LocalNavBottomBarPadding
 import com.mskwak.gardendailylog.R
 import com.mskwak.gardendailylog.ui.bottom_nav.BottomNavItem
+import com.mskwak.gardendailylog.ui.dialog.ForceUpdateDialog
 import com.mskwak.plant.plantNavGraph
 import com.mskwak.plant.plant_list.PlantListNavKey
 import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen(
+    viewModel: MainViewModel = hiltViewModel(),
     openAppSetting: () -> Unit
 ) {
+    val isForceUpdateRequired by viewModel.isForceUpdateRequired.collectAsStateWithLifecycle()
+
+    if (isForceUpdateRequired) {
+        ForceUpdateDialog()
+    }
+
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Navigation 3: 단일 백스택 사용

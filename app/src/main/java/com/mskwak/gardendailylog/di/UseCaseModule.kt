@@ -1,12 +1,11 @@
 package com.mskwak.gardendailylog.di
 
-import com.mskwak.domain.repository.AppConfigRepository
 import com.mskwak.domain.repository.DiaryRepository
 import com.mskwak.domain.repository.PictureRepository
 import com.mskwak.domain.repository.PlantRepository
 import com.mskwak.domain.repository.WateringAlarmRepository
-import com.mskwak.domain.useCase.config.GetLatestAppVersionUseCase
-import com.mskwak.domain.useCase.config.GetUpdatedContent
+import com.mskwak.domain.repository.AppConfigRepository
+import com.mskwak.domain.useCase.config.GetMinimumAppVersionUseCase
 import com.mskwak.domain.useCase.diary.AddDiaryUseCase
 import com.mskwak.domain.useCase.diary.DeleteDiaryUseCase
 import com.mskwak.domain.useCase.diary.GetDiariesByPlantIdUseCase
@@ -126,17 +125,10 @@ class UseCaseModule {
 
     /* Config UseCases */
     @Provides
-    fun provideGetLatestAppVersionUseCase(
+    fun provideGetMinimumAppVersionUseCase(
         appConfigRepository: AppConfigRepository
-    ): GetLatestAppVersionUseCase {
-        return GetLatestAppVersionUseCase(appConfigRepository)
-    }
-
-    @Provides
-    fun provideGetUpdatedContentUseCase(
-        appConfigRepository: AppConfigRepository
-    ): GetUpdatedContent {
-        return GetUpdatedContent(appConfigRepository)
+    ): GetMinimumAppVersionUseCase {
+        return GetMinimumAppVersionUseCase(appConfigRepository)
     }
 
     /* Picture UseCases */
