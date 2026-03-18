@@ -12,6 +12,7 @@ import com.mskwak.domain.repository.DiaryRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -52,7 +53,7 @@ internal class DiaryRepositoryImpl @Inject constructor(
 
     override fun getDiary(id: Int): Flow<Diary> {
         return combine(
-            diaryDao.getDiary(id),
+            diaryDao.getDiary(id).filterNotNull(),
             pictureDao.getDiaryPictures(id)
         ) { diary, pictures ->
             diary.toDiary(pictures)
