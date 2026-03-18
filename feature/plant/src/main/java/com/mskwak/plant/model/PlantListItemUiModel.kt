@@ -25,6 +25,10 @@ fun Plant.toPlantListItemUiModel(
             WateringStatus.TODAY_DONE to 0
         }
 
+        !wateringDays.hasPeriod -> {
+            WateringStatus.NO_PERIOD to wateringDays.days
+        }
+
         wateringDays.isOverDue -> {
             WateringStatus.OVERDUE to wateringDays.days
         }

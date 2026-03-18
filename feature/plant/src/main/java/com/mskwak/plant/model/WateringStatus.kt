@@ -6,10 +6,12 @@ package com.mskwak.plant.model
  * TODAY_DONE, 오늘 물을 줌
  * OVERDUE: 물주기가 지난 경우
  * UPCOMING: 다음 물주기까지 아직 남음
+ * NO_PERIOD: 물주기 간격 미설정
  */
 enum class WateringStatus {
     TODAY,
     TODAY_DONE,
     OVERDUE,
-    UPCOMING
+    UPCOMING,
+    NO_PERIOD
 }

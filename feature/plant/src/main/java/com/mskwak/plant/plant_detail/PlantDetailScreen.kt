@@ -200,7 +200,6 @@ private fun Content(
             Spacer(Modifier.height(16.dp))
             WateringInfo(
                 dDays = state.dDays,
-                hasWateringPeriod = state.hasWateringPeriod,
                 wateringStatus = state.wateringStatus,
                 lastWateringDate = state.lastWateringDate,
                 wateringAlarm = state.wateringAlarmTime,
@@ -305,7 +304,6 @@ private fun Header(
 @Composable
 private fun WateringInfo(
     modifier: Modifier = Modifier,
-    hasWateringPeriod: Boolean,
     dDays: Int,
     wateringStatus: WateringStatus,
     lastWateringDate: LocalDate?,
@@ -353,7 +351,8 @@ private fun WateringInfo(
                     Image(
                         imageVector = when (wateringStatus) {
                             WateringStatus.TODAY,
-                            WateringStatus.UPCOMING -> IconPack.WaterDropBlue
+                            WateringStatus.UPCOMING,
+                            WateringStatus.NO_PERIOD -> IconPack.WaterDropBlue
 
                             WateringStatus.TODAY_DONE -> IconPack.WaterDropWithBackground
                             WateringStatus.OVERDUE -> IconPack.WaterDropRed
@@ -376,12 +375,9 @@ private fun WateringInfo(
                     )
                     Spacer(Modifier.width(4.dp))
                     Text(
-                        text = when {
-                            !hasWateringPeriod -> {
-                                stringResource(R.string.watering_d_day_plus_format, dDays)
-                            }
-
-                            wateringStatus == WateringStatus.OVERDUE -> {
+                        text = when (wateringStatus) {
+                            WateringStatus.NO_PERIOD,
+                            WateringStatus.OVERDUE -> {
                                 stringResource(R.string.watering_d_day_plus_format, dDays)
                             }
 
@@ -610,7 +606,6 @@ private fun PreviewContent() {
         plantName = "바질",
         createdAt = LocalDate.now(),
         dDays = 1,
-        hasWateringPeriod = true,
         wateringStatus = WateringStatus.UPCOMING,
         lastWateringDate = LocalDate.now().minusDays(3),
         wateringAlarmTime = LocalTime.of(9, 0),

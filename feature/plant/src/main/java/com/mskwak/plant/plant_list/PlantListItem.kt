@@ -183,7 +183,7 @@ private fun ForegroundCard(
                     stringResource(R.string.today)
                 }
 
-                WateringStatus.OVERDUE -> {
+                WateringStatus.OVERDUE, WateringStatus.NO_PERIOD -> {
                     stringResource(R.string.watering_d_day_plus_format, uiModel.dDay)
                 }
 
@@ -202,7 +202,8 @@ private class WateringStatusPreviewProvider : PreviewParameterProvider<WateringS
         WateringStatus.OVERDUE,
         WateringStatus.TODAY,
         WateringStatus.TODAY_DONE,
-        WateringStatus.UPCOMING
+        WateringStatus.UPCOMING,
+        WateringStatus.NO_PERIOD
     )
 }
 

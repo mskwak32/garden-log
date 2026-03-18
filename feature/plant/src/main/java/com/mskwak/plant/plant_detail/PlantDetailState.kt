@@ -9,16 +9,12 @@ import com.mskwak.plant.model.WateringStatus
 import java.time.LocalDate
 import java.time.LocalTime
 
-/**
- * @param hasWateringPeriod 물주기 설정여부
- */
 @Immutable
 data class PlantDetailState(
     val plantImagePath: String? = null,
     val plantName: String = "",
     val createdAt: LocalDate? = null,
     val dDays: Int = 0,
-    val hasWateringPeriod: Boolean = false,
     val wateringStatus: WateringStatus = WateringStatus.UPCOMING,
     val lastWateringDate: LocalDate? = null,
     val wateringAlarmTime: LocalTime? = null,

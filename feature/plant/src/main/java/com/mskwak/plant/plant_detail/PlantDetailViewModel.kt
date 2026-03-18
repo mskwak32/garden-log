@@ -61,7 +61,6 @@ class PlantDetailViewModel @AssistedInject constructor(
                     plantName = uiModel.name,
                     createdAt = uiModel.createdAt,
                     dDays = uiModel.dDay,
-                    hasWateringPeriod = plant.waterPeriod > 0,
                     wateringStatus = uiModel.status,
                     lastWateringDate = plant.lastWateringDate,
                     wateringAlarmTime = plant.wateringAlarm.time,
