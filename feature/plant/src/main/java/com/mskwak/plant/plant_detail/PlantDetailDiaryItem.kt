@@ -64,6 +64,7 @@ fun PlantDetailDiaryItem(
                 AsyncImage(
                     model = diary.imagePath,
                     contentDescription = null,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(70.dp)
                         .clip(RoundedCornerShape(10.dp))
