@@ -30,6 +30,7 @@ import com.mskwak.plant.plant_list.PlantListNavKey
 import com.mskwak.plant.plant_list.PlantListScreen
 import com.mskwak.plant.setting.SettingNavKey
 import com.mskwak.plant.setting.SettingScreen
+import com.mskwak.plant.setting.SettingViewModel
 
 fun EntryProviderScope<NavKey>.plantNavGraph(
     backStack: NavBackStack<NavKey>
@@ -155,6 +156,7 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
     }
 
     entry<SettingNavKey> {
-        SettingScreen()
+        val viewModel = hiltViewModel<SettingViewModel>()
+        SettingScreen(viewModel = viewModel)
     }
 }

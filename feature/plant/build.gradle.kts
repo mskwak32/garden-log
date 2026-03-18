@@ -30,6 +30,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -52,6 +53,7 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.kotlin.serialization)
     implementation(libs.exifinterface)
+    implementation(libs.googleplay.review)
 
     testImplementation(libs.bundles.test)
     androidTestImplementation(platform(libs.compose.bom))
