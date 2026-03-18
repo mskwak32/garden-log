@@ -2,6 +2,7 @@ package com.mskwak.remote.di
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
+import com.mskwak.remote.BuildConfig
 import com.mskwak.remote.source_impl.AppConfigRemoteSourceImpl
 import dagger.Module
 import dagger.Provides
@@ -17,7 +18,7 @@ internal class RemoteModule {
     fun provideFirebaseRemoteConfig(): FirebaseRemoteConfig {
         return FirebaseRemoteConfig.getInstance().apply {
             val settings = remoteConfigSettings {
-                minimumFetchIntervalInSeconds = 3600
+                minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 600 else 3600
             }
             setConfigSettingsAsync(settings)
             setDefaultsAsync(
