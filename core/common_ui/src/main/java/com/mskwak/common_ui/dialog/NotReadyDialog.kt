@@ -1,10 +1,10 @@
 package com.mskwak.common_ui.dialog
 
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,17 +26,20 @@ fun NotReadyDialog(onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         text = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.fillMaxWidth()) {
                 val composition by rememberLottieComposition(
                     LottieCompositionSpec.RawRes(R.raw.lottie_under_construction)
                 )
                 LottieAnimation(
                     composition = composition,
                     iterations = LottieConstants.IterateForever,
-                    modifier = Modifier.size(140.dp)
+                    modifier = Modifier.size(200.dp)
                 )
-                Spacer(Modifier.width(16.dp))
-                Text(text = stringResource(R.string.message_not_ready))
+                Text(
+                    text = stringResource(R.string.message_not_ready),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
             }
         },
         confirmButton = {
