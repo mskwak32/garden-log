@@ -40,9 +40,11 @@
     <string name="sort_diary_created_earliest">오래된순</string>
 
     <string name="plant_list_empty">아직 등록된 식물이 없어요</string>
+    <string name="harvested_list_empty">아직 수확한 작물이 없어요</string>
     <string name="new_plant">식물 추가하기</string>
     <string name="plant_name">식물 이름</string>
     <string name="plant_date">심은 날짜</string>
+    <string name="plant_date_format">심은 날짜: %s</string>
     <string name="plant_diary">가꾸기 일기</string>
     <string name="days_ago_format">%d일 전</string>
 
@@ -79,4 +81,15 @@
     <string name="setting_app_estimation">앱 평가하기</string>
     <string name="setting_update_content_title">%s 버전</string>
     <string name="setting_play_store_debug">Debug: Play Store 연결 불가</string>
+
+    <string name="harvested">수확</string>
+    <string name="harvest">수확하기</string>
+    <string name="cancel_harvest">수확 취소하기</string>
+    <string name="harvest_date">수확 날짜</string>
+    <string name="harvest_date_format">수확 날짜: %s</string>
+    <string name="harvest_memo">수확 메모</string>
+    <string name="harvest_memo_hint">수확에 대한 메모를 입력하세요.</string>
+    <string name="message_harvest_confirm">수확 처리하시겠습니까?\n수확된 식물은 물주기 관리에서 제외됩니다.</string>
+    <string name="tab_my_garden">내 텃밭</string>
+    <string name="tab_harvested">수확 작물</string>
 </resources>

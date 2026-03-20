@@ -16,5 +16,7 @@ data class PlantEntity(
     val lastWateringDate: LocalDate,
     @Embedded(prefix = "watering_alarm_") val wateringAlarm: AlarmEntity,
     val pictureId: Int?,
-    val memo: String?
+    val memo: String?,
+    val harvestDate: LocalDate? = null,
+    val harvestMemo: String? = null
 )

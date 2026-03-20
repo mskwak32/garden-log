@@ -12,8 +12,11 @@ data class PlantListItemUiModel(
     val imagePath: String?,
     val dDay: Int,
     val status: WateringStatus,
-    val createdAt: LocalDate
-)
+    val createdAt: LocalDate,
+    val harvestDate: LocalDate? = null
+) {
+    val isHarvested: Boolean get() = harvestDate != null
+}
 
 fun Plant.toPlantListItemUiModel(
     getWateringDays: (Plant) -> WateringDays
@@ -48,6 +51,7 @@ fun Plant.toPlantListItemUiModel(
         imagePath = picture?.path,
         dDay = dDay,
         status = status,
-        createdAt = createdDate
+        createdAt = createdDate,
+        harvestDate = harvestDate
     )
 }

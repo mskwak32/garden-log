@@ -1,8 +1,8 @@
 package com.mskwak.data.repository
 
+import com.mskwak.data.mapper.toPictureEntity
 import com.mskwak.data.mapper.toPlant
 import com.mskwak.data.mapper.toPlantEntity
-import com.mskwak.data.mapper.toPictureEntity
 import com.mskwak.database.dao.PictureDao
 import com.mskwak.database.dao.PlantDao
 import com.mskwak.domain.model.Plant
@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
+import java.time.LocalDate
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -23,7 +24,8 @@ internal class PlantRepositoryImpl @Inject constructor(
 ) : PlantRepository {
 
     override suspend fun addPlant(plant: Plant): Int {
-        val pictureId = plant.picture?.let { pictureDao.insertPicture(it.toPictureEntity()).toInt() }
+        val pictureId =
+            plant.picture?.let { pictureDao.insertPicture(it.toPictureEntity()).toInt() }
         val id = plantDao.insertPlant(plant.toPlantEntity(pictureId)).toInt()
         Timber.d("add new plant id=$id")
         return id
@@ -40,10 +42,12 @@ internal class PlantRepositoryImpl @Inject constructor(
                 existing?.pictureId?.let { pictureDao.deletePicture(it) }
                 pictureId = null
             }
+
             existingPicture?.path == newPicture.path -> {
                 // 이미지가 동일하면 기존 pictureId 재사용 (삭제 후 재삽입 시 일시적 null 방지)
                 pictureId = existing.pictureId
             }
+
             else -> {
                 existing?.pictureId?.let { pictureDao.deletePicture(it) }
                 pictureId = pictureDao.insertPicture(newPicture.toPictureEntity()).toInt()
@@ -111,5 +115,13 @@ internal class PlantRepositoryImpl @Inject constructor(
 
     override suspend fun updateWateringAlarmActivation(isActive: Boolean, plantId: Int) {
         plantDao.updateWateringAlarmActivation(isActive, plantId)
+    }
+
+    override suspend fun updateHarvestStatus(
+        plantId: Int,
+        harvestDate: LocalDate?,
+        harvestMemo: String?
+    ) {
+        plantDao.updateHarvestStatus(harvestDate, harvestMemo, plantId)
     }
 }

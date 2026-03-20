@@ -5,11 +5,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -21,12 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.union
-import com.mskwak.common_ui.ui_component.LocalNavBottomBarPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,6 +41,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mskwak.common_ui.IconPack
 import com.mskwak.common_ui.icon.AddWhite
 import com.mskwak.common_ui.theme.GardenLogTheme
+import com.mskwak.common_ui.ui_component.LocalNavBottomBarPadding
+import com.mskwak.common_ui.util.clickableWithoutRipple
 import com.mskwak.domain.model.PlantListSortOrder
 import com.mskwak.plant.R
 import com.mskwak.plant.model.PlantListItemUiModel
@@ -76,25 +78,11 @@ private fun Content(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                modifier = Modifier.padding(horizontal = 8.dp),
-                title = {
-                    Text(
-                        text = stringResource(R.string.home_title),
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                },
-                actions = {
-                    PlantListSortFilter(
-                        currentOrder = state.sortOrder,
-                        onEvent = onEvent
-                    )
-                }
-            )
+            TopBar(state = state, onEvent = onEvent)
         },
         floatingActionButton = {
-            if (state.plants.isNotEmpty()) {
+            // 수확 탭에서는 FAB 숨김
+            if (state.plants.isNotEmpty() && state.selectedTab == PlantListTab.MY_GARDEN) {
                 AddPlantButton(onEvent = onEvent)
             }
         },
@@ -106,6 +94,7 @@ private fun Content(
         if (state.plants.isEmpty()) {
             EmptyList(
                 modifier = Modifier.padding(innerPadding),
+                isHarvestedTab = state.selectedTab == PlantListTab.HARVESTED,
                 onEvent = onEvent
             )
         } else {
@@ -113,6 +102,66 @@ private fun Content(
                 modifier = Modifier.padding(innerPadding),
                 uiModels = state.plants,
                 onEvent = onEvent
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopBar(
+    state: PlantListState,
+    onEvent: (PlantListEvent) -> Unit
+) {
+    TopAppBar(
+        modifier = Modifier.padding(horizontal = 8.dp),
+        title = {
+            TabTitle(
+                selectedTab = state.selectedTab,
+                onTabChanged = { onEvent(PlantListEvent.OnTabChanged(it)) }
+            )
+        },
+        actions = {
+            // 수확 탭에서는 정렬 불필요 (물주기 기반 정렬이 의미 없음)
+            if (state.selectedTab == PlantListTab.MY_GARDEN) {
+                PlantListSortFilter(
+                    currentOrder = state.sortOrder,
+                    onEvent = onEvent
+                )
+            }
+        }
+    )
+}
+
+@Composable
+private fun TabTitle(
+    selectedTab: PlantListTab,
+    onTabChanged: (PlantListTab) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        PlantListTab.entries.forEach { tab ->
+            val isSelected = tab == selectedTab
+            Text(
+                text = stringResource(
+                    when (tab) {
+                        PlantListTab.MY_GARDEN -> R.string.tab_my_garden
+                        PlantListTab.HARVESTED -> R.string.tab_harvested
+                    }
+                ),
+                style = if (isSelected) {
+                    MaterialTheme.typography.headlineSmall
+                } else {
+                    MaterialTheme.typography.titleMedium
+                },
+                color = if (isSelected) {
+                    MaterialTheme.colorScheme.onBackground
+                } else {
+                    MaterialTheme.colorScheme.onBackground.copy(alpha = 0.35f)
+                },
+                modifier = Modifier.clickableWithoutRipple { onTabChanged(tab) }
             )
         }
     }
@@ -161,6 +210,7 @@ private fun PlantList(
 @Composable
 private fun EmptyList(
     modifier: Modifier = Modifier,
+    isHarvestedTab: Boolean = false,
     onEvent: (PlantListEvent) -> Unit
 ) {
     Column(
@@ -176,22 +226,26 @@ private fun EmptyList(
 
         Spacer(Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.plant_list_empty),
+            text = stringResource(
+                if (isHarvestedTab) R.string.harvested_list_empty else R.string.plant_list_empty
+            ),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurface
         )
 
-        Spacer(Modifier.height(16.dp))
-        Button(
-            colors = ButtonDefaults.buttonColors().copy(
-                containerColor = MaterialTheme.colorScheme.secondary
-            ),
-            onClick = { onEvent(PlantListEvent.AddPlant) }
-        ) {
-            Text(
-                text = stringResource(R.string.new_plant),
-                style = MaterialTheme.typography.bodyMedium
-            )
+        if (!isHarvestedTab) {
+            Spacer(Modifier.height(16.dp))
+            Button(
+                colors = ButtonDefaults.buttonColors().copy(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                ),
+                onClick = { onEvent(PlantListEvent.AddPlant) }
+            ) {
+                Text(
+                    text = stringResource(R.string.new_plant),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 }

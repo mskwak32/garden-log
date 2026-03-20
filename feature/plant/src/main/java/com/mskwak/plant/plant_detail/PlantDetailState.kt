@@ -20,8 +20,14 @@ data class PlantDetailState(
     val wateringAlarmTime: LocalTime? = null,
     val isWateringActive: Boolean = false,
     val memo: String? = null,
-    val diaries: List<DiaryListItemUiModel> = emptyList()
-) : ViewState
+    val diaries: List<DiaryListItemUiModel> = emptyList(),
+    val harvestDate: LocalDate? = null,
+    val harvestMemo: String? = null,
+    val isHarvestSectionExpanded: Boolean = false,
+    val harvestMemoInput: String = ""
+) : ViewState {
+    val isHarvested: Boolean get() = harvestDate != null
+}
 
 sealed interface PlantDetailEvent : ViewEvent {
     data object OnBackClicked : PlantDetailEvent
@@ -33,6 +39,11 @@ sealed interface PlantDetailEvent : ViewEvent {
     data class OnDiaryClicked(val diaryId: Int) : PlantDetailEvent
     data object OnNewDiaryClicked : PlantDetailEvent
     data object OnMoreDiaryClicked : PlantDetailEvent
+    data object OnHarvestSectionToggled : PlantDetailEvent
+    data class OnHarvestMemoChanged(val memo: String) : PlantDetailEvent
+    data object OnHarvestClicked : PlantDetailEvent
+    data object OnHarvestConfirmed : PlantDetailEvent
+    data object OnCancelHarvestClicked : PlantDetailEvent
 }
 
 sealed interface PlantDetailEffect : ViewEffect {
@@ -46,4 +57,5 @@ sealed interface PlantDetailEffect : ViewEffect {
 
     data object ShowExactAlarmPermissionDialog : PlantDetailEffect
     data object ShowDeleteConfirmDialog : PlantDetailEffect
+    data object ShowHarvestConfirmDialog : PlantDetailEffect
 }

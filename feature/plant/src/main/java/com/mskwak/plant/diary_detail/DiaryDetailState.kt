@@ -11,7 +11,8 @@ data class DiaryDetailState(
     val plantName: String = "",
     val diaryDate: LocalDate = LocalDate.now(),
     val picturePaths: List<String> = emptyList(),
-    val memo: String = ""
+    val memo: String = "",
+    val isHarvested: Boolean = false
 ) : ViewState
 
 sealed interface DiaryDetailEvent : ViewEvent {

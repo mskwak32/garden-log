@@ -7,10 +7,13 @@ import com.mskwak.common_ui.ViewState
 import com.mskwak.domain.model.PlantListSortOrder
 import com.mskwak.plant.model.PlantListItemUiModel
 
+enum class PlantListTab { MY_GARDEN, HARVESTED }
+
 @Immutable
 data class PlantListState(
     val sortOrder: PlantListSortOrder = PlantListSortOrder.CREATED_LATEST,
-    val plants: List<PlantListItemUiModel> = emptyList()
+    val plants: List<PlantListItemUiModel> = emptyList(),
+    val selectedTab: PlantListTab = PlantListTab.MY_GARDEN
 ) : ViewState
 
 sealed interface PlantListEvent : ViewEvent {
@@ -18,6 +21,7 @@ sealed interface PlantListEvent : ViewEvent {
     data object AddPlant : PlantListEvent
     data class OnPlantClicked(val plantId: Int) : PlantListEvent
     data class Watering(val plantId: Int) : PlantListEvent
+    data class OnTabChanged(val tab: PlantListTab) : PlantListEvent
 }
 
 sealed interface PlantListEffect : ViewEffect {

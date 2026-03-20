@@ -35,8 +35,9 @@ class DiaryListViewModel @Inject constructor(
                 setState {
                     copy(plantFilterList = plants.map {
                         DiaryListPlantFilterUiModel(
-                            it.id,
-                            it.name
+                            plantId = it.id,
+                            plantName = it.name,
+                            isHarvested = it.isHarvested
                         )
                     })
                 }
@@ -58,8 +59,16 @@ class DiaryListViewModel @Inject constructor(
                 )
             }
             .onEach { diaries ->
+                // plantFilterList에서 plantId로 식물 정보를 조회하여 plantName, isHarvested 매핑
+                val plantMap = viewState.value.plantFilterList.associateBy { it.plantId }
                 setState {
-                    copy(diaries = diaries.map { it.toDiaryListItemUiModel() })
+                    copy(diaries = diaries.map { diary ->
+                        val plant = plantMap[diary.plantId]
+                        diary.toDiaryListItemUiModel(
+                            plantName = plant?.plantName,
+                            isHarvested = plant?.isHarvested ?: false
+                        )
+                    })
                 }
             }
             .launchIn(viewModelScope)

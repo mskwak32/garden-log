@@ -10,14 +10,20 @@ data class DiaryListItemUiModel(
     val date: LocalDate,
     val content: String,
     val imagePath: String?,
-    val plantName: String? = null
+    val plantName: String? = null,
+    val isHarvested: Boolean = false
 )
 
-fun Diary.toDiaryListItemUiModel(): DiaryListItemUiModel {
+fun Diary.toDiaryListItemUiModel(
+    plantName: String? = null,
+    isHarvested: Boolean = false
+): DiaryListItemUiModel {
     return DiaryListItemUiModel(
         id = id,
         date = createdDate,
         content = memo,
-        imagePath = pictureList?.firstOrNull()?.path
+        imagePath = pictureList?.firstOrNull()?.path,
+        plantName = plantName,
+        isHarvested = isHarvested
     )
 }

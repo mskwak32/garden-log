@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.mskwak.database.entity.PlantEntity
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @Dao
 interface PlantDao {
@@ -44,4 +45,7 @@ interface PlantDao {
     suspend fun getPlantIdsWithAlarmActivation(): Map<
             @MapColumn(columnName = "plantId") Int,
             @MapColumn(columnName = "alarmActivation") Boolean>
+
+    @Query("UPDATE plant SET harvestDate = :harvestDate, harvestMemo = :harvestMemo WHERE id = :plantId")
+    suspend fun updateHarvestStatus(harvestDate: LocalDate?, harvestMemo: String?, plantId: Int)
 }

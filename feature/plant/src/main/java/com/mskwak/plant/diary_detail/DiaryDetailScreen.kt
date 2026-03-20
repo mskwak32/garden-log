@@ -5,12 +5,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -49,6 +51,7 @@ import com.mskwak.common_ui.icon.MoreHorizBlack
 import com.mskwak.common_ui.theme.GardenLogTheme
 import com.mskwak.common_ui.ui_component.AppDropDownMenu
 import com.mskwak.common_ui.ui_component.PagerDotIndicator
+import com.mskwak.common_ui.ui_component.TextBadge
 import com.mskwak.common_ui.util.toDateString
 import com.mskwak.plant.R
 import com.mskwak.plant.dialog.ImageZoomDialog
@@ -194,11 +197,17 @@ private fun TopBar(
 
     TopAppBar(
         title = {
-            Text(
-                text = state.plantName,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = state.plantName,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+                if (state.isHarvested) {
+                    Spacer(Modifier.width(8.dp))
+                    TextBadge(text = stringResource(R.string.harvested))
+                }
+            }
         },
         navigationIcon = {
             IconButton(onClick = { onEvent(DiaryDetailEvent.BackClick) }) {

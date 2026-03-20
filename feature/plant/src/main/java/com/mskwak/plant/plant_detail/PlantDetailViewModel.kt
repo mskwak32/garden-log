@@ -8,6 +8,7 @@ import com.mskwak.domain.repository.PlantRepository
 import com.mskwak.domain.useCase.diary.GetDiariesByPlantIdUseCase
 import com.mskwak.domain.useCase.plant.DeletePlantUseCase
 import com.mskwak.domain.useCase.plant.GetPlantUseCase
+import com.mskwak.domain.useCase.plant.HarvestPlantUseCase
 import com.mskwak.domain.useCase.watering.GetWateringDaysUseCase
 import com.mskwak.domain.useCase.watering.UpdateWateringAlarmActivationUseCase
 import com.mskwak.domain.useCase.watering.WateringNowUseCase
@@ -35,7 +36,8 @@ class PlantDetailViewModel @AssistedInject constructor(
     private val wateringNowUseCase: WateringNowUseCase,
     private val updateWateringAlarmActivationUseCase: UpdateWateringAlarmActivationUseCase,
     private val deletePlantUseCase: DeletePlantUseCase,
-    private val plantRepository: PlantRepository
+    private val plantRepository: PlantRepository,
+    private val harvestPlantUseCase: HarvestPlantUseCase
 ) : BaseViewModel<PlantDetailState, PlantDetailEvent, PlantDetailEffect>() {
 
     private val plantId: Int = navKey.plantId
@@ -66,7 +68,9 @@ class PlantDetailViewModel @AssistedInject constructor(
                     wateringAlarmTime = if (plant.waterPeriod == 0) null else plant.wateringAlarm.time,
                     isWateringActive = plant.wateringAlarm.isActive,
                     memo = plant.memo,
-                    diaries = diaries.map { it.toDiaryListItemUiModel() }
+                    diaries = diaries.map { it.toDiaryListItemUiModel() },
+                    harvestDate = plant.harvestDate,
+                    harvestMemo = plant.harvestMemo
                 )
             }
         }
@@ -112,6 +116,26 @@ class PlantDetailViewModel @AssistedInject constructor(
             is PlantDetailEvent.OnMoreDiaryClicked -> {
                 setEffect(PlantDetailEffect.Navigation.ToMoreDiaries)
             }
+
+            is PlantDetailEvent.OnHarvestSectionToggled -> {
+                setState { copy(isHarvestSectionExpanded = !isHarvestSectionExpanded) }
+            }
+
+            is PlantDetailEvent.OnHarvestMemoChanged -> {
+                setState { copy(harvestMemoInput = event.memo) }
+            }
+
+            is PlantDetailEvent.OnHarvestClicked -> {
+                setEffect(PlantDetailEffect.ShowHarvestConfirmDialog)
+            }
+
+            is PlantDetailEvent.OnHarvestConfirmed -> {
+                harvestPlant()
+            }
+
+            is PlantDetailEvent.OnCancelHarvestClicked -> {
+                cancelHarvest()
+            }
         }
     }
 
@@ -137,6 +161,22 @@ class PlantDetailViewModel @AssistedInject constructor(
             val plant = plantRepository.getPlant(plantId) ?: return@launch
             deletePlantUseCase(plant)
             setEffect(PlantDetailEffect.Navigation.Back)
+        }
+    }
+
+    private fun harvestPlant() {
+        viewModelScope.launch {
+            harvestPlantUseCase.harvest(
+                plantId = plantId,
+                harvestMemo = viewState.value.harvestMemoInput.ifBlank { null }
+            )
+            setState { copy(isHarvestSectionExpanded = false, harvestMemoInput = "") }
+        }
+    }
+
+    private fun cancelHarvest() {
+        viewModelScope.launch {
+            harvestPlantUseCase.cancelHarvest(plantId)
         }
     }
 

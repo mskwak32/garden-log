@@ -55,27 +55,36 @@ fun PlantListItem(
     val revealState = rememberSwipeToRevealState(80.dp)
     val scope = rememberCoroutineScope()
 
-    SwipeToRevealCard(
-        modifier = modifier.height(IntrinsicSize.Min),
-        state = revealState,
-        backgroundContent = {
-            BackgroundCard(
-                onClick = {
-                    scope.launch { revealState.animateTo(RevealState.CLOSED) }
-                    onEvent(PlantListEvent.Watering(uiModel.plantId))
-                }
-            )
-        },
-        cardContent = {
-            ForegroundCard(
-                uiModel = uiModel,
-                onClick = {
-                    scope.launch { revealState.animateTo(RevealState.CLOSED) }
-                    onEvent(PlantListEvent.OnPlantClicked(uiModel.plantId))
-                }
-            )
-        }
-    )
+    if (uiModel.isHarvested) {
+        // 수확된 식물은 스와이프(물주기) 비활성화
+        ForegroundCard(
+            modifier = modifier,
+            uiModel = uiModel,
+            onClick = { onEvent(PlantListEvent.OnPlantClicked(uiModel.plantId)) }
+        )
+    } else {
+        SwipeToRevealCard(
+            modifier = modifier.height(IntrinsicSize.Min),
+            state = revealState,
+            backgroundContent = {
+                BackgroundCard(
+                    onClick = {
+                        scope.launch { revealState.animateTo(RevealState.CLOSED) }
+                        onEvent(PlantListEvent.Watering(uiModel.plantId))
+                    }
+                )
+            },
+            cardContent = {
+                ForegroundCard(
+                    uiModel = uiModel,
+                    onClick = {
+                        scope.launch { revealState.animateTo(RevealState.CLOSED) }
+                        onEvent(PlantListEvent.OnPlantClicked(uiModel.plantId))
+                    }
+                )
+            }
+        )
+    }
 }
 
 @Composable
@@ -160,40 +169,53 @@ private fun ForegroundCard(
 
             Spacer(Modifier.height(6.dp))
             Text(
-                text = uiModel.createdAt.toDateString(),
+                text = stringResource(R.string.plant_date_format, uiModel.createdAt.toDateString()),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            if (uiModel.harvestDate != null) {
+                Text(
+                    text = stringResource(
+                        R.string.harvest_date_format,
+                        uiModel.harvestDate.toDateString()
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
-        Image(
-            imageVector = when (uiModel.status) {
-                WateringStatus.OVERDUE -> IconPack.WaterDropRed
-                WateringStatus.TODAY_DONE -> IconPack.WaterDropWithBackground
-                else -> IconPack.WaterDropBlue
-            },
-            contentDescription = null,
-            modifier = Modifier.size(30.dp)
-        )
+        if (!uiModel.isHarvested) {
+            Image(
+                imageVector = when (uiModel.status) {
+                    WateringStatus.OVERDUE -> IconPack.WaterDropRed
+                    WateringStatus.TODAY_DONE -> IconPack.WaterDropWithBackground
+                    else -> IconPack.WaterDropBlue
+                },
+                contentDescription = null,
+                modifier = Modifier.size(30.dp)
+            )
 
-        Spacer(Modifier.width(6.dp))
-        Text(
-            text = when (uiModel.status) {
-                WateringStatus.TODAY, WateringStatus.TODAY_DONE -> {
-                    stringResource(R.string.today)
-                }
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = when (uiModel.status) {
+                    WateringStatus.TODAY, WateringStatus.TODAY_DONE -> {
+                        stringResource(R.string.today)
+                    }
 
-                WateringStatus.OVERDUE, WateringStatus.NO_PERIOD -> {
-                    stringResource(R.string.watering_d_day_plus_format, uiModel.dDay)
-                }
+                    WateringStatus.OVERDUE, WateringStatus.NO_PERIOD -> {
+                        stringResource(R.string.watering_d_day_plus_format, uiModel.dDay)
+                    }
 
-                WateringStatus.UPCOMING -> {
-                    stringResource(R.string.watering_d_day_minus_format, uiModel.dDay)
-                }
-            },
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+                    WateringStatus.UPCOMING -> {
+                        stringResource(R.string.watering_d_day_minus_format, uiModel.dDay)
+                    }
+                },
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }
 

@@ -2,6 +2,7 @@ package com.mskwak.domain.repository
 
 import com.mskwak.domain.model.Plant
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 interface PlantRepository {
     /**
@@ -21,4 +22,5 @@ interface PlantRepository {
     suspend fun getPlantNames(): Map<Int, String>
     suspend fun getPlantIdsWithAlarmActivation(): Map<Int, Boolean>
     suspend fun updateWateringAlarmActivation(isActive: Boolean, plantId: Int)
+    suspend fun updateHarvestStatus(plantId: Int, harvestDate: LocalDate?, harvestMemo: String?)
 }

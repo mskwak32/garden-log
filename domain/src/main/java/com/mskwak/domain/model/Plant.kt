@@ -10,8 +10,12 @@ data class Plant(
     val lastWateringDate: LocalDate,
     val wateringAlarm: Alarm,
     val picture: Picture?,
-    val memo: String?
-)
+    val memo: String?,
+    val harvestDate: LocalDate? = null,
+    val harvestMemo: String? = null
+) {
+    val isHarvested: Boolean get() = harvestDate != null
+}
 
 enum class PlantListSortOrder {
     CREATED_LATEST,

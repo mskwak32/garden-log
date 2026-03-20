@@ -6,18 +6,20 @@ import com.mskwak.common_ui.base.BaseViewModel
 import com.mskwak.domain.model.Diary
 import com.mskwak.domain.useCase.diary.DeleteDiaryUseCase
 import com.mskwak.domain.useCase.diary.GetDiaryUseCase
-import com.mskwak.domain.useCase.plant.GetPlantNameUseCase
+import com.mskwak.domain.useCase.plant.GetPlantUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = DiaryDetailViewModel.Factory::class)
 class DiaryDetailViewModel @AssistedInject constructor(
     @Assisted navKey: DiaryDetailNavKey,
     private val getDiaryUseCase: GetDiaryUseCase,
-    private val getPlantNameUseCase: GetPlantNameUseCase,
+    private val getPlantUseCase: GetPlantUseCase,
     private val deleteDiaryUseCase: DeleteDiaryUseCase
 ) : BaseViewModel<DiaryDetailState, DiaryDetailEvent, DiaryDetailEffect>() {
 
@@ -38,6 +40,7 @@ class DiaryDetailViewModel @AssistedInject constructor(
             is DiaryDetailEvent.EditClick -> {
                 setEffect(DiaryDetailEffect.Navigation.GoToEdit(currentPlantId, diaryId))
             }
+
             is DiaryDetailEvent.DeleteClick -> setEffect(DiaryDetailEffect.ShowDeleteConfirmDialog)
             is DiaryDetailEvent.DeleteConfirm -> deleteDiary()
         }
@@ -48,13 +51,14 @@ class DiaryDetailViewModel @AssistedInject constructor(
             getDiaryUseCase(diaryId).collect { diary ->
                 currentDiary = diary
                 currentPlantId = diary.plantId
-                val plantName = getPlantNameUseCase.getName(diary.plantId) ?: ""
+                val plant = getPlantUseCase(diary.plantId).filterNotNull().first()
                 setState {
                     copy(
-                        plantName = plantName,
+                        plantName = plant.name,
                         diaryDate = diary.createdDate,
                         picturePaths = diary.pictureList?.map { it.path } ?: emptyList(),
-                        memo = diary.memo
+                        memo = diary.memo,
+                        isHarvested = plant.isHarvested
                     )
                 }
             }

@@ -18,7 +18,9 @@ internal fun Plant.toPlantEntity(pictureId: Int?): PlantEntity {
         lastWateringDate = lastWateringDate,
         wateringAlarm = wateringAlarm.toAlarmEntity(),
         pictureId = pictureId,
-        memo = memo
+        memo = memo,
+        harvestDate = harvestDate,
+        harvestMemo = harvestMemo
     )
 }
 
@@ -31,7 +33,9 @@ internal fun PlantEntity.toPlant(picture: PictureEntity?): Plant {
         lastWateringDate = lastWateringDate,
         wateringAlarm = wateringAlarm.toAlarm(),
         picture = picture?.toPicture(),
-        memo = memo
+        memo = memo,
+        harvestDate = harvestDate,
+        harvestMemo = harvestMemo
     )
 }
 

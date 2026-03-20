@@ -1,10 +1,10 @@
 package com.mskwak.gardendailylog.di
 
+import com.mskwak.domain.repository.AppConfigRepository
 import com.mskwak.domain.repository.DiaryRepository
 import com.mskwak.domain.repository.PictureRepository
 import com.mskwak.domain.repository.PlantRepository
 import com.mskwak.domain.repository.WateringAlarmRepository
-import com.mskwak.domain.repository.AppConfigRepository
 import com.mskwak.domain.useCase.config.GetMinimumAppVersionUseCase
 import com.mskwak.domain.useCase.diary.AddDiaryUseCase
 import com.mskwak.domain.useCase.diary.DeleteDiaryUseCase
@@ -19,6 +19,7 @@ import com.mskwak.domain.useCase.plant.DeletePlantUseCase
 import com.mskwak.domain.useCase.plant.GetPlantNameUseCase
 import com.mskwak.domain.useCase.plant.GetPlantUseCase
 import com.mskwak.domain.useCase.plant.GetPlantsWithSortOrderUseCase
+import com.mskwak.domain.useCase.plant.HarvestPlantUseCase
 import com.mskwak.domain.useCase.plant.UpdatePlantUseCase
 import com.mskwak.domain.useCase.watering.GetRemainWateringDateUseCase
 import com.mskwak.domain.useCase.watering.GetWateringDaysUseCase
@@ -122,6 +123,14 @@ class UseCaseModule {
     @Provides
     fun provideGetPlantNameUseCase(plantRepository: PlantRepository): GetPlantNameUseCase {
         return GetPlantNameUseCase(plantRepository)
+    }
+
+    @Provides
+    fun provideHarvestPlantUseCase(
+        plantRepository: PlantRepository,
+        setWateringAlarmUseCase: SetWateringAlarmUseCase
+    ): HarvestPlantUseCase {
+        return HarvestPlantUseCase(plantRepository, setWateringAlarmUseCase)
     }
 
     /* Config UseCases */
