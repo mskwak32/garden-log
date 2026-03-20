@@ -53,7 +53,6 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.kotlin.serialization)
     implementation(libs.exifinterface)
-    implementation(libs.googleplay.review)
     implementation(libs.telephoto.zoomable.coil3)
 
     testImplementation(libs.bundles.test)

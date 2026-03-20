@@ -29,10 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.play.core.review.ReviewManagerFactory
 import com.mskwak.common_ui.theme.GardenLogTheme
 import com.mskwak.common_ui.ui_component.LocalNavBottomBarPadding
-import com.mskwak.common_ui.util.findActivity
 import com.mskwak.common_ui.util.openPlayStore
 import com.mskwak.domain.Constants
 import com.mskwak.plant.BuildConfig
@@ -67,19 +65,7 @@ fun SettingScreen(
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        val activity = context.findActivity()
-                        if (activity != null) {
-                            val reviewManager = ReviewManagerFactory.create(context)
-                            reviewManager.requestReviewFlow().addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    reviewManager.launchReviewFlow(activity, task.result)
-                                } else {
-                                    context.openPlayStore()
-                                }
-                            }
-                        } else {
-                            context.openPlayStore()
-                        }
+                        context.openPlayStore()
                     }
                 }
             }
