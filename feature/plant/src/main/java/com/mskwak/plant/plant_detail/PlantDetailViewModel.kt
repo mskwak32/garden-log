@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @HiltViewModel(assistedFactory = PlantDetailViewModel.Factory::class)
 class PlantDetailViewModel @AssistedInject constructor(
@@ -130,7 +131,7 @@ class PlantDetailViewModel @AssistedInject constructor(
             }
 
             is PlantDetailEvent.OnHarvestConfirmed -> {
-                harvestPlant()
+                harvestPlant(event.date)
             }
 
             is PlantDetailEvent.OnCancelHarvestClicked -> {
@@ -164,11 +165,12 @@ class PlantDetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun harvestPlant() {
+    private fun harvestPlant(harvestDate: LocalDate) {
         viewModelScope.launch {
             harvestPlantUseCase.harvest(
                 plantId = plantId,
-                harvestMemo = viewState.value.harvestMemoInput.ifBlank { null }
+                harvestMemo = viewState.value.harvestMemoInput.ifBlank { null },
+                harvestDate = harvestDate
             )
             setState { copy(isHarvestSectionExpanded = false, harvestMemoInput = "") }
         }

@@ -112,9 +112,9 @@ fun PlantDetailScreen(
 
     if (showHarvestDialog) {
         PlantDetailHarvestDialog(
-            onConfirm = {
+            onConfirm = { date ->
                 showHarvestDialog = false
-                viewModel.setEvent(PlantDetailEvent.OnHarvestConfirmed)
+                viewModel.setEvent(PlantDetailEvent.OnHarvestConfirmed(date))
             },
             onDismiss = { showHarvestDialog = false }
         )

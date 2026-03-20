@@ -42,7 +42,7 @@ sealed interface PlantDetailEvent : ViewEvent {
     data object OnHarvestSectionToggled : PlantDetailEvent
     data class OnHarvestMemoChanged(val memo: String) : PlantDetailEvent
     data object OnHarvestClicked : PlantDetailEvent
-    data object OnHarvestConfirmed : PlantDetailEvent
+    data class OnHarvestConfirmed(val date: LocalDate) : PlantDetailEvent
     data object OnCancelHarvestClicked : PlantDetailEvent
 }
 

@@ -10,12 +10,12 @@ class HarvestPlantUseCase(
 ) {
     /**
      * 식물을 수확 처리한다.
-     * - DB에 harvestDate=오늘, harvestMemo 저장
+     * - DB에 harvestDate, harvestMemo 저장
      * - 물리적 알람만 취소 (DB의 watering_alarm_isActive는 변경하지 않음)
      *   → 수확 취소 시 이전 알람 상태를 그대로 복원할 수 있도록
      */
-    suspend fun harvest(plantId: Int, harvestMemo: String?) {
-        plantRepository.updateHarvestStatus(plantId, LocalDate.now(), harvestMemo)
+    suspend fun harvest(plantId: Int, harvestMemo: String?, harvestDate: LocalDate) {
+        plantRepository.updateHarvestStatus(plantId, harvestDate, harvestMemo)
         setWateringAlarmUseCase(plantId, false)
     }
 
