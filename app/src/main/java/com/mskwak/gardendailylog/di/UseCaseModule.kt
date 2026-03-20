@@ -60,9 +60,10 @@ class UseCaseModule {
 
     @Provides
     fun provideUpdateWateringAlarmActivationUseCase(
-        plantRepository: PlantRepository
+        plantRepository: PlantRepository,
+        setWateringAlarmUseCase: SetWateringAlarmUseCase
     ): UpdateWateringAlarmActivationUseCase {
-        return UpdateWateringAlarmActivationUseCase(plantRepository)
+        return UpdateWateringAlarmActivationUseCase(plantRepository, setWateringAlarmUseCase)
     }
 
     @Provides

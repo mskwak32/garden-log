@@ -63,7 +63,7 @@ class PlantDetailViewModel @AssistedInject constructor(
                     dDays = uiModel.dDay,
                     wateringStatus = uiModel.status,
                     lastWateringDate = plant.lastWateringDate,
-                    wateringAlarmTime = plant.wateringAlarm.time,
+                    wateringAlarmTime = if (plant.waterPeriod == 0) null else plant.wateringAlarm.time,
                     isWateringActive = plant.wateringAlarm.isActive,
                     memo = plant.memo,
                     diaries = diaries.map { it.toDiaryListItemUiModel() }
