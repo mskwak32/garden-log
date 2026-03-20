@@ -6,4 +6,6 @@ object Constants {
     const val PAGE_SIZE = 10
     const val LAST_WATERING_TEXT_CRITERION = 7
     const val MAX_WATERING_PERIOD = 400
+    const val APP_UPDATE_LOG_URL =
+        "https://spiffy-naranja-d91.notion.site/3296e29b97d5801c92cdfe04aba86f79"
 }

@@ -16,6 +16,6 @@ sealed interface SettingEvent : ViewEvent {
 }
 
 sealed interface SettingEffect : ViewEffect {
-    data object ShowNotReadyDialog : SettingEffect
     data object OpenPlayStore : SettingEffect
+    data object OpenUpdateLog : SettingEffect
 }
