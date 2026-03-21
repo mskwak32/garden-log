@@ -88,7 +88,7 @@
     <string name="harvest_date">수확 날짜</string>
     <string name="harvest_date_format">수확 날짜: %s</string>
     <string name="harvest_memo">수확 메모</string>
-    <string name="harvest_memo_hint">수확에 대한 메모를 입력하세요.</string>
+    <string name="harvest_memo_hint">수확 메모를 입력할 수 있어요.</string>
     <string name="message_harvest_confirm">수확 처리하시겠습니까?\n수확된 식물은 물주기 관리에서 제외됩니다.</string>
     <string name="tab_my_garden">내 텃밭</string>
     <string name="tab_harvested">수확 작물</string>
