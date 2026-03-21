@@ -34,7 +34,7 @@ fun PlantDetailHarvestDialog(
 ) {
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = LocalDate.now()
-            .atStartOfDay(ZoneId.systemDefault())
+            .atStartOfDay(ZoneId.of("UTC"))
             .toInstant()
             .toEpochMilli()
     )
@@ -44,9 +44,7 @@ fun PlantDetailHarvestDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.extraLarge,
             tonalElevation = 6.dp
         ) {
@@ -84,7 +82,7 @@ fun PlantDetailHarvestDialog(
                     TextButton(onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
                             val date = Instant.ofEpochMilli(millis)
-                                .atZone(ZoneId.systemDefault())
+                                .atZone(ZoneId.of("UTC"))
                                 .toLocalDate()
                             onConfirm(date)
                         } ?: onConfirm(LocalDate.now())

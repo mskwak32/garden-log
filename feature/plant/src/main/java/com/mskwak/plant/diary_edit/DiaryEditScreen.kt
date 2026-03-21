@@ -158,7 +158,7 @@ fun DiaryEditScreen(
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = state.diaryDate
-                .atStartOfDay(ZoneId.systemDefault())
+                .atStartOfDay(ZoneId.of("UTC"))
                 .toInstant()
                 .toEpochMilli()
         )
@@ -168,7 +168,7 @@ fun DiaryEditScreen(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
                         val date = Instant.ofEpochMilli(millis)
-                            .atZone(ZoneId.systemDefault())
+                            .atZone(ZoneId.of("UTC"))
                             .toLocalDate()
                         viewModel.setEvent(DiaryEditEvent.OnDateChanged(date))
                     }

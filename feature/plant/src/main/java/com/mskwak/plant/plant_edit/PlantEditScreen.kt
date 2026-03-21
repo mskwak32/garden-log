@@ -175,7 +175,7 @@ fun PlantEditScreen(
     if (showCreatedDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = state.createdDate
-                .atStartOfDay(ZoneId.systemDefault())
+                .atStartOfDay(ZoneId.of("UTC"))
                 .toInstant()
                 .toEpochMilli()
         )
@@ -185,7 +185,7 @@ fun PlantEditScreen(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
                         val date = Instant.ofEpochMilli(millis)
-                            .atZone(ZoneId.systemDefault())
+                            .atZone(ZoneId.of("UTC"))
                             .toLocalDate()
                         viewModel.setEvent(PlantEditEvent.OnCreatedDateChanged(date))
                     }
@@ -207,7 +207,7 @@ fun PlantEditScreen(
     if (showLastWateringDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = state.lastWateringDate
-                .atStartOfDay(ZoneId.systemDefault())
+                .atStartOfDay(ZoneId.of("UTC"))
                 .toInstant()
                 .toEpochMilli()
         )
@@ -217,7 +217,7 @@ fun PlantEditScreen(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
                         val date = Instant.ofEpochMilli(millis)
-                            .atZone(ZoneId.systemDefault())
+                            .atZone(ZoneId.of("UTC"))
                             .toLocalDate()
                         viewModel.setEvent(PlantEditEvent.OnLastWateringDateChanged(date))
                     }
