@@ -10,6 +10,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import com.mskwak.plant.R
 
 @Composable
@@ -39,8 +40,11 @@ fun ExactAlarmPermissionDialog(
 
 private fun openExactAlarmSettings(context: Context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        // 패키지 URI를 지정하면 설정 화면에서 내 앱이 바로 보이고 하이라이트됨
         context.startActivity(
-            Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+            Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                data = "package:${context.packageName}".toUri()
+            }
         )
     }
 }

@@ -15,12 +15,12 @@ internal val MIGRATION_6_7 = object : Migration(6, 7) {
                 createdDate TEXT NOT NULL,
                 waterPeriod INTEGER NOT NULL,
                 lastWateringDate TEXT NOT NULL,
-                watering_alarm_time TEXT NOT NULL,
-                watering_alarm_isActive INTEGER NOT NULL,
                 pictureId INTEGER,
                 memo TEXT,
                 harvestDate TEXT,
-                harvestMemo TEXT
+                harvestMemo TEXT,
+                watering_alarm_time TEXT NOT NULL,
+                watering_alarm_isActive INTEGER NOT NULL
             )
             """.trimIndent()
         )
