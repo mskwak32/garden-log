@@ -1,6 +1,8 @@
 package com.mskwak.plant.diary_detail
 
 import androidx.lifecycle.viewModelScope
+import com.mskwak.analytics.AnalyticsLogger
+import com.mskwak.analytics.GardenEvent
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
 import com.mskwak.domain.model.Diary
@@ -20,7 +22,8 @@ class DiaryDetailViewModel @AssistedInject constructor(
     @Assisted navKey: DiaryDetailNavKey,
     private val getDiaryUseCase: GetDiaryUseCase,
     private val getPlantUseCase: GetPlantUseCase,
-    private val deleteDiaryUseCase: DeleteDiaryUseCase
+    private val deleteDiaryUseCase: DeleteDiaryUseCase,
+    private val analyticsLogger: AnalyticsLogger
 ) : BaseViewModel<DiaryDetailState, DiaryDetailEvent, DiaryDetailEffect>() {
 
     private val diaryId: Int = navKey.diaryId
@@ -28,6 +31,7 @@ class DiaryDetailViewModel @AssistedInject constructor(
     private var currentPlantId: Int = 0
 
     init {
+        analyticsLogger.log(GardenEvent.ScreenView("diary_detail"))
         loadDiary()
     }
 

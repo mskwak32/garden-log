@@ -1,6 +1,8 @@
 package com.mskwak.plant.diary_list
 
 import androidx.lifecycle.viewModelScope
+import com.mskwak.analytics.AnalyticsLogger
+import com.mskwak.analytics.GardenEvent
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
 import com.mskwak.domain.model.PlantListSortOrder
@@ -20,11 +22,13 @@ import javax.inject.Inject
 @HiltViewModel
 class DiaryListViewModel @Inject constructor(
     private val getDiariesUseCase: GetDiariesUseCase,
-    private val getPlantsWithSortOrderUseCase: GetPlantsWithSortOrderUseCase
+    private val getPlantsWithSortOrderUseCase: GetPlantsWithSortOrderUseCase,
+    private val analyticsLogger: AnalyticsLogger
 ) : BaseViewModel<DiaryListState, DiaryListEvent, DiaryListEffect>() {
     override fun setInitialState(): DiaryListState = DiaryListState()
 
     init {
+        analyticsLogger.log(GardenEvent.ScreenView("diary_list"))
         observePlants()
         observeDiaries()
     }

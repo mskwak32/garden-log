@@ -3,6 +3,8 @@ package com.mskwak.plant.plant_edit
 import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
+import com.mskwak.analytics.AnalyticsLogger
+import com.mskwak.analytics.GardenEvent
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
 import com.mskwak.domain.model.Alarm
@@ -36,7 +38,8 @@ class PlantEditViewModel @AssistedInject constructor(
     private val addPlantUseCase: AddPlantUseCase,
     private val updatePlantUseCase: UpdatePlantUseCase,
     private val savePictureUseCase: SavePictureUseCase,
-    private val deletePictureUseCase: DeletePictureUseCase
+    private val deletePictureUseCase: DeletePictureUseCase,
+    private val analyticsLogger: AnalyticsLogger
 ) : BaseViewModel<PlantEditState, PlantEditEvent, PlantEditEffect>() {
 
     private var plantId: Int? = navKey.plantId
@@ -45,6 +48,8 @@ class PlantEditViewModel @AssistedInject constructor(
     private var loadJob: Job? = null
 
     init {
+        val screenName = if (navKey.plantId != null) "plant_edit" else "plant_add"
+        analyticsLogger.log(GardenEvent.ScreenView(screenName))
         plantId?.let { loadJob = loadPlant(it) }
     }
 
@@ -219,8 +224,15 @@ class PlantEditViewModel @AssistedInject constructor(
 
                 if (plantId != null) {
                     updatePlantUseCase(plant)
+                    analyticsLogger.log(GardenEvent.UpdatePlant)
                 } else {
                     addPlantUseCase(plant)
+                    analyticsLogger.log(
+                        GardenEvent.AddPlant(
+                            wateringInterval = state.wateringPeriod,
+                            alarmEnabled = state.isWateringAlarmActive
+                        )
+                    )
                 }
 
                 setEffect(PlantEditEffect.Navigation.SaveComplete)

@@ -37,6 +37,7 @@ android {
 dependencies {
     implementation(project(":domain"))
     implementation(project(":core:common_ui"))
+    implementation(project(":core:analytics"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)

@@ -1,6 +1,8 @@
 package com.mskwak.plant.diary_more
 
 import androidx.lifecycle.viewModelScope
+import com.mskwak.analytics.AnalyticsLogger
+import com.mskwak.analytics.GardenEvent
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
 import com.mskwak.domain.Constants
@@ -20,7 +22,8 @@ import kotlinx.coroutines.launch
 class DiaryMoreViewModel @AssistedInject constructor(
     @Assisted navKey: DiaryMoreNavKey,
     private val getDiariesByPlantIdUseCase: GetDiariesByPlantIdUseCase,
-    private val getPlantNameUseCase: GetPlantNameUseCase
+    private val getPlantNameUseCase: GetPlantNameUseCase,
+    private val analyticsLogger: AnalyticsLogger
 ) : BaseViewModel<DiaryMoreState, DiaryMoreEvent, DiaryMoreEffect>() {
 
     private val plantId = navKey.plantId
@@ -30,6 +33,7 @@ class DiaryMoreViewModel @AssistedInject constructor(
     override fun setInitialState(): DiaryMoreState = DiaryMoreState()
 
     init {
+        analyticsLogger.log(GardenEvent.ScreenView("diary_more"))
         loadPlantName()
         loadPage(page = 0)
     }

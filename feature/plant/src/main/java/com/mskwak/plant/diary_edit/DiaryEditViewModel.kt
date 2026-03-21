@@ -2,13 +2,12 @@ package com.mskwak.plant.diary_edit
 
 import android.app.Application
 import androidx.lifecycle.viewModelScope
+import com.mskwak.analytics.AnalyticsLogger
+import com.mskwak.analytics.GardenEvent
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
 import com.mskwak.domain.Constants
 import com.mskwak.domain.model.Diary
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import com.mskwak.domain.model.Picture
 import com.mskwak.domain.useCase.diary.AddDiaryUseCase
 import com.mskwak.domain.useCase.diary.GetDiaryUseCase
@@ -19,6 +18,9 @@ import com.mskwak.domain.useCase.plant.GetPlantNameUseCase
 import com.mskwak.plant.R
 import com.mskwak.plant.util.cleanupCameraCache
 import com.mskwak.plant.util.readBytesFromUri
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +36,8 @@ class DiaryEditViewModel @AssistedInject constructor(
     private val getDiaryUseCase: GetDiaryUseCase,
     private val getPlantNameUseCase: GetPlantNameUseCase,
     private val savePictureUseCase: SavePictureUseCase,
-    private val deletePictureUseCase: DeletePictureUseCase
+    private val deletePictureUseCase: DeletePictureUseCase,
+    private val analyticsLogger: AnalyticsLogger
 ) : BaseViewModel<DiaryEditState, DiaryEditEvent, DiaryEditEffect>() {
 
     private val plantId: Int = navKey.plantId
@@ -44,6 +47,8 @@ class DiaryEditViewModel @AssistedInject constructor(
     private val removedOriginalPictures: MutableList<Picture> = mutableListOf()
 
     init {
+        val screenName = if (navKey.diaryId != null) "diary_edit" else "diary_add"
+        analyticsLogger.log(GardenEvent.ScreenView(screenName))
         loadPlantName()
         diaryId?.let { loadDiary(it) }
     }
@@ -60,6 +65,7 @@ class DiaryEditViewModel @AssistedInject constructor(
                 setState { copy(isSaveEnabled = false) }
                 saveDiary()
             }
+
             is DiaryEditEvent.OnMemoChanged -> setState { copy(memo = event.memo) }
             is DiaryEditEvent.OnDateClicked -> setEffect(DiaryEditEffect.ShowDatePicker)
             is DiaryEditEvent.OnDateChanged -> setState { copy(diaryDate = event.date) }
@@ -200,6 +206,7 @@ class DiaryEditViewModel @AssistedInject constructor(
                     updateDiaryUseCase(diary)
                 } else {
                     addDiaryUseCase(diary)
+                    analyticsLogger.log(GardenEvent.AddDiary)
                 }
 
                 setEffect(DiaryEditEffect.Navigation.SaveComplete)

@@ -2,6 +2,9 @@ package com.mskwak.plant.plant_detail
 
 import android.app.Application
 import androidx.lifecycle.viewModelScope
+import com.mskwak.analytics.AnalyticsLogger
+import com.mskwak.analytics.GardenEvent
+import com.mskwak.analytics.WateringSource
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
 import com.mskwak.domain.repository.PlantRepository
@@ -38,13 +41,15 @@ class PlantDetailViewModel @AssistedInject constructor(
     private val updateWateringAlarmActivationUseCase: UpdateWateringAlarmActivationUseCase,
     private val deletePlantUseCase: DeletePlantUseCase,
     private val plantRepository: PlantRepository,
-    private val harvestPlantUseCase: HarvestPlantUseCase
+    private val harvestPlantUseCase: HarvestPlantUseCase,
+    private val analyticsLogger: AnalyticsLogger
 ) : BaseViewModel<PlantDetailState, PlantDetailEvent, PlantDetailEffect>() {
 
     private val plantId: Int = navKey.plantId
     private var observeJob: Job? = null
 
     init {
+        analyticsLogger.log(GardenEvent.ScreenView("plant_detail"))
         observeJob = observePlant()
     }
 
@@ -148,10 +153,12 @@ class PlantDetailViewModel @AssistedInject constructor(
 
         viewModelScope.launch {
             updateWateringAlarmActivationUseCase(plantId, isActive)
+            analyticsLogger.log(GardenEvent.WateringAlarmToggle(isActive))
         }
     }
 
     private fun waterPlant() {
+        analyticsLogger.log(GardenEvent.WateringClick(WateringSource.DETAIL))
         viewModelScope.launch {
             wateringNowUseCase(plantId)
         }
@@ -172,6 +179,7 @@ class PlantDetailViewModel @AssistedInject constructor(
                 harvestMemo = viewState.value.harvestMemoInput.ifBlank { null },
                 harvestDate = harvestDate
             )
+            analyticsLogger.log(GardenEvent.Harvest)
             setState { copy(isHarvestSectionExpanded = false, harvestMemoInput = "") }
         }
     }
@@ -179,6 +187,7 @@ class PlantDetailViewModel @AssistedInject constructor(
     private fun cancelHarvest() {
         viewModelScope.launch {
             harvestPlantUseCase.cancelHarvest(plantId)
+            analyticsLogger.log(GardenEvent.CancelHarvest)
         }
     }
 

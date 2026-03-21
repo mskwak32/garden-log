@@ -1,6 +1,9 @@
 package com.mskwak.plant.plant_list
 
 import androidx.lifecycle.viewModelScope
+import com.mskwak.analytics.AnalyticsLogger
+import com.mskwak.analytics.GardenEvent
+import com.mskwak.analytics.WateringSource
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
 import com.mskwak.domain.model.PlantListSortOrder
@@ -20,12 +23,14 @@ import javax.inject.Inject
 class PlantListViewModel @Inject constructor(
     private val getPlantsWithSortOrderUseCase: GetPlantsWithSortOrderUseCase,
     private val getWateringDaysUseCase: GetWateringDaysUseCase,
-    private val wateringNowUseCase: WateringNowUseCase
+    private val wateringNowUseCase: WateringNowUseCase,
+    private val analyticsLogger: AnalyticsLogger
 ) : BaseViewModel<PlantListState, PlantListEvent, PlantListEffect>() {
     private val _sortOrder = MutableStateFlow(PlantListSortOrder.CREATED_LATEST)
     private val _selectedTab = MutableStateFlow(PlantListTab.MY_GARDEN)
 
     init {
+        analyticsLogger.log(GardenEvent.ScreenView("plant_list"))
         observePlants()
     }
 
@@ -48,6 +53,7 @@ class PlantListViewModel @Inject constructor(
             }
 
             is PlantListEvent.Watering -> {
+                analyticsLogger.log(GardenEvent.WateringClick(WateringSource.LIST))
                 waterPlant(event.plantId)
             }
 

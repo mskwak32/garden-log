@@ -1,6 +1,8 @@
 package com.mskwak.plant.setting
 
 import android.content.Context
+import com.mskwak.analytics.AnalyticsLogger
+import com.mskwak.analytics.GardenEvent
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,10 +11,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
-    @ApplicationContext context: Context
+    @ApplicationContext context: Context,
+    private val analyticsLogger: AnalyticsLogger
 ) : BaseViewModel<SettingState, SettingEvent, SettingEffect>() {
 
     init {
+        analyticsLogger.log(GardenEvent.ScreenView("setting"))
         val versionName = runCatching {
             context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: ""
         }.getOrDefault("")
