@@ -64,7 +64,7 @@ class DiaryEditViewModel @AssistedInject constructor(
             is DiaryEditEvent.OnDateClicked -> setEffect(DiaryEditEffect.ShowDatePicker)
             is DiaryEditEvent.OnDateChanged -> setState { copy(diaryDate = event.date) }
             is DiaryEditEvent.OnAddPhotoClicked -> handleAddPhoto()
-            is DiaryEditEvent.OnPictureAdded -> addPicture(event)
+            is DiaryEditEvent.OnPicturesAdded -> addPictures(event)
             is DiaryEditEvent.OnPictureRemoved -> removePicture(event.index)
         }
     }
@@ -96,18 +96,24 @@ class DiaryEditViewModel @AssistedInject constructor(
         }
     }
 
-    private fun addPicture(event: DiaryEditEvent.OnPictureAdded) {
+    private fun addPictures(event: DiaryEditEvent.OnPicturesAdded) {
         viewModelScope.launch {
-            val currentSize = viewState.value.picturePaths.size
-            if (currentSize >= Constants.MAX_PICTURE_PER_DIARY) {
-                setEffect(DiaryEditEffect.ShowSnackbar(R.string.message_no_more_picture))
-                return@launch
+            var skipped = false
+            for (uri in event.uris) {
+                val currentSize = viewState.value.picturePaths.size
+                if (currentSize >= Constants.MAX_PICTURE_PER_DIARY) {
+                    skipped = true
+                    break
+                }
+                val bytes = readBytesFromUri(application, uri) ?: continue
+                cleanupCameraCache(application)
+                val picture = savePictureUseCase(bytes)
+                newPictures.add(picture)
+                setState { copy(picturePaths = picturePaths + picture.path) }
             }
-            val bytes = readBytesFromUri(application, event.uri) ?: return@launch
-            cleanupCameraCache(application)
-            val picture = savePictureUseCase(bytes)
-            newPictures.add(picture)
-            setState { copy(picturePaths = picturePaths + picture.path) }
+            if (skipped) {
+                setEffect(DiaryEditEffect.ShowSnackbar(R.string.message_no_more_picture))
+            }
         }
     }
 

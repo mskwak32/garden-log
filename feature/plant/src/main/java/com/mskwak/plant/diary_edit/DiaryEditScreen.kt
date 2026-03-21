@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import com.mskwak.domain.Constants
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -85,9 +86,9 @@ fun DiaryEditScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        uri?.let { viewModel.setEvent(DiaryEditEvent.OnPictureAdded(it)) }
+        contract = ActivityResultContracts.PickMultipleVisualMedia(Constants.MAX_PICTURE_PER_DIARY)
+    ) { uris ->
+        if (uris.isNotEmpty()) viewModel.setEvent(DiaryEditEvent.OnPicturesAdded(uris))
     }
 
     var cameraUri by remember { mutableStateOf<Uri?>(null) }
@@ -95,7 +96,7 @@ fun DiaryEditScreen(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
         if (success) {
-            cameraUri?.let { viewModel.setEvent(DiaryEditEvent.OnPictureAdded(it)) }
+            cameraUri?.let { viewModel.setEvent(DiaryEditEvent.OnPicturesAdded(listOf(it))) }
         }
     }
 

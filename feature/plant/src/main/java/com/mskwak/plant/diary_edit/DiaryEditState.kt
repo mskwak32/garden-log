@@ -24,7 +24,7 @@ sealed interface DiaryEditEvent : ViewEvent {
     data object OnDateClicked : DiaryEditEvent
     data class OnDateChanged(val date: LocalDate) : DiaryEditEvent
     data object OnAddPhotoClicked : DiaryEditEvent
-    data class OnPictureAdded(val uri: Uri) : DiaryEditEvent
+    data class OnPicturesAdded(val uris: List<Uri>) : DiaryEditEvent
     data class OnPictureRemoved(val index: Int) : DiaryEditEvent
 }
 
