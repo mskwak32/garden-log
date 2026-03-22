@@ -13,6 +13,7 @@ local.properties
 *.aab
 *.jks
 *.keystore
+/keystore
 google-services.json
 app/release/
 firebase-debug.log

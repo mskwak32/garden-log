@@ -82,15 +82,15 @@ entry<FooNavKey> {
 
 ## Tech Stack
 
-- **Kotlin**: 2.2.21 (JVM 17)
-- **Compose BOM**: 2025.11.00, Material 3
-- **AGP**: 8.13.0, SDK 36/29
-- **Hilt**: 2.57.2, KSP
-- **Room**: 2.8.3 (DB v6, migration required)
-- **Retrofit**: 3.0.0, OkHttp 5.3.0, Kotlin Serialization
-- **Coil**: 3.3.0 (image loading)
+- **Kotlin**: 2.3.20 (JVM 17)
+- **Compose BOM**: 2026.03.00, Material 3
+- **AGP**: 9.1.0, SDK 36/29
+- **Hilt**: 2.59.2, KSP
+- **Room**: 2.8.4 (DB v6, migration required)
+- **Retrofit**: 3.0.0, OkHttp 5.3.2, Kotlin Serialization
+- **Coil**: 3.4.0 (image loading)
 - **Timber**: 5.0.1 (logging)
-- **Firebase BOM**: 34.5.0, Analytics, Crashlytics (disabled in Debug)
+- **Firebase BOM**: 34.11.0, Analytics, Crashlytics (disabled in Debug)
 
 ## Key Conventions
 

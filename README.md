@@ -38,14 +38,14 @@
 
 | 분류 | 기술 |
 |---|---|
-| Language | Kotlin 2.2.21 |
-| UI | Jetpack Compose (BOM 2025.11.00), Material 3 |
+| Language | Kotlin 2.3.20 |
+| UI | Jetpack Compose (BOM 2026.03.00), Material 3 |
 | Architecture | Clean Architecture, MVVM/MVI |
-| DI | Hilt 2.57.2 |
-| Navigation | Navigation 3 1.1.0-alpha02 |
-| Database | Room 2.8.3 |
-| Network | Retrofit 3.0.0, OkHttp 5.3.0 |
-| Image | Coil 3.3.0 |
+| DI | Hilt 2.59.2 |
+| Navigation | Navigation 3 1.1.0-beta01 |
+| Database | Room 2.8.4 |
+| Network | Retrofit 3.0.0, OkHttp 5.3.2 |
+| Image | Coil 3.4.0 |
 | Animation | Lottie 6.7.1 |
 | Logging | Timber 5.0.1 |
 | Monitoring | Firebase Analytics, Crashlytics |
