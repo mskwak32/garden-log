@@ -3,6 +3,7 @@ package com.mskwak.gardendailylog
 import android.app.Application
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
+import com.google.firebase.analytics.analytics
 import com.google.firebase.crashlytics.crashlytics
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
@@ -27,5 +28,6 @@ class AppApplication : Application() {
     private fun initFirebase() {
         FirebaseApp.initializeApp(applicationContext)
         Firebase.crashlytics.isCrashlyticsCollectionEnabled = !BuildConfig.DEBUG
+        Firebase.analytics.setAnalyticsCollectionEnabled(!BuildConfig.DEBUG)
     }
 }
