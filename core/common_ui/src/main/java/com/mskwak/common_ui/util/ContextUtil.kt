@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.net.toUri
 
 fun Context.findActivity(): Activity? {
@@ -17,10 +18,10 @@ fun Context.findActivity(): Activity? {
 
 fun Context.openPlayStore() {
     val packageName = packageName
-    val intent = runCatching {
-        Intent(Intent.ACTION_VIEW, "market://details?id=$packageName".toUri())
-    }.getOrElse {
-        Intent(Intent.ACTION_VIEW, "https://play.google.com/store/apps/details?id=$packageName".toUri())
+    runCatching {
+        startActivity(Intent(Intent.ACTION_VIEW, "market://details?id=$packageName".toUri()))
+    }.onFailure {
+        // Play Store 앱이 없는 기기(에뮬레이터, 일부 제조사)는 브라우저로 fallback
+        startActivity(Intent(Intent.ACTION_VIEW, "https://play.google.com/store/apps/details?id=$packageName".toUri()))
     }
-    startActivity(intent)
 }
