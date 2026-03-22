@@ -3,12 +3,7 @@ package com.mskwak.database.di
 import android.app.Application
 import androidx.room.Room
 import com.mskwak.database.GardenDatabase
-import com.mskwak.database.migration.MIGRATION_1_2
-import com.mskwak.database.migration.MIGRATION_2_3
-import com.mskwak.database.migration.MIGRATION_3_4
-import com.mskwak.database.migration.MIGRATION_4_5
-import com.mskwak.database.migration.MIGRATION_5_6
-import com.mskwak.database.migration.MIGRATION_6_7
+import com.mskwak.database.migration.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,7 +24,8 @@ class DatabaseModule {
                 MIGRATION_3_4,
                 MIGRATION_4_5,
                 MIGRATION_5_6,
-                MIGRATION_6_7
+                MIGRATION_6_7,
+                MIGRATION_7_8
             )
             .build()
     }
@@ -45,4 +41,8 @@ class DatabaseModule {
     @Provides
     @Singleton
     fun providePictureDao(gardenDatabase: GardenDatabase) = gardenDatabase.pictureDao()
+
+    @Provides
+    @Singleton
+    fun provideWateringLogDao(gardenDatabase: GardenDatabase) = gardenDatabase.wateringLogDao()
 }

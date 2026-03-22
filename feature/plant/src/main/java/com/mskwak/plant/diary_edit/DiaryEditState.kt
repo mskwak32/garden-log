@@ -14,7 +14,8 @@ data class DiaryEditState(
     val picturePaths: List<String> = emptyList(),
     val diaryDate: LocalDate = LocalDate.now(),
     val memo: String = "",
-    val isSaveEnabled: Boolean = true
+    val isSaveEnabled: Boolean = true,
+    val isWatered: Boolean = false
 ) : ViewState
 
 sealed interface DiaryEditEvent : ViewEvent {

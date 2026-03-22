@@ -1,31 +1,12 @@
 package com.mskwak.gardendailylog.di
 
-import com.mskwak.domain.repository.AppConfigRepository
-import com.mskwak.domain.repository.DiaryRepository
-import com.mskwak.domain.repository.PictureRepository
-import com.mskwak.domain.repository.PlantRepository
-import com.mskwak.domain.repository.WateringAlarmRepository
+import com.mskwak.domain.repository.*
 import com.mskwak.domain.useCase.config.GetMinimumAppVersionUseCase
-import com.mskwak.domain.useCase.diary.AddDiaryUseCase
-import com.mskwak.domain.useCase.diary.DeleteDiaryUseCase
-import com.mskwak.domain.useCase.diary.GetDiariesByPlantIdUseCase
-import com.mskwak.domain.useCase.diary.GetDiariesUseCase
-import com.mskwak.domain.useCase.diary.GetDiaryUseCase
-import com.mskwak.domain.useCase.diary.UpdateDiaryUseCase
+import com.mskwak.domain.useCase.diary.*
 import com.mskwak.domain.useCase.picture.DeletePictureUseCase
 import com.mskwak.domain.useCase.picture.SavePictureUseCase
-import com.mskwak.domain.useCase.plant.AddPlantUseCase
-import com.mskwak.domain.useCase.plant.DeletePlantUseCase
-import com.mskwak.domain.useCase.plant.GetPlantNameUseCase
-import com.mskwak.domain.useCase.plant.GetPlantUseCase
-import com.mskwak.domain.useCase.plant.GetPlantsWithSortOrderUseCase
-import com.mskwak.domain.useCase.plant.HarvestPlantUseCase
-import com.mskwak.domain.useCase.plant.UpdatePlantUseCase
-import com.mskwak.domain.useCase.watering.GetRemainWateringDateUseCase
-import com.mskwak.domain.useCase.watering.GetWateringDaysUseCase
-import com.mskwak.domain.useCase.watering.SetWateringAlarmUseCase
-import com.mskwak.domain.useCase.watering.UpdateWateringAlarmActivationUseCase
-import com.mskwak.domain.useCase.watering.WateringNowUseCase
+import com.mskwak.domain.useCase.plant.*
+import com.mskwak.domain.useCase.watering.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -68,11 +49,26 @@ class UseCaseModule {
     }
 
     @Provides
+    fun provideAddWateringLogUseCase(
+        wateringLogRepository: WateringLogRepository
+    ): AddWateringLogUseCase {
+        return AddWateringLogUseCase(wateringLogRepository)
+    }
+
+    @Provides
+    fun provideGetWateringLogExistsUseCase(
+        wateringLogRepository: WateringLogRepository
+    ): GetWateringLogExistsUseCase {
+        return GetWateringLogExistsUseCase(wateringLogRepository)
+    }
+
+    @Provides
     fun provideWateringNowUseCase(
         plantRepository: PlantRepository,
-        setWateringAlarmUseCase: SetWateringAlarmUseCase
+        setWateringAlarmUseCase: SetWateringAlarmUseCase,
+        addWateringLogUseCase: AddWateringLogUseCase
     ): WateringNowUseCase {
-        return WateringNowUseCase(plantRepository, setWateringAlarmUseCase)
+        return WateringNowUseCase(plantRepository, setWateringAlarmUseCase, addWateringLogUseCase)
     }
 
     /* Plant UseCases */

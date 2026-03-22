@@ -1,13 +1,7 @@
 package com.mskwak.data.di
 
-import com.mskwak.data.repository.AppConfigRepositoryImpl
-import com.mskwak.data.repository.DiaryRepositoryImpl
-import com.mskwak.data.repository.PictureRepositoryImpl
-import com.mskwak.data.repository.PlantRepositoryImpl
-import com.mskwak.domain.repository.AppConfigRepository
-import com.mskwak.domain.repository.DiaryRepository
-import com.mskwak.domain.repository.PictureRepository
-import com.mskwak.domain.repository.PlantRepository
+import com.mskwak.data.repository.*
+import com.mskwak.domain.repository.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -32,4 +26,8 @@ internal abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindPictureRepository(impl: PictureRepositoryImpl): PictureRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindWateringLogRepository(impl: WateringLogRepositoryImpl): WateringLogRepository
 }

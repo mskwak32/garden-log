@@ -55,6 +55,7 @@
     <string name="watering_d_day_plus_format">D+%02d</string>
     <string name="watering_d_day_minus_format">D-%02d</string>
     <string name="watering_alarm">알림 시간</string>
+    <string name="watering_icon_description">물주기 기록 있음</string>
 
     <string name="message_input_required_field">필수항목을 입력해주세요.</string>
     <string name="message_no_more_picture">더이상 이미지를 추가할 수 없습니다.</string>

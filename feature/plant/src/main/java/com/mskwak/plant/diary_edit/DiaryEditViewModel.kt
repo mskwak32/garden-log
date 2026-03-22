@@ -15,6 +15,7 @@ import com.mskwak.domain.useCase.diary.UpdateDiaryUseCase
 import com.mskwak.domain.useCase.picture.DeletePictureUseCase
 import com.mskwak.domain.useCase.picture.SavePictureUseCase
 import com.mskwak.domain.useCase.plant.GetPlantNameUseCase
+import com.mskwak.domain.useCase.watering.GetWateringLogExistsUseCase
 import com.mskwak.plant.R
 import com.mskwak.plant.util.cleanupCameraCache
 import com.mskwak.plant.util.readBytesFromUri
@@ -26,6 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.time.LocalDate
 
 @HiltViewModel(assistedFactory = DiaryEditViewModel.Factory::class)
 class DiaryEditViewModel @AssistedInject constructor(
@@ -37,6 +39,7 @@ class DiaryEditViewModel @AssistedInject constructor(
     private val getPlantNameUseCase: GetPlantNameUseCase,
     private val savePictureUseCase: SavePictureUseCase,
     private val deletePictureUseCase: DeletePictureUseCase,
+    private val getWateringLogExistsUseCase: GetWateringLogExistsUseCase,
     private val analyticsLogger: AnalyticsLogger
 ) : BaseViewModel<DiaryEditState, DiaryEditEvent, DiaryEditEffect>() {
 
@@ -50,7 +53,7 @@ class DiaryEditViewModel @AssistedInject constructor(
         val screenName = if (navKey.diaryId != null) "diary_edit" else "diary_add"
         analyticsLogger.log(GardenEvent.ScreenView(screenName))
         loadPlantName()
-        diaryId?.let { loadDiary(it) }
+        diaryId?.let { loadDiary(it) } ?: loadWateringStatus(LocalDate.now())
     }
 
     override fun setInitialState(): DiaryEditState = DiaryEditState(
@@ -68,7 +71,11 @@ class DiaryEditViewModel @AssistedInject constructor(
 
             is DiaryEditEvent.OnMemoChanged -> setState { copy(memo = event.memo) }
             is DiaryEditEvent.OnDateClicked -> setEffect(DiaryEditEffect.ShowDatePicker)
-            is DiaryEditEvent.OnDateChanged -> setState { copy(diaryDate = event.date) }
+            is DiaryEditEvent.OnDateChanged -> {
+                setState { copy(diaryDate = event.date) }
+                loadWateringStatus(event.date)
+            }
+
             is DiaryEditEvent.OnAddPhotoClicked -> handleAddPhoto()
             is DiaryEditEvent.OnPicturesAdded -> addPictures(event)
             is DiaryEditEvent.OnPictureRemoved -> removePicture(event.index)
@@ -76,6 +83,13 @@ class DiaryEditViewModel @AssistedInject constructor(
     }
 
     fun createCameraUri() = com.mskwak.plant.util.createCameraUri(application)
+
+    private fun loadWateringStatus(date: LocalDate) {
+        viewModelScope.launch {
+            val isWatered = getWateringLogExistsUseCase(plantId, date)
+            setState { copy(isWatered = isWatered) }
+        }
+    }
 
     private fun handleBack() {
         val state = viewState.value
@@ -166,12 +180,14 @@ class DiaryEditViewModel @AssistedInject constructor(
         viewModelScope.launch {
             getDiaryUseCase(diaryId).collect { diary ->
                 originalPictures = diary.pictureList ?: emptyList()
+                val isWatered = getWateringLogExistsUseCase(plantId, diary.createdDate)
                 setState {
                     copy(
                         isEditMode = true,
                         memo = diary.memo,
                         diaryDate = diary.createdDate,
-                        picturePaths = originalPictures.map { it.path }
+                        picturePaths = originalPictures.map { it.path },
+                        isWatered = isWatered
                     )
                 }
             }
