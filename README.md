@@ -2,8 +2,9 @@
 
 텃밭에서 키우는 식물을 관리하고, 성장 일기를 기록하는 Android 앱입니다.
 
-> 이 프로젝트는 기존 `garden-daily-log` 프로젝트를 Clean Architecture + Jetpack Compose 기반으로 리뉴얼한 버전입니다.
-> 현재 미완성 프로젝트 입니다.
+> 기존 `garden-daily-log` 프로젝트를 Clean Architecture + Jetpack Compose 기반으로 리뉴얼한 버전입니다.
+
+[![Google Play](https://img.shields.io/badge/Google%20Play-다운로드-green?logo=google-play)](https://play.google.com/store/apps/details?id=com.mskwak.gardendailylog)
 
 ## 주요 기능
 
@@ -25,9 +26,13 @@
 
 ## 스크린샷
 
-| 홈 (식물 목록) | 식물 상세 | 일기 목록 |
-|:-:|:-:|:-:|
-| - | - | - |
+<p align="center">
+  <img src="playstore/playstore%20images/슬라이드1.PNG" width="19%" alt="홈 화면"/>
+  <img src="playstore/playstore%20images/슬라이드2.PNG" width="19%" alt="물주기 알림"/>
+  <img src="playstore/playstore%20images/슬라이드3.PNG" width="19%" alt="식물 상세"/>
+  <img src="playstore/playstore%20images/슬라이드4.PNG" width="19%" alt="일기 작성"/>
+  <img src="playstore/playstore%20images/슬라이드5.PNG" width="19%" alt="일기 목록"/>
+</p>
 
 ## 기술 스택
 
