@@ -30,7 +30,7 @@ android {
         versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        setProperty("archivesBaseName", "${rootProject.name} $versionName($versionCode)")
+        base.archivesName = "${rootProject.name} $versionName($versionCode)"
     }
     signingConfigs {
         getByName("debug") {
