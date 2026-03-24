@@ -7,8 +7,8 @@ import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
 import com.mskwak.domain.Constants
 import com.mskwak.domain.model.DiaryListSortOrder
-import com.mskwak.domain.useCase.diary.GetDiariesByPlantIdUseCase
-import com.mskwak.domain.useCase.plant.GetPlantNameUseCase
+import com.mskwak.domain.usecase.diary.GetDiariesByPlantIdUseCase
+import com.mskwak.domain.usecase.plant.GetPlantNameUseCase
 import com.mskwak.plant.model.toDiaryListItemUiModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

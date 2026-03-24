@@ -10,11 +10,11 @@ import com.mskwak.common_ui.base.BaseViewModel
 import com.mskwak.domain.model.Alarm
 import com.mskwak.domain.model.Picture
 import com.mskwak.domain.model.Plant
-import com.mskwak.domain.useCase.picture.DeletePictureUseCase
-import com.mskwak.domain.useCase.picture.SavePictureUseCase
-import com.mskwak.domain.useCase.plant.AddPlantUseCase
-import com.mskwak.domain.useCase.plant.GetPlantUseCase
-import com.mskwak.domain.useCase.plant.UpdatePlantUseCase
+import com.mskwak.domain.usecase.picture.DeletePictureUseCase
+import com.mskwak.domain.usecase.picture.SavePictureUseCase
+import com.mskwak.domain.usecase.plant.AddPlantUseCase
+import com.mskwak.domain.usecase.plant.GetPlantUseCase
+import com.mskwak.domain.usecase.plant.UpdatePlantUseCase
 import com.mskwak.plant.R
 import com.mskwak.plant.util.canScheduleExactAlarms
 import com.mskwak.plant.util.cleanupCameraCache

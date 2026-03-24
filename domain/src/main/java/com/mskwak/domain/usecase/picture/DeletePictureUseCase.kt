@@ -1,4 +1,4 @@
-package com.mskwak.domain.useCase.picture
+package com.mskwak.domain.usecase.picture
 
 import com.mskwak.domain.model.Picture
 import com.mskwak.domain.repository.PictureRepository

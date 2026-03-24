@@ -38,4 +38,13 @@ interface PictureDao {
         """
     )
     fun getDiaryPictures(diaryId: Int): Flow<List<PictureEntity>>
+
+    @Query(
+        """
+        SELECT picture.* FROM picture
+        INNER JOIN diary_picture ON picture.id = diary_picture.pictureId
+        WHERE diary_picture.diaryId = :diaryId
+        """
+    )
+    suspend fun getDiaryPicturesOneShot(diaryId: Int): List<PictureEntity>
 }

@@ -3,20 +3,8 @@ package com.mskwak.plant.setting
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.union
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,7 +26,8 @@ import com.mskwak.plant.R
 
 @Composable
 fun SettingScreen(
-    viewModel: SettingViewModel = hiltViewModel()
+    viewModel: SettingViewModel = hiltViewModel(),
+    onNavigateToExportedDiaryList: () -> Unit = {}
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -67,6 +56,10 @@ fun SettingScreen(
                     } else {
                         context.openPlayStore()
                     }
+                }
+
+                SettingEffect.NavigateToExportedDiaryList -> {
+                    onNavigateToExportedDiaryList()
                 }
             }
         }
@@ -98,6 +91,10 @@ private fun Content(
             SettingItem(
                 label = stringResource(R.string.setting_app_estimation),
                 onClick = { onEvent(SettingEvent.RateAppClick) }
+            )
+            SettingItem(
+                label = stringResource(R.string.setting_exported_diary),
+                onClick = { onEvent(SettingEvent.ExportedDiaryListClick) }
             )
         }
     }

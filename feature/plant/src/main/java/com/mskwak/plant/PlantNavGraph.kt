@@ -11,6 +11,11 @@ import com.mskwak.plant.diary_detail.DiaryDetailViewModel
 import com.mskwak.plant.diary_edit.DiaryEditNavKey
 import com.mskwak.plant.diary_edit.DiaryEditScreen
 import com.mskwak.plant.diary_edit.DiaryEditViewModel
+import com.mskwak.plant.diary_export.DiaryExportNavKey
+import com.mskwak.plant.diary_export.DiaryExportScreen
+import com.mskwak.plant.diary_export.DiaryExportViewModel
+import com.mskwak.plant.diary_export.exported_list.ExportedDiaryListNavKey
+import com.mskwak.plant.diary_export.exported_list.ExportedDiaryListScreen
 import com.mskwak.plant.diary_list.DiaryListEffect
 import com.mskwak.plant.diary_list.DiaryListNavKey
 import com.mskwak.plant.diary_list.DiaryListScreen
@@ -77,6 +82,10 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
 
                     is PlantDetailEffect.Navigation.ToMoreDiaries -> {
                         backStack.add(DiaryMoreNavKey(it.plantId))
+                    }
+
+                    is PlantDetailEffect.Navigation.ToExportDiary -> {
+                        backStack.add(DiaryExportNavKey(it.plantId))
                     }
                 }
             }
@@ -157,6 +166,25 @@ fun EntryProviderScope<NavKey>.plantNavGraph(
 
     entry<SettingNavKey> {
         val viewModel = hiltViewModel<SettingViewModel>()
-        SettingScreen(viewModel = viewModel)
+        SettingScreen(
+            viewModel = viewModel,
+            onNavigateToExportedDiaryList = { backStack.add(ExportedDiaryListNavKey) }
+        )
+    }
+
+    entry<DiaryExportNavKey> {
+        val viewModel = hiltViewModel<DiaryExportViewModel, DiaryExportViewModel.Factory>(
+            creationCallback = { factory -> factory.create(it) }
+        )
+        DiaryExportScreen(
+            viewModel = viewModel,
+            onNavigateBack = { backStack.removeLastOrNull() }
+        )
+    }
+
+    entry<ExportedDiaryListNavKey> {
+        ExportedDiaryListScreen(
+            onNavigateBack = { backStack.removeLastOrNull() }
+        )
     }
 }

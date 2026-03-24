@@ -1,9 +1,9 @@
-package com.mskwak.domain.useCase.plant
+package com.mskwak.domain.usecase.plant
 
 import com.mskwak.domain.model.Plant
 import com.mskwak.domain.model.PlantListSortOrder
 import com.mskwak.domain.repository.PlantRepository
-import com.mskwak.domain.useCase.watering.GetRemainWateringDateUseCase
+import com.mskwak.domain.usecase.watering.GetRemainWateringDateUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

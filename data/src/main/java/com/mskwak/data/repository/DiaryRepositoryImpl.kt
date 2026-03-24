@@ -10,12 +10,7 @@ import com.mskwak.domain.model.Diary
 import com.mskwak.domain.model.Picture
 import com.mskwak.domain.repository.DiaryRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
@@ -99,6 +94,24 @@ internal class DiaryRepositoryImpl @Inject constructor(
                 }
             }) { it.toList() }
         }
+    }
+
+    override suspend fun getDiariesByPlantIdAndDateRange(
+        plantId: Int,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<Diary> {
+        return diaryDao.getDiariesByPlantIdAndDateRangeOneShot(plantId, startDate, endDate)
+            .map { diary ->
+                val pictures = pictureDao.getDiaryPicturesOneShot(diary.id)
+                diary.toDiary(pictures)
+            }
+    }
+
+    override suspend fun getDiaryDateRange(plantId: Int): Pair<LocalDate, LocalDate>? {
+        val first = diaryDao.getFirstDiaryDate(plantId) ?: return null
+        val last = diaryDao.getLastDiaryDate(plantId) ?: return null
+        return first to last
     }
 
     private suspend fun insertDiaryPictures(diaryId: Int, pictures: List<Picture>?) {

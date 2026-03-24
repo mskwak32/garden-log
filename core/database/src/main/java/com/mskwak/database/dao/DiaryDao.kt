@@ -1,10 +1,6 @@
 package com.mskwak.database.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.mskwak.database.entity.DiaryEntity
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
@@ -44,4 +40,17 @@ interface DiaryDao {
 
     @Query("SELECT id FROM diary WHERE plantId = :plantId")
     suspend fun getDiaryIdsByPlantId(plantId: Int): List<Int>
+
+    @Query("SELECT * FROM diary WHERE plantId = :plantId AND createdDate BETWEEN :startDate AND :endDate ORDER BY createdDate ASC")
+    suspend fun getDiariesByPlantIdAndDateRangeOneShot(
+        plantId: Int,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<DiaryEntity>
+
+    @Query("SELECT MIN(createdDate) FROM diary WHERE plantId = :plantId")
+    suspend fun getFirstDiaryDate(plantId: Int): LocalDate?
+
+    @Query("SELECT MAX(createdDate) FROM diary WHERE plantId = :plantId")
+    suspend fun getLastDiaryDate(plantId: Int): LocalDate?
 }

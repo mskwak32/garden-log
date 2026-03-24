@@ -1,7 +1,7 @@
-package com.mskwak.domain.useCase.plant
+package com.mskwak.domain.usecase.plant
 
 import com.mskwak.domain.repository.PlantRepository
-import com.mskwak.domain.useCase.watering.SetWateringAlarmUseCase
+import com.mskwak.domain.usecase.watering.SetWateringAlarmUseCase
 import java.time.LocalDate
 
 class HarvestPlantUseCase(

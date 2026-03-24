@@ -14,4 +14,11 @@ interface WateringLogDao {
 
     @Query("SELECT COUNT(*) > 0 FROM watering_log WHERE plantId = :plantId AND date = :date")
     suspend fun hasWateringLog(plantId: Int, date: LocalDate): Boolean
+
+    @Query("SELECT date FROM watering_log WHERE plantId = :plantId AND date BETWEEN :startDate AND :endDate")
+    suspend fun getWateringDatesByRange(
+        plantId: Int,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<LocalDate>
 }

@@ -1,4 +1,4 @@
-package com.mskwak.domain.useCase.plant
+package com.mskwak.domain.usecase.plant
 
 import com.mskwak.domain.repository.PlantRepository
 

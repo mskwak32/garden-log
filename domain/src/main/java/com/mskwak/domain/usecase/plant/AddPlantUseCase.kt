@@ -1,8 +1,8 @@
-package com.mskwak.domain.useCase.plant
+package com.mskwak.domain.usecase.plant
 
 import com.mskwak.domain.model.Plant
 import com.mskwak.domain.repository.PlantRepository
-import com.mskwak.domain.useCase.watering.SetWateringAlarmUseCase
+import com.mskwak.domain.usecase.watering.SetWateringAlarmUseCase
 
 class AddPlantUseCase(
     private val plantRepository: PlantRepository,

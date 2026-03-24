@@ -2,7 +2,7 @@ package com.mskwak.gardendailylog.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mskwak.domain.useCase.config.GetMinimumAppVersionUseCase
+import com.mskwak.domain.usecase.config.GetMinimumAppVersionUseCase
 import com.mskwak.gardendailylog.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

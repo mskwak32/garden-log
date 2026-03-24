@@ -12,8 +12,8 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.mskwak.domain.useCase.plant.GetPlantNameUseCase
-import com.mskwak.domain.useCase.watering.SetWateringAlarmUseCase
+import com.mskwak.domain.usecase.plant.GetPlantNameUseCase
+import com.mskwak.domain.usecase.watering.SetWateringAlarmUseCase
 import com.mskwak.gardendailylog.MainActivity
 import com.mskwak.gardendailylog.R
 import dagger.hilt.android.AndroidEntryPoint

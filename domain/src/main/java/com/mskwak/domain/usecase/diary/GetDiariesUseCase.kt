@@ -1,4 +1,4 @@
-package com.mskwak.domain.useCase.diary
+package com.mskwak.domain.usecase.diary
 
 import com.mskwak.domain.model.Diary
 import com.mskwak.domain.model.DiaryListSortOrder

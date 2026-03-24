@@ -17,4 +17,12 @@ internal class WateringLogRepositoryImpl @Inject constructor(
     override suspend fun hasWateringLog(plantId: Int, date: LocalDate): Boolean {
         return wateringLogDao.hasWateringLog(plantId, date)
     }
+
+    override suspend fun getWateringDatesByRange(
+        plantId: Int,
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<LocalDate> {
+        return wateringLogDao.getWateringDatesByRange(plantId, startDate, endDate)
+    }
 }

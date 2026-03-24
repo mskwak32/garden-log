@@ -8,13 +8,13 @@ import com.mskwak.analytics.WateringSource
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
 import com.mskwak.domain.repository.PlantRepository
-import com.mskwak.domain.useCase.diary.GetDiariesByPlantIdUseCase
-import com.mskwak.domain.useCase.plant.DeletePlantUseCase
-import com.mskwak.domain.useCase.plant.GetPlantUseCase
-import com.mskwak.domain.useCase.plant.HarvestPlantUseCase
-import com.mskwak.domain.useCase.watering.GetWateringDaysUseCase
-import com.mskwak.domain.useCase.watering.UpdateWateringAlarmActivationUseCase
-import com.mskwak.domain.useCase.watering.WateringNowUseCase
+import com.mskwak.domain.usecase.diary.GetDiariesByPlantIdUseCase
+import com.mskwak.domain.usecase.plant.DeletePlantUseCase
+import com.mskwak.domain.usecase.plant.GetPlantUseCase
+import com.mskwak.domain.usecase.plant.HarvestPlantUseCase
+import com.mskwak.domain.usecase.watering.GetWateringDaysUseCase
+import com.mskwak.domain.usecase.watering.UpdateWateringAlarmActivationUseCase
+import com.mskwak.domain.usecase.watering.WateringNowUseCase
 import com.mskwak.plant.model.toDiaryListItemUiModel
 import com.mskwak.plant.model.toPlantListItemUiModel
 import com.mskwak.plant.util.canScheduleExactAlarms
@@ -141,6 +141,10 @@ class PlantDetailViewModel @AssistedInject constructor(
 
             is PlantDetailEvent.OnCancelHarvestClicked -> {
                 cancelHarvest()
+            }
+
+            is PlantDetailEvent.OnExportClicked -> {
+                setEffect(PlantDetailEffect.Navigation.ToExportDiary)
             }
         }
     }

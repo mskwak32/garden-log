@@ -1,4 +1,4 @@
-package com.mskwak.domain.useCase.config
+package com.mskwak.domain.usecase.config
 
 import com.mskwak.domain.repository.AppConfigRepository
 

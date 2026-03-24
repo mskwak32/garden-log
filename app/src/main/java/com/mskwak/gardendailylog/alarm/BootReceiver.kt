@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.mskwak.domain.repository.PlantRepository
-import com.mskwak.domain.useCase.watering.SetWateringAlarmUseCase
+import com.mskwak.domain.usecase.watering.SetWateringAlarmUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

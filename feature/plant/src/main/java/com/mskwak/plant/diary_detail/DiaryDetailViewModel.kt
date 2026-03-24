@@ -6,10 +6,10 @@ import com.mskwak.analytics.GardenEvent
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
 import com.mskwak.domain.model.Diary
-import com.mskwak.domain.useCase.diary.DeleteDiaryUseCase
-import com.mskwak.domain.useCase.diary.GetDiaryUseCase
-import com.mskwak.domain.useCase.plant.GetPlantUseCase
-import com.mskwak.domain.useCase.watering.GetWateringLogExistsUseCase
+import com.mskwak.domain.usecase.diary.DeleteDiaryUseCase
+import com.mskwak.domain.usecase.diary.GetDiaryUseCase
+import com.mskwak.domain.usecase.plant.GetPlantUseCase
+import com.mskwak.domain.usecase.watering.GetWateringLogExistsUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

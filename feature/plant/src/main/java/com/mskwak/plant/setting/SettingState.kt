@@ -13,9 +13,11 @@ data class SettingState(
 sealed interface SettingEvent : ViewEvent {
     data object UpdateContentClick : SettingEvent
     data object RateAppClick : SettingEvent
+    data object ExportedDiaryListClick : SettingEvent
 }
 
 sealed interface SettingEffect : ViewEffect {
     data object OpenPlayStore : SettingEffect
     data object OpenUpdateLog : SettingEffect
+    data object NavigateToExportedDiaryList : SettingEffect
 }

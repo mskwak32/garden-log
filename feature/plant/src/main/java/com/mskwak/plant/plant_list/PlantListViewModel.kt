@@ -7,9 +7,9 @@ import com.mskwak.analytics.WateringSource
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
 import com.mskwak.domain.model.PlantListSortOrder
-import com.mskwak.domain.useCase.plant.GetPlantsWithSortOrderUseCase
-import com.mskwak.domain.useCase.watering.GetWateringDaysUseCase
-import com.mskwak.domain.useCase.watering.WateringNowUseCase
+import com.mskwak.domain.usecase.plant.GetPlantsWithSortOrderUseCase
+import com.mskwak.domain.usecase.watering.GetWateringDaysUseCase
+import com.mskwak.domain.usecase.watering.WateringNowUseCase
 import com.mskwak.plant.model.toPlantListItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -44,6 +44,7 @@ sealed interface PlantDetailEvent : ViewEvent {
     data object OnHarvestClicked : PlantDetailEvent
     data class OnHarvestConfirmed(val date: LocalDate) : PlantDetailEvent
     data object OnCancelHarvestClicked : PlantDetailEvent
+    data object OnExportClicked : PlantDetailEvent
 }
 
 sealed interface PlantDetailEffect : ViewEffect {
@@ -53,6 +54,7 @@ sealed interface PlantDetailEffect : ViewEffect {
         data object ToNewDiary : Navigation
         data class ToDiaryDetail(val diaryId: Int) : Navigation
         data object ToMoreDiaries : Navigation
+        data object ToExportDiary : Navigation
     }
 
     data object ShowExactAlarmPermissionDialog : PlantDetailEffect

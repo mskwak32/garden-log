@@ -1,4 +1,4 @@
-package com.mskwak.domain.useCase.watering
+package com.mskwak.domain.usecase.watering
 
 import com.mskwak.domain.repository.PlantRepository
 
