@@ -20,7 +20,6 @@ room = "2.8.4"
 ksp = "2.3.6"
 material = "1.13.0"
 exifinterface = "1.4.2"
-
 #compose
 composeBom = "2026.03.00"
 compose-navigation = "2.9.6"

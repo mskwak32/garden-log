@@ -93,4 +93,25 @@
     <string name="message_harvest_confirm">수확 처리하시겠습니까?\n수확된 식물은 물주기 관리에서 제외됩니다.</string>
     <string name="tab_my_garden">내 텃밭</string>
     <string name="tab_harvested">수확 작물</string>
+
+    <string name="export">일기 내보내기</string>
+    <string name="diary_export_title">일기 내보내기</string>
+    <string name="diary_export_notice_title">내보내기 전 확인해주세요 📋</string>
+    <string name="diary_export_notice_body">📁 저장 위치\n내 파일 > Downloads > GardenLog\n\n💾 주의사항\n앱을 삭제해도 파일이 기기에 남아\n저장공간을 차지합니다.</string>
+    <string name="diary_export_include_first_page">첫 페이지(식물 상세) 포함</string>
+    <string name="diary_export_start_date">시작 날짜</string>
+    <string name="diary_export_end_date">종료 날짜</string>
+    <string name="diary_export_button">PDF로 내보내기</string>
+    <string name="diary_export_success">PDF가 저장되었습니다. (Downloads/GardenLog)</string>
+    <string name="diary_export_fail">내보내기에 실패했습니다.</string>
+    <string name="diary_export_no_diary">선택한 날짜 범위에 일기가 없습니다.</string>
+    <string name="diary_export_loading">PDF 생성 중…</string>
+    <string name="exported_diary_title">내보낸 일기</string>
+    <string name="exported_diary_empty">내보낸 일기가 없습니다.</string>
+    <string name="exported_diary_share">공유</string>
+    <string name="exported_diary_delete_confirm">파일을 삭제하시겠습니까?</string>
+    <string name="setting_exported_diary">내보낸 일기</string>
+    <string name="file_size_mb_format">%.1f MB</string>
+    <string name="file_size_kb_format">%d KB</string>
+    <string name="day_format">%d일</string>
 </resources>

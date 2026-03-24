@@ -30,4 +30,8 @@ internal abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindWateringLogRepository(impl: WateringLogRepositoryImpl): WateringLogRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindExportRepository(impl: ExportRepositoryImpl): ExportRepository
 }

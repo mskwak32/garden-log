@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pdf_label_planting_date">식재일</string>
+    <string name="pdf_label_watering_cycle">물주기</string>
+    <string name="pdf_watering_cycle_format">%d일마다</string>
+    <string name="pdf_label_memo">메모</string>
+    <string name="pdf_label_harvest_date">수확일</string>
+    <string name="pdf_label_harvest_memo">수확 메모</string>
+</resources>

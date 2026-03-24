@@ -1,12 +1,15 @@
 package com.mskwak.gardendailylog.di
 
 import com.mskwak.domain.repository.*
-import com.mskwak.domain.useCase.config.GetMinimumAppVersionUseCase
-import com.mskwak.domain.useCase.diary.*
-import com.mskwak.domain.useCase.picture.DeletePictureUseCase
-import com.mskwak.domain.useCase.picture.SavePictureUseCase
-import com.mskwak.domain.useCase.plant.*
-import com.mskwak.domain.useCase.watering.*
+import com.mskwak.domain.usecase.config.GetMinimumAppVersionUseCase
+import com.mskwak.domain.usecase.diary.*
+import com.mskwak.domain.usecase.export.DeleteExportedFileUseCase
+import com.mskwak.domain.usecase.export.GenerateExportUseCase
+import com.mskwak.domain.usecase.export.GetExportedFilesUseCase
+import com.mskwak.domain.usecase.picture.DeletePictureUseCase
+import com.mskwak.domain.usecase.picture.SavePictureUseCase
+import com.mskwak.domain.usecase.plant.*
+import com.mskwak.domain.usecase.watering.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -60,6 +63,13 @@ class UseCaseModule {
         wateringLogRepository: WateringLogRepository
     ): GetWateringLogExistsUseCase {
         return GetWateringLogExistsUseCase(wateringLogRepository)
+    }
+
+    @Provides
+    fun provideGetWateringDatesForExportUseCase(
+        wateringLogRepository: WateringLogRepository
+    ): GetWateringDatesForExportUseCase {
+        return GetWateringDatesForExportUseCase(wateringLogRepository)
     }
 
     @Provides
@@ -194,5 +204,35 @@ class UseCaseModule {
         diaryRepository: DiaryRepository
     ): UpdateDiaryUseCase {
         return UpdateDiaryUseCase(diaryRepository)
+    }
+
+    @Provides
+    fun provideGetDiaryDateRangeUseCase(
+        diaryRepository: DiaryRepository
+    ): GetDiaryDateRangeUseCase {
+        return GetDiaryDateRangeUseCase(diaryRepository)
+    }
+
+    @Provides
+    fun provideGetDiariesForExportUseCase(
+        diaryRepository: DiaryRepository
+    ): GetDiariesForExportUseCase {
+        return GetDiariesForExportUseCase(diaryRepository)
+    }
+
+    /* Export UseCases */
+    @Provides
+    fun provideGenerateExportUseCase(exportRepository: ExportRepository): GenerateExportUseCase {
+        return GenerateExportUseCase(exportRepository)
+    }
+
+    @Provides
+    fun provideGetExportedFilesUseCase(exportRepository: ExportRepository): GetExportedFilesUseCase {
+        return GetExportedFilesUseCase(exportRepository)
+    }
+
+    @Provides
+    fun provideDeleteExportedFileUseCase(exportRepository: ExportRepository): DeleteExportedFileUseCase {
+        return DeleteExportedFileUseCase(exportRepository)
     }
 }
