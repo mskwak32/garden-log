@@ -47,7 +47,7 @@ class DiaryListViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeDiaries() {
-        viewState
+        val diariesFlow = viewState
             .map { Triple(it.currentYearMonth, it.sortOder, it.currentPlant) }
             .distinctUntilChanged()
             .flatMapLatest { (yearMonth, sortOrder, currentPlant) ->
@@ -58,18 +58,23 @@ class DiaryListViewModel @Inject constructor(
                     sortOder = sortOrder
                 )
             }
-            .onEach { diaries ->
-                // plantFilterList에서 plantId로 식물 정보를 조회하여 plantName, isHarvested 매핑
-                val plantMap = viewState.value.plantFilterList.associateBy { it.plantId }
-                setState {
-                    copy(diaries = diaries.map { diary ->
-                        val plant = plantMap[diary.plantId]
-                        diary.toDiaryListItemUiModel(
-                            plantName = plant?.plantName,
-                            isHarvested = plant?.isHarvested ?: false
-                        )
-                    })
-                }
+
+        // plantFilterList가 나중에 로드되더라도 식물 이름이 반영되도록 combine 사용
+        combine(
+            diariesFlow,
+            viewState.map { it.plantFilterList }.distinctUntilChanged()
+        ) { diaries, plantFilterList ->
+            val plantMap = plantFilterList.associateBy { it.plantId }
+            diaries.map { diary ->
+                val plant = plantMap[diary.plantId]
+                diary.toDiaryListItemUiModel(
+                    plantName = plant?.plantName,
+                    isHarvested = plant?.isHarvested ?: false
+                )
+            }
+        }
+            .onEach { mappedDiaries ->
+                setState { copy(diaries = mappedDiaries) }
             }
             .launchIn(viewModelScope)
     }
