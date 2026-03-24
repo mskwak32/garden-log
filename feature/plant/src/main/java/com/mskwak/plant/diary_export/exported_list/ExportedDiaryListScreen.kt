@@ -1,7 +1,9 @@
 package com.mskwak.plant.diary_export.exported_list
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,10 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import kotlinx.coroutines.launch
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mskwak.common_ui.IconPack
@@ -33,6 +35,9 @@ fun ExportedDiaryListScreen(
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val noViewerMessage = stringResource(R.string.exported_diary_no_viewer)
     var deleteTargetUri by remember { mutableStateOf<Uri?>(null) }
 
     deleteTargetUri?.let { uri ->
@@ -50,6 +55,20 @@ fun ExportedDiaryListScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is ExportedDiaryListEffect.NavigateBack -> onNavigateBack()
+
+                is ExportedDiaryListEffect.OpenFile -> {
+                    val viewIntent = Intent(Intent.ACTION_VIEW).apply {
+                        setDataAndType(effect.uri, "application/pdf")
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    try {
+                        context.startActivity(viewIntent)
+                    } catch (_: ActivityNotFoundException) {
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(noViewerMessage)
+                        }
+                    }
+                }
 
                 is ExportedDiaryListEffect.ShareFile -> {
                     val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -69,6 +88,7 @@ fun ExportedDiaryListScreen(
 
     Content(
         state = state,
+        snackbarHostState = snackbarHostState,
         onEvent = viewModel::setEvent
     )
 }
@@ -77,10 +97,12 @@ fun ExportedDiaryListScreen(
 @Composable
 private fun Content(
     state: ExportedDiaryListState,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onEvent: (ExportedDiaryListEvent) -> Unit
 ) {
     Scaffold(
         topBar = { TopBar(onEvent = onEvent) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         Box(
@@ -107,6 +129,7 @@ private fun Content(
                         items(state.files, key = { it.contentUri }) { file ->
                             FileItem(
                                 file = file,
+                                onOpen = { onEvent(ExportedDiaryListEvent.OnOpenClicked(file.contentUri.toUri())) },
                                 onShare = { onEvent(ExportedDiaryListEvent.OnShareClicked(file.contentUri.toUri())) },
                                 onDelete = { onEvent(ExportedDiaryListEvent.OnDeleteClicked(file.contentUri.toUri())) }
                             )
@@ -122,6 +145,7 @@ private fun Content(
 @Composable
 private fun FileItem(
     file: ExportedFileInfo,
+    onOpen: () -> Unit,
     onShare: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -139,15 +163,14 @@ private fun FileItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = onOpen)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = file.fileName,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                style = MaterialTheme.typography.bodyLarge
             )
             Text(
                 text = "$dateStr · $sizeStr",

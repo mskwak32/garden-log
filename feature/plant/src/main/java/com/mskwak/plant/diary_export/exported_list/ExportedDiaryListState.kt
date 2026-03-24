@@ -15,6 +15,7 @@ data class ExportedDiaryListState(
 
 sealed interface ExportedDiaryListEvent : ViewEvent {
     data object OnBackClicked : ExportedDiaryListEvent
+    data class OnOpenClicked(val uri: Uri) : ExportedDiaryListEvent
     data class OnShareClicked(val uri: Uri) : ExportedDiaryListEvent
     data class OnDeleteClicked(val uri: Uri) : ExportedDiaryListEvent
     data class OnDeleteConfirmed(val uri: Uri) : ExportedDiaryListEvent
@@ -22,6 +23,7 @@ sealed interface ExportedDiaryListEvent : ViewEvent {
 
 sealed interface ExportedDiaryListEffect : ViewEffect {
     data object NavigateBack : ExportedDiaryListEffect
+    data class OpenFile(val uri: Uri) : ExportedDiaryListEffect
     data class ShareFile(val uri: Uri) : ExportedDiaryListEffect
     data class ShowDeleteConfirmDialog(val uri: Uri) : ExportedDiaryListEffect
 }

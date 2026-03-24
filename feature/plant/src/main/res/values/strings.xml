@@ -110,6 +110,7 @@
     <string name="exported_diary_empty">내보낸 일기가 없습니다.</string>
     <string name="exported_diary_share">공유</string>
     <string name="exported_diary_delete_confirm">파일을 삭제하시겠습니까?</string>
+    <string name="exported_diary_no_viewer">PDF를 열 수 있는 앱이 없습니다.</string>
     <string name="setting_exported_diary">내보낸 일기</string>
     <string name="file_size_mb_format">%.1f MB</string>
     <string name="file_size_kb_format">%d KB</string>

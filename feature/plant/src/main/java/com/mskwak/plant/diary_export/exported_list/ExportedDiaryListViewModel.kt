@@ -38,6 +38,10 @@ class ExportedDiaryListViewModel @Inject constructor(
                 setEffect(ExportedDiaryListEffect.NavigateBack)
             }
 
+            is ExportedDiaryListEvent.OnOpenClicked -> {
+                setEffect(ExportedDiaryListEffect.OpenFile(event.uri))
+            }
+
             is ExportedDiaryListEvent.OnShareClicked -> {
                 setEffect(ExportedDiaryListEffect.ShareFile(event.uri))
             }
