@@ -10,11 +10,14 @@ sealed interface DiaryMoreListItem {
     data class DiaryItem(val diary: DiaryListItemUiModel) : DiaryMoreListItem
 }
 
-fun buildDiaryListItems(diaries: List<DiaryListItemUiModel>): List<DiaryMoreListItem> {
+fun buildDiaryListItems(
+    diaries: List<DiaryListItemUiModel>,
+    previousYearMonth: YearMonth? = null
+): List<DiaryMoreListItem> {
     if (diaries.isEmpty()) return emptyList()
 
     val items = mutableListOf<DiaryMoreListItem>()
-    var lastYearMonth: YearMonth? = null
+    var lastYearMonth: YearMonth? = previousYearMonth
 
     for (diary in diaries) {
         val yearMonth = YearMonth.from(diary.date)
