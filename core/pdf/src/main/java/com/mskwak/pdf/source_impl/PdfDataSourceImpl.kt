@@ -61,12 +61,15 @@ internal class PdfDataSourceImpl @Inject constructor(
 
         // 줄 간격 추가값
         private const val LINE_SPACING_EXTRA = 4f
+
+        // 이미지 품질 설정을 위한 DPI 스케일 (120 DPI 목표: 120 / 72 ≒ 1.666)
+        private const val DPI_SCALE = 1.67f
     }
 
     override suspend fun generatePdf(request: PdfRequest): Uri = withContext(Dispatchers.IO) {
         val startDate = request.diaries.minOf { it.date }
         val endDate = request.diaries.maxOf { it.date }
-        val fileName = "GardenLog_${request.plantName}_${startDate.format(DATE_FORMATTER)}_${
+        val fileName = "${request.plantName}_${startDate.format(DATE_FORMATTER)}_${
             endDate.format(DATE_FORMATTER)
         }.pdf"
 
@@ -346,17 +349,25 @@ internal class PdfDataSourceImpl @Inject constructor(
         private fun drawPlantImage(imagePath: String) {
             ensureSpace(PLANT_IMAGE_HEIGHT)
             try {
-                val bitmap = BitmapFactory.decodeFile(imagePath) ?: return
+                val targetWidth = (PLANT_IMAGE_WIDTH * DPI_SCALE).toInt()
+                val targetHeight = (PLANT_IMAGE_HEIGHT * DPI_SCALE).toInt()
+
+                val bitmap = decodeBitmap(imagePath, targetWidth, targetHeight) ?: return
                 val cropped = cropToRatio(bitmap, 1.5f)
 
                 @Suppress("UseKtx")
                 val scaled = Bitmap.createScaledBitmap(
                     cropped,
-                    PLANT_IMAGE_WIDTH.toInt(),
-                    PLANT_IMAGE_HEIGHT.toInt(),
+                    targetWidth,
+                    targetHeight,
                     true
                 )
-                canvas.drawBitmap(scaled, MARGIN, y, Paint().apply { isAntiAlias = true })
+                val destRect = RectF(MARGIN, y, MARGIN + PLANT_IMAGE_WIDTH, y + PLANT_IMAGE_HEIGHT)
+                canvas.drawBitmap(
+                    scaled,
+                    null,
+                    destRect,
+                    Paint().apply { isAntiAlias = true; isFilterBitmap = true })
                 if (scaled !== cropped) scaled.recycle()
                 if (cropped !== bitmap) cropped.recycle()
                 bitmap.recycle()
@@ -387,23 +398,76 @@ internal class PdfDataSourceImpl @Inject constructor(
 
         private fun drawImage(imagePath: String, x: Float, y: Float) {
             try {
-                val bitmap = BitmapFactory.decodeFile(imagePath) ?: return
+                val targetWidth = (IMAGE_WIDTH * DPI_SCALE).toInt()
+                val targetHeight = (IMAGE_HEIGHT * DPI_SCALE).toInt()
+
+                val bitmap = decodeBitmap(imagePath, targetWidth, targetHeight) ?: return
                 val cropped = cropToRatio(bitmap, 4f / 3f)
 
                 @Suppress("UseKtx")
                 val scaled = Bitmap.createScaledBitmap(
                     cropped,
-                    IMAGE_WIDTH.toInt(),
-                    IMAGE_HEIGHT.toInt(),
+                    targetWidth,
+                    targetHeight,
                     true
                 )
-                canvas.drawBitmap(scaled, x, y, Paint().apply { isAntiAlias = true })
+                val destRect = RectF(x, y, x + IMAGE_WIDTH, y + IMAGE_HEIGHT)
+                canvas.drawBitmap(
+                    scaled,
+                    null,
+                    destRect,
+                    Paint().apply { isAntiAlias = true; isFilterBitmap = true })
                 if (scaled !== cropped) scaled.recycle()
                 if (cropped !== bitmap) cropped.recycle()
                 bitmap.recycle()
             } catch (e: Exception) {
                 Timber.e(e, "이미지 로드 실패: $imagePath")
             }
+        }
+
+        /**
+         * 지정된 경로의 이미지를 목표 크기(reqWidth, reqHeight)에 맞춰 효율적으로 로드한다.
+         * BitmapFactory.Options를 사용하여 실제 비트맵을 메모리에 올리기 전에 크기를 먼저 확인하고,
+         * 적절한 inSampleSize를 계산하여 메모리 사용량을 최적화한다.
+         */
+        private fun decodeBitmap(path: String, reqWidth: Int, reqHeight: Int): Bitmap? {
+            val options = BitmapFactory.Options().apply {
+                // 실제 비트맵 데이터는 로드하지 않고 이미지의 정보(크기, 타입 등)만 읽어온다.
+                inJustDecodeBounds = true
+            }
+            BitmapFactory.decodeFile(path, options)
+
+            // 목표 크기에 가장 근접한(2의 거듭제곱 단위) 샘플링 비율을 계산한다.
+            options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
+            options.inJustDecodeBounds = false
+            return BitmapFactory.decodeFile(path, options)
+        }
+
+        /**
+         * 원본 이미지 크기와 목표 크기를 비교하여 가장 적절한 inSampleSize 값을 계산한다.
+         * inSampleSize는 2의 거듭제곱(1, 2, 4, 8...) 값을 가지며, 값이 클수록 로드되는 이미지 해상도는 낮아지고
+         * 메모리는 절약된다.
+         */
+        private fun calculateInSampleSize(
+            options: BitmapFactory.Options,
+            reqWidth: Int,
+            reqHeight: Int
+        ): Int {
+            val (height: Int, width: Int) = options.outHeight to options.outWidth
+            var inSampleSize = 1
+
+            if (height > reqHeight || width > reqWidth) {
+                val halfHeight: Int = height / 2
+                val halfWidth: Int = width / 2
+
+                // 목표 크기보다 작아지기 직전까지 inSampleSize를 2배씩 키운다.
+                while (halfHeight / inSampleSize >= reqHeight
+                    && halfWidth / inSampleSize >= reqWidth
+                ) {
+                    inSampleSize *= 2
+                }
+            }
+            return inSampleSize
         }
     }
 
