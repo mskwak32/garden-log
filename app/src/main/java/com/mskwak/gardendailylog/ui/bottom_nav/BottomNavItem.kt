@@ -9,7 +9,7 @@ import com.mskwak.common_ui.icon.SettingsBlack
 import com.mskwak.gardendailylog.R
 import com.mskwak.plant.diary_list.DiaryListNavKey
 import com.mskwak.plant.plant_list.PlantListNavKey
-import com.mskwak.plant.setting.SettingNavKey
+import com.mskwak.setting.setting.SettingNavKey
 
 /**
  * 하단 탭 메뉴 정의

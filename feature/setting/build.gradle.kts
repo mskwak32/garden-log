@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mskwak.plant"
+    namespace = "com.mskwak.setting"
     compileSdk {
         version = release(libs.versions.compileSdk.get().toInt())
     }
@@ -51,12 +51,8 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.kotlin.serialization)
-    implementation(libs.exifinterface)
-    implementation(libs.telephoto.zoomable.coil3)
 
     testImplementation(libs.bundles.test)
     androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.bundles.androidTest)
-    androidTestImplementation(platform(libs.compose.bom))
 }

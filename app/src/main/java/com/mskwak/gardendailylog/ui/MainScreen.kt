@@ -60,6 +60,7 @@ import com.mskwak.gardendailylog.ui.bottom_nav.BottomNavItem
 import com.mskwak.gardendailylog.ui.dialog.ForceUpdateDialog
 import com.mskwak.plant.plantNavGraph
 import com.mskwak.plant.plant_list.PlantListNavKey
+import com.mskwak.setting.settingNavGraph
 import kotlinx.coroutines.launch
 
 @Composable
@@ -102,6 +103,7 @@ fun MainScreen(
                 modifier = Modifier.fillMaxSize(),
                 entryProvider = entryProvider {
                     plantNavGraph(backStack)
+                    settingNavGraph(backStack)
                 },
                 entryDecorators = listOf(
                     rememberSaveableStateHolderNavEntryDecorator(),

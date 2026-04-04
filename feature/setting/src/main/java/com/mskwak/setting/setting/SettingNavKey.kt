@@ -1,4 +1,4 @@
-package com.mskwak.plant.setting
+package com.mskwak.setting.setting
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable

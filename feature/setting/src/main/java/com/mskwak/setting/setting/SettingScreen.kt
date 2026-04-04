@@ -1,4 +1,4 @@
-package com.mskwak.plant.setting
+package com.mskwak.setting.setting
 
 import android.content.Intent
 import android.widget.Toast
@@ -21,8 +21,8 @@ import com.mskwak.common_ui.theme.GardenLogTheme
 import com.mskwak.common_ui.ui_component.LocalNavBottomBarPadding
 import com.mskwak.common_ui.util.openPlayStore
 import com.mskwak.domain.Constants
-import com.mskwak.plant.BuildConfig
-import com.mskwak.plant.R
+import com.mskwak.setting.BuildConfig
+import com.mskwak.setting.R
 
 @Composable
 fun SettingScreen(

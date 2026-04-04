@@ -77,6 +77,7 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":domain"))
     implementation(project(":feature:plant"))
+    implementation(project(":feature:setting"))
     implementation(project(":core:common_ui"))
 
     implementation(libs.androidx.core.ktx)

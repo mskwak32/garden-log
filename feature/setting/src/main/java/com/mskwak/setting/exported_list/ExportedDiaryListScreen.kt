@@ -1,4 +1,4 @@
-package com.mskwak.plant.diary_export.exported_list
+package com.mskwak.setting.exported_list
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -23,7 +23,7 @@ import com.mskwak.common_ui.IconPack
 import com.mskwak.common_ui.icon.ArrowBackBlack
 import com.mskwak.common_ui.theme.GardenLogTheme
 import com.mskwak.domain.model.ExportedFileInfo
-import com.mskwak.plant.R
+import com.mskwak.setting.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

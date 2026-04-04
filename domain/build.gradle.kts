@@ -18,6 +18,4 @@ kotlin {
 
 dependencies {
     implementation(libs.kotlin.coroutines)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.crashlytics)
 }

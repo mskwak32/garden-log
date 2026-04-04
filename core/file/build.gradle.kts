@@ -33,6 +33,4 @@ dependencies {
     implementation(libs.hilt)
     ksp(libs.hilt.compiler)
     implementation(libs.timber)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.crashlytics)
 }

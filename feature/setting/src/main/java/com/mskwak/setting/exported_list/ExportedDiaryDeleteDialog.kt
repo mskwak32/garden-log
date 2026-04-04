@@ -1,4 +1,4 @@
-package com.mskwak.plant.diary_export.exported_list
+package com.mskwak.setting.exported_list
 
 import android.net.Uri
 import androidx.compose.material3.AlertDialog
@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mskwak.common_ui.theme.GardenLogTheme
-import com.mskwak.plant.R
+import com.mskwak.setting.R
 
 @Composable
 fun ExportedDiaryDeleteDialog(

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">뒤로가기</string>
+    <string name="cancel">취소</string>
+    <string name="delete">삭제</string>
+
+    <string name="setting_title">설정</string>
+    <string name="setting_version">버전정보</string>
+    <string name="setting_version_update">업데이트</string>
+    <string name="setting_update_content">업데이트 내용</string>
+    <string name="setting_app_estimation">앱 평가하기</string>
+    <string name="setting_update_content_title">%s 버전</string>
+    <string name="setting_play_store_debug">Debug: Play Store 연결 불가</string>
+    <string name="setting_exported_diary">내보낸 일기</string>
+
+    <string name="exported_diary_title">내보낸 일기</string>
+    <string name="exported_diary_empty">내보낸 일기가 없습니다.</string>
+    <string name="exported_diary_share">공유</string>
+    <string name="exported_diary_delete_confirm">파일을 삭제하시겠습니까?</string>
+    <string name="exported_diary_no_viewer">PDF를 열 수 있는 앱이 없습니다.</string>
+</resources>

@@ -1,4 +1,4 @@
-package com.mskwak.plant.setting
+package com.mskwak.setting.setting
 
 import android.content.Context
 import com.mskwak.analytics.AnalyticsLogger

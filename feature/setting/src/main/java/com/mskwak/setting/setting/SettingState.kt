@@ -1,4 +1,4 @@
-package com.mskwak.plant.setting
+package com.mskwak.setting.setting
 
 import androidx.compose.runtime.Immutable
 import com.mskwak.common_ui.ViewEffect

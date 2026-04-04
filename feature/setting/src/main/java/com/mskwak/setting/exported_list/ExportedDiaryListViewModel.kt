@@ -1,4 +1,4 @@
-package com.mskwak.plant.diary_export.exported_list
+package com.mskwak.setting.exported_list
 
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
