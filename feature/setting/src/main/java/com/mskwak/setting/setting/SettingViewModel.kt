@@ -31,6 +31,7 @@ class SettingViewModel @Inject constructor(
             SettingEvent.UpdateContentClick -> setEffect(SettingEffect.OpenUpdateLog)
             SettingEvent.RateAppClick -> setEffect(SettingEffect.OpenPlayStore)
             SettingEvent.ExportedDiaryListClick -> setEffect(SettingEffect.NavigateToExportedDiaryList)
+            SettingEvent.FeedbackClick -> setEffect(SettingEffect.OpenFeedbackForm)
         }
     }
 }

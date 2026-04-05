@@ -1,5 +1,6 @@
 package com.mskwak.setting.setting
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -32,6 +33,7 @@ fun SettingScreen(
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val debugToastMessage = stringResource(R.string.setting_play_store_debug)
+    val noBrowserMessage = stringResource(R.string.setting_no_browser)
 
     Content(
         state = state,
@@ -60,6 +62,16 @@ fun SettingScreen(
 
                 SettingEffect.NavigateToExportedDiaryList -> {
                     onNavigateToExportedDiaryList()
+                }
+
+                SettingEffect.OpenFeedbackForm -> {
+                    val intent =
+                        Intent(Intent.ACTION_VIEW, Constants.USER_FEEDBACK_FORM_URL.toUri())
+                    try {
+                        context.startActivity(intent)
+                    } catch (_: ActivityNotFoundException) {
+                        Toast.makeText(context, noBrowserMessage, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -95,6 +107,10 @@ private fun Content(
             SettingItem(
                 label = stringResource(R.string.setting_exported_diary),
                 onClick = { onEvent(SettingEvent.ExportedDiaryListClick) }
+            )
+            SettingItem(
+                label = stringResource(R.string.setting_feedback),
+                onClick = { onEvent(SettingEvent.FeedbackClick) }
             )
         }
     }
