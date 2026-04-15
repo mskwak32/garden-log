@@ -8,6 +8,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 
 private val lightScheme = lightColorScheme(
@@ -87,6 +88,7 @@ private val darkScheme = darkColorScheme(
 )
 
 
+@Suppress("unused")
 private val mediumContrastLightColorScheme = lightColorScheme(
     primary = primaryLightMediumContrast,
     onPrimary = onPrimaryLightMediumContrast,
@@ -125,6 +127,7 @@ private val mediumContrastLightColorScheme = lightColorScheme(
     surfaceContainerHighest = surfaceContainerHighestLightMediumContrast,
 )
 
+@Suppress("unused")
 private val mediumContrastDarkColorScheme = darkColorScheme(
     primary = primaryDarkMediumContrast,
     onPrimary = onPrimaryDarkMediumContrast,
@@ -180,9 +183,15 @@ fun GardenLogTheme(
         else -> lightScheme
     }
 
+    val locale = LocalConfiguration.current.locales[0]
+    val fontFamily = when (locale.language) {
+        "ja" -> notoSansJp
+        else -> notoSansKr  // ko, en 모두 KR 폰트 사용 (NotoSansKR에 Latin 포함)
+    }
+
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = AppTypography,
+        typography = appTypography(fontFamily),
         content = content
     )
 }

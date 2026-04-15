@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">戻る</string>
+    <string name="save">保存</string>
+    <string name="cancel">キャンセル</string>
+    <string name="confirm">OK</string>
+    <string name="none">なし</string>
+    <string name="complete">完了</string>
+    <string name="edit">編集</string>
+    <string name="delete">削除</string>
+    <string name="menu">メニュー</string>
+    <string name="close">閉じる</string>
+    <string name="date">日付</string>
+    <string name="this_month">今月</string>
+    <string name="previous_month">前月</string>
+    <string name="next_month">次月</string>
+    <string name="select_year_month">年/月を選択</string>
+    <string name="year_format">%d年</string>
+    <string name="month_format">%d月</string>
+    <string name="today">今日</string>
+    <string name="yesterday">昨日</string>
+    <string name="select_all">すべて</string>
+    <string name="photo_image">ギャラリー</string>
+    <string name="photo_camera">カメラ</string>
+    <string name="permission_setting_action">権限設定</string>
+    <string name="view_more">もっと見る</string>
+    <string name="new_diary">日記を書く</string>
+    <string name="memo">メモ</string>
+    <string name="watering">水やり</string>
+    <string name="sort">並び替え</string>
+
+    <string name="home_title">マイガーデン</string>
+    <string name="sort_plant_created_latest">植付日（新しい順）</string>
+    <string name="sort_plant_created_earliest">植付日（古い順）</string>
+    <string name="sort_plant_watering_upcoming">水やり（近い順）</string>
+
+    <string name="sort_diary_created_latest">新しい順</string>
+    <string name="sort_diary_created_earliest">古い順</string>
+
+    <string name="plant_list_empty">まだ植物が登録されていません</string>
+    <string name="harvested_list_empty">まだ収穫した作物がありません</string>
+    <string name="new_plant">植物を追加</string>
+    <string name="plant_name">植物名</string>
+    <string name="plant_date">植付日</string>
+    <string name="plant_date_format">植付日: %s</string>
+    <string name="plant_diary">栽培日記</string>
+    <string name="days_ago_format">%d日前</string>
+
+    <string name="watering_last_date">最後の水やり</string>
+    <string name="watering_period">水やり間隔</string>
+    <string name="watering_period_unit">%d日ごと</string>
+    <string name="watering_period_unit_dialog">日ごと</string>
+    <string name="watering_d_day_plus_format">D+%02d</string>
+    <string name="watering_d_day_minus_format">D-%02d</string>
+    <string name="watering_alarm">リマインダー時刻</string>
+    <string name="watering_icon_description">水やり記録あり</string>
+
+    <string name="message_input_required_field">必須項目を入力してください。</string>
+    <string name="message_no_more_picture">これ以上画像を追加できません。</string>
+    <string name="message_input_picture_or_content">写真または内容を入力してください。</string>
+    <string name="message_photo_image_permission">ギャラリーにアクセスするには権限が必要です。</string>
+    <string name="message_photo_camera_permission">カメラを使用するには権限が必要です。</string>
+    <string name="message_delete_confirm">本当に削除しますか？\n関連する日記なども削除され、復元できません。</string>
+    <string name="message_not_ready">準備中です</string>
+    <string name="message_save_failed">保存に失敗しました。</string>
+    <string name="exact_alarm_permission_title">アラーム権限が必要です</string>
+    <string name="exact_alarm_permission_message">正確な水やりリマインダーのためにアラーム権限が必要です。\n設定で権限を許可してください。</string>
+
+    <string name="diary_list_empty_with_plantName">%sの日記がまだありません</string>
+    <string name="diary_list_empty">該当する日記がありません</string>
+    <string name="diary_content_hint">内容を入力してください。</string>
+    <string name="diary_content_empty">記録された内容がありません。</string>
+    <string name="message_discard_confirm">作成中の内容が削除されます。</string>
+    <string name="message_diary_delete_confirm">日記を削除しますか？\n削除後は復元できません。</string>
+
+    <string name="harvested">収穫済み</string>
+    <string name="harvest">収穫する</string>
+    <string name="cancel_harvest">収穫をキャンセル</string>
+    <string name="harvest_date">収穫日</string>
+    <string name="harvest_date_format">収穫日: %s</string>
+    <string name="harvest_memo">収穫メモ</string>
+    <string name="harvest_memo_hint">収穫メモを入力できます。</string>
+    <string name="message_harvest_confirm">収穫処理しますか？\n収穫済みの植物は水やり管理から除外されます。</string>
+    <string name="tab_my_garden">マイガーデン</string>
+    <string name="tab_harvested">収穫済み</string>
+
+    <string name="export">日記を出力</string>
+    <string name="diary_export_title">日記を出力</string>
+    <string name="diary_export_notice_title">出力前にご確認ください 📋</string>
+    <string name="diary_export_notice_body">📁 保存場所\nファイル > ダウンロード > GardenLog\n\n💾 注意事項\nアプリを削除してもファイルは端末に残り\nストレージを使用します。</string>
+    <string name="diary_export_include_first_page">最初のページ（植物詳細）を含む</string>
+    <string name="diary_export_start_date">開始日</string>
+    <string name="diary_export_end_date">終了日</string>
+    <string name="diary_export_button">PDFで出力</string>
+    <string name="diary_export_success">PDFが保存されました。（Downloads/GardenLog）</string>
+    <string name="diary_export_fail">出力に失敗しました。</string>
+    <string name="diary_export_no_diary">選択した日付範囲に日記がありません。</string>
+    <string name="diary_export_loading">PDF生成中…</string>
+    <string name="file_size_mb_format">%.1f MB</string>
+    <string name="file_size_kb_format">%d KB</string>
+    <string name="day_format">%d日</string>
+</resources>

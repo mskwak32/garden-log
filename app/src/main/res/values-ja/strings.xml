@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">家庭菜園日記</string>
+    <string name="noti_watering_title">水やりリマインダー</string>
+    <string name="noti_watering_message">%sに水をあげる時間です</string>
+    <string name="noti_watering_channel_name">水やりリマインダー</string>
+    <string name="permission_setting_action">権限設定</string>
+    <string name="message_notification_permission">水やりリマインダーを使うには権限が必要です。</string>
+    <string name="message_finish_app">もう一度押すと終了します。</string>
+
+    <string name="force_update_title">アップデートが必要です</string>
+    <string name="force_update_message">快適にご利用いただくために\n最新バージョンにアップデートしてください。</string>
+    <string name="force_update_button">アップデート</string>
+
+    <string name="bottom_nav_home">ホーム</string>
+    <string name="bottom_nav_diary">日記</string>
+    <string name="bottom_nav_setting">設定</string>
+</resources>

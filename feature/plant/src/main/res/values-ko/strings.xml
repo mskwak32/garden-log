@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">뒤로가기</string>
+    <string name="save">저장</string>
+    <string name="cancel">취소</string>
+    <string name="confirm">확인</string>
+    <string name="none">없음</string>
+    <string name="complete">완료</string>
+    <string name="edit">수정</string>
+    <string name="delete">삭제</string>
+    <string name="menu">메뉴</string>
+    <string name="close">닫기</string>
+    <string name="date">날짜</string>
+    <string name="this_month">이번달</string>
+    <string name="previous_month">이전달</string>
+    <string name="next_month">다음달</string>
+    <string name="select_year_month">년/월 선택</string>
+    <string name="year_format">%d년</string>
+    <string name="month_format">%d월</string>
+    <string name="today">오늘</string>
+    <string name="yesterday">어제</string>
+    <string name="select_all">전체</string>
+    <string name="photo_image">이미지</string>
+    <string name="photo_camera">카메라</string>
+    <string name="permission_setting_action">권한 설정</string>
+    <string name="view_more">더보기</string>
+    <string name="new_diary">일기쓰기</string>
+    <string name="memo">메모</string>
+    <string name="watering">물주기</string>
+    <string name="sort">정렬</string>
+
+    <string name="home_title">내 텃밭</string>
+    <string name="sort_plant_created_latest">심은날짜 최근순</string>
+    <string name="sort_plant_created_earliest">심은날짜 오래된순</string>
+    <string name="sort_plant_watering_upcoming">급수일 가까운순</string>
+
+    <string name="sort_diary_created_latest">최신순</string>
+    <string name="sort_diary_created_earliest">오래된순</string>
+
+    <string name="plant_list_empty">아직 등록된 식물이 없어요</string>
+    <string name="harvested_list_empty">아직 수확한 작물이 없어요</string>
+    <string name="new_plant">식물 추가하기</string>
+    <string name="plant_name">식물 이름</string>
+    <string name="plant_date">심은 날짜</string>
+    <string name="plant_date_format">심은 날짜: %s</string>
+    <string name="plant_diary">가꾸기 일기</string>
+    <string name="days_ago_format">%d일 전</string>
+
+    <string name="watering_last_date">마지막 물준 날짜</string>
+    <string name="watering_period">물주기 간격</string>
+    <string name="watering_period_unit">%d일마다</string>
+    <string name="watering_period_unit_dialog">일마다</string>
+    <string name="watering_d_day_plus_format">D+%02d</string>
+    <string name="watering_d_day_minus_format">D-%02d</string>
+    <string name="watering_alarm">알림 시간</string>
+    <string name="watering_icon_description">물주기 기록 있음</string>
+
+    <string name="message_input_required_field">필수항목을 입력해주세요.</string>
+    <string name="message_no_more_picture">더이상 이미지를 추가할 수 없습니다.</string>
+    <string name="message_input_picture_or_content">사진이나 내용을 입력해주세요.</string>
+    <string name="message_photo_image_permission">이미지를 가져오려면 권한이 필요합니다.</string>
+    <string name="message_photo_camera_permission">카메라를 사용하려면 권한이 필요합니다.</string>
+    <string name="message_delete_confirm">정말 삭제하시겠습니까?\n삭제 시 관련된 일기 등이 삭제되며 복구할 수 없습니다.</string>
+    <string name="message_not_ready">준비중이에요</string>
+    <string name="message_save_failed">저장에 실패했습니다.</string>
+    <string name="exact_alarm_permission_title">알람 권한 필요</string>
+    <string name="exact_alarm_permission_message">정확한 물주기 알림을 위해 알람 권한이 필요합니다.\n설정에서 권한을 허용해주세요.</string>
+
+    <string name="diary_list_empty_with_plantName">아직 %s에 대한 일기가 없어요</string>
+    <string name="diary_list_empty">해당하는 일기가 없어요</string>
+    <string name="diary_content_hint">내용을 입력해주세요.</string>
+    <string name="diary_content_empty">기록된 내용이 없습니다.</string>
+    <string name="message_discard_confirm">작성 중인 내용이 삭제됩니다.</string>
+    <string name="message_diary_delete_confirm">일기를 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.</string>
+
+    <string name="harvested">수확</string>
+    <string name="harvest">수확하기</string>
+    <string name="cancel_harvest">수확 취소하기</string>
+    <string name="harvest_date">수확 날짜</string>
+    <string name="harvest_date_format">수확 날짜: %s</string>
+    <string name="harvest_memo">수확 메모</string>
+    <string name="harvest_memo_hint">수확 메모를 입력할 수 있어요.</string>
+    <string name="message_harvest_confirm">수확 처리하시겠습니까?\n수확된 식물은 물주기 관리에서 제외됩니다.</string>
+    <string name="tab_my_garden">내 텃밭</string>
+    <string name="tab_harvested">수확 작물</string>
+
+    <string name="export">일기 내보내기</string>
+    <string name="diary_export_title">일기 내보내기</string>
+    <string name="diary_export_notice_title">내보내기 전 확인해주세요 📋</string>
+    <string name="diary_export_notice_body">📁 저장 위치\n내 파일 > Downloads > GardenLog\n\n💾 주의사항\n앱을 삭제해도 파일이 기기에 남아\n저장공간을 차지합니다.</string>
+    <string name="diary_export_include_first_page">첫 페이지(식물 상세) 포함</string>
+    <string name="diary_export_start_date">시작 날짜</string>
+    <string name="diary_export_end_date">종료 날짜</string>
+    <string name="diary_export_button">PDF로 내보내기</string>
+    <string name="diary_export_success">PDF가 저장되었습니다. (Downloads/GardenLog)</string>
+    <string name="diary_export_fail">내보내기에 실패했습니다.</string>
+    <string name="diary_export_no_diary">선택한 날짜 범위에 일기가 없습니다.</string>
+    <string name="diary_export_loading">PDF 생성 중…</string>
+    <string name="file_size_mb_format">%.1f MB</string>
+    <string name="file_size_kb_format">%d KB</string>
+    <string name="day_format">%d일</string>
+</resources>

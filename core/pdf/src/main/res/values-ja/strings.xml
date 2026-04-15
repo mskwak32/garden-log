@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pdf_label_planting_date">植えた日</string>
+    <string name="pdf_label_watering_cycle">水やり</string>
+    <string name="pdf_watering_cycle_format">%d日ごと</string>
+    <string name="pdf_label_memo">メモ</string>
+    <string name="pdf_label_harvest_date">収穫日</string>
+    <string name="pdf_label_harvest_memo">収穫メモ</string>
+</resources>

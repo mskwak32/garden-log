@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">戻る</string>
+    <string name="cancel">キャンセル</string>
+    <string name="delete">削除</string>
+
+    <string name="setting_title">設定</string>
+    <string name="setting_version">バージョン情報</string>
+    <string name="setting_version_update">アップデート</string>
+    <string name="setting_update_content">アップデート内容</string>
+    <string name="setting_app_estimation">アプリを評価する</string>
+    <string name="setting_update_content_title">バージョン %s</string>
+    <string name="setting_play_store_debug">Debug: Play Store 接続不可</string>
+    <string name="setting_exported_diary">出力済み日記</string>
+    <string name="setting_feedback">ご意見・ご要望</string>
+    <string name="setting_no_browser">ブラウザが見つかりません。</string>
+
+    <string name="exported_diary_title">出力済み日記</string>
+    <string name="exported_diary_empty">出力済みの日記がありません。</string>
+    <string name="exported_diary_share">共有</string>
+    <string name="exported_diary_delete_confirm">ファイルを削除しますか？</string>
+    <string name="exported_diary_no_viewer">PDFを開けるアプリがありません。</string>
+</resources>

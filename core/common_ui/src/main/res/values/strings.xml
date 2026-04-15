@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="close">닫기</string>
-    <string name="message_not_ready">준비중이에요</string>
-    <string name="confirm">확인</string>
-    <string name="cancel">취소</string>
-    <string name="year">년</string>
-    <string name="month">월</string>
-    <string name="year_format">%d년</string>
-    <string name="month_format">%d월</string>
-    <string name="day_format">%d일</string>
-    <string name="select_year_month">년/월 선택</string>
+    <string name="close">Close</string>
+    <string name="message_not_ready">Coming Soon</string>
+    <string name="confirm">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="year">Year</string>
+    <string name="month">Month</string>
+    <string name="year_format">%d</string>
+    <string name="month_format">%d</string>
+    <string name="day_format">%d</string>
+    <string name="select_year_month">Select Year/Month</string>
 </resources>
