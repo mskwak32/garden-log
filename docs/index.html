@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script>
+    const lang = navigator.language || '';
+    if (lang.startsWith('ja')) {
+      location.replace('./ja/');
+    } else if (lang.startsWith('ko')) {
+      location.replace('./ko/');
+    } else {
+      location.replace('./en/');
+    }
+  </script>
+</head>
+<body></body>
+</html>
