@@ -108,10 +108,12 @@ private fun Content(
                 label = stringResource(R.string.setting_exported_diary),
                 onClick = { onEvent(SettingEvent.ExportedDiaryListClick) }
             )
-            SettingItem(
-                label = stringResource(R.string.setting_feedback),
-                onClick = { onEvent(SettingEvent.FeedbackClick) }
-            )
+            if (state.isFeedbackVisible) {
+                SettingItem(
+                    label = stringResource(R.string.setting_feedback),
+                    onClick = { onEvent(SettingEvent.FeedbackClick) }
+                )
+            }
         }
     }
 }

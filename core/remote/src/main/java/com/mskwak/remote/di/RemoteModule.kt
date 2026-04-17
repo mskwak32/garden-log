@@ -18,13 +18,15 @@ internal class RemoteModule {
     fun provideFirebaseRemoteConfig(): FirebaseRemoteConfig {
         return FirebaseRemoteConfig.getInstance().apply {
             val settings = remoteConfigSettings {
-                minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 600 else 3600
+                minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 600 else 43200
             }
             setConfigSettingsAsync(settings)
             setDefaultsAsync(
                 mapOf(
                     AppConfigRemoteSourceImpl.KEY_MIN_VERSION_DEBUG to AppConfigRemoteSourceImpl.DEFAULT_MIN_VERSION,
-                    AppConfigRemoteSourceImpl.KEY_MIN_VERSION_RELEASE to AppConfigRemoteSourceImpl.DEFAULT_MIN_VERSION
+                    AppConfigRemoteSourceImpl.KEY_MIN_VERSION_RELEASE to AppConfigRemoteSourceImpl.DEFAULT_MIN_VERSION,
+                    AppConfigRemoteSourceImpl.KEY_FEEDBACK_DEBUG to AppConfigRemoteSourceImpl.DEFAULT_FEEDBACK_VISIBLE,
+                    AppConfigRemoteSourceImpl.KEY_FEEDBACK_RELEASE to AppConfigRemoteSourceImpl.DEFAULT_FEEDBACK_VISIBLE,
                 )
             )
         }

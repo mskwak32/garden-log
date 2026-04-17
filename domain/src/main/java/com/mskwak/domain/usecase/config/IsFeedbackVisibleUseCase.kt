@@ -2,10 +2,8 @@ package com.mskwak.domain.usecase.config
 
 import com.mskwak.domain.repository.AppConfigRepository
 
-class GetMinimumAppVersionUseCase(
+class IsFeedbackVisibleUseCase(
     private val appConfigRepository: AppConfigRepository
 ) {
-    suspend operator fun invoke(): Int {
-        return appConfigRepository.getMinimumAppVersion()
-    }
+    suspend operator fun invoke(): Boolean = appConfigRepository.isFeedbackVisible()
 }

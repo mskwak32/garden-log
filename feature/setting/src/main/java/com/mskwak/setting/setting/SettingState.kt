@@ -7,7 +7,8 @@ import com.mskwak.common_ui.ViewState
 
 @Immutable
 data class SettingState(
-    val versionName: String = ""
+    val versionName: String = "",
+    val isFeedbackVisible: Boolean = false
 ) : ViewState
 
 sealed interface SettingEvent : ViewEvent {

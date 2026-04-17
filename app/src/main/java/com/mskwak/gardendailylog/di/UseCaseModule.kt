@@ -2,6 +2,7 @@ package com.mskwak.gardendailylog.di
 
 import com.mskwak.domain.repository.*
 import com.mskwak.domain.usecase.config.GetMinimumAppVersionUseCase
+import com.mskwak.domain.usecase.config.IsFeedbackVisibleUseCase
 import com.mskwak.domain.usecase.diary.*
 import com.mskwak.domain.usecase.export.DeleteExportedFileUseCase
 import com.mskwak.domain.usecase.export.GenerateExportUseCase
@@ -145,6 +146,13 @@ class UseCaseModule {
         appConfigRepository: AppConfigRepository
     ): GetMinimumAppVersionUseCase {
         return GetMinimumAppVersionUseCase(appConfigRepository)
+    }
+
+    @Provides
+    fun provideIsFeedbackVisibleUseCase(
+        appConfigRepository: AppConfigRepository
+    ): IsFeedbackVisibleUseCase {
+        return IsFeedbackVisibleUseCase(appConfigRepository)
     }
 
     /* Picture UseCases */
