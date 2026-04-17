@@ -1,6 +1,5 @@
 package com.mskwak.plant.diary_list
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -139,9 +138,10 @@ private fun TopBar(
     CenterAlignedTopAppBar(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
+                Icon(
                     imageVector = IconPack.ArrowBackIosBlack,
                     contentDescription = stringResource(R.string.previous_month),
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(30.dp)
                         .clip(RoundedCornerShape(10.dp))
@@ -157,9 +157,10 @@ private fun TopBar(
                     )
                 )
                 Spacer(Modifier.width(16.dp))
-                Image(
+                Icon(
                     imageVector = IconPack.ArrowForwardIosBlack,
                     contentDescription = stringResource(R.string.next_month),
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .size(30.dp)
                         .clip(RoundedCornerShape(10.dp))
