@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Garden Diary</string>
+    <string name="noti_watering_title">Watering Reminder</string>
+    <string name="noti_watering_message">Time to water %s</string>
+    <string name="noti_watering_channel_name">Watering Reminder</string>
+    <string name="permission_setting_action">Permission Settings</string>
+    <string name="message_notification_permission">Permission is required to use watering reminders.</string>
+    <string name="message_finish_app">Press again to exit.</string>
+
+    <string name="force_update_title">Update Required</string>
+    <string name="force_update_message">Please update to the latest version\nfor the best experience.</string>
+    <string name="force_update_button">Update</string>
+
+    <string name="bottom_nav_home">Home</string>
+    <string name="bottom_nav_diary">Diary</string>
+    <string name="bottom_nav_setting">Settings</string>
+</resources>

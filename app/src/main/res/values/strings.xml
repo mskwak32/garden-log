@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Garden Diary</string>
-    <string name="noti_watering_title">Watering Reminder</string>
-    <string name="noti_watering_message">Time to water %s</string>
-    <string name="noti_watering_channel_name">Watering Reminder</string>
-    <string name="permission_setting_action">Permission Settings</string>
-    <string name="message_notification_permission">Permission is required to use watering reminders.</string>
-    <string name="message_finish_app">Press again to exit.</string>
+    <string name="app_name">텃밭 일기</string>
+    <string name="noti_watering_title">물주기 알림</string>
+    <string name="noti_watering_message">%s에 물을 줄 시간이에요</string>
+    <string name="noti_watering_channel_name">물주기 알림</string>
+    <string name="permission_setting_action">권한 설정</string>
+    <string name="message_notification_permission">물주기 알람을 사용하려면 권한이 필요합니다.</string>
+    <string name="message_finish_app">종료하려면 한 번 더 눌러주세요.</string>
 
-    <string name="force_update_title">Update Required</string>
-    <string name="force_update_message">Please update to the latest version\nfor the best experience.</string>
-    <string name="force_update_button">Update</string>
+    <string name="force_update_title">업데이트 필요</string>
+    <string name="force_update_message">원활한 사용을 위해 최신 버전으로\n업데이트해 주세요.</string>
+    <string name="force_update_button">업데이트</string>
 
-    <string name="bottom_nav_home">Home</string>
-    <string name="bottom_nav_diary">Diary</string>
-    <string name="bottom_nav_setting">Settings</string>
+    <string name="bottom_nav_home">홈</string>
+    <string name="bottom_nav_diary">일기</string>
+    <string name="bottom_nav_setting">설정</string>
 </resources>

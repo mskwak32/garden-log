@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pdf_label_planting_date">Planting Date</string>
+    <string name="pdf_label_watering_cycle">Watering Cycle</string>
+    <string name="pdf_watering_cycle_format">Every %d days</string>
+    <string name="pdf_label_memo">Memo</string>
+    <string name="pdf_label_harvest_date">Harvest Date</string>
+    <string name="pdf_label_harvest_memo">Harvest Note</string>
+</resources>

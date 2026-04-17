@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+
+    <string name="setting_title">Settings</string>
+    <string name="setting_version">Version</string>
+    <string name="setting_version_update">Update</string>
+    <string name="setting_update_content">What\'s New</string>
+    <string name="setting_app_estimation">Rate the App</string>
+    <string name="setting_update_content_title">Version %s</string>
+    <string name="setting_play_store_debug">Debug: Play Store unavailable</string>
+    <string name="setting_exported_diary">Exported Diaries</string>
+    <string name="setting_feedback">Send Feedback</string>
+    <string name="setting_no_browser">No browser found.</string>
+
+    <string name="exported_diary_title">Exported Diaries</string>
+    <string name="exported_diary_empty">No exported diaries.</string>
+    <string name="exported_diary_share">Share</string>
+    <string name="exported_diary_delete_confirm">Delete this file?</string>
+    <string name="exported_diary_no_viewer">No app available to open PDF.</string>
+</resources>

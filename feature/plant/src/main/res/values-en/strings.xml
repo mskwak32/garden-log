@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">Back</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">OK</string>
+    <string name="none">None</string>
+    <string name="complete">Done</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="menu">Menu</string>
+    <string name="close">Close</string>
+    <string name="date">Date</string>
+    <string name="this_month">This Month</string>
+    <string name="previous_month">Previous Month</string>
+    <string name="next_month">Next Month</string>
+    <string name="select_year_month">Select Year/Month</string>
+    <string name="year_format">%d</string>
+    <string name="month_format">%d</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="select_all">All</string>
+    <string name="photo_image">Gallery</string>
+    <string name="photo_camera">Camera</string>
+    <string name="permission_setting_action">Permission Settings</string>
+    <string name="view_more">More</string>
+    <string name="new_diary">Write Diary</string>
+    <string name="memo">Memo</string>
+    <string name="watering">Watering</string>
+    <string name="sort">Sort</string>
+
+    <string name="home_title">My Garden</string>
+    <string name="sort_plant_created_latest">Recently Planted</string>
+    <string name="sort_plant_created_earliest">Earliest Planted</string>
+    <string name="sort_plant_watering_upcoming">Watering Soon</string>
+
+    <string name="sort_diary_created_latest">Newest</string>
+    <string name="sort_diary_created_earliest">Oldest</string>
+
+    <string name="plant_list_empty">No plants registered yet</string>
+    <string name="harvested_list_empty">No harvested crops yet</string>
+    <string name="new_plant">Add Plant</string>
+    <string name="plant_name">Plant Name</string>
+    <string name="plant_date">Planting Date</string>
+    <string name="plant_date_format">Planted: %s</string>
+    <string name="plant_diary">Growth Diary</string>
+    <string name="days_ago_format">%d days ago</string>
+
+    <string name="watering_last_date">Last Watered</string>
+    <string name="watering_period">Watering Interval</string>
+    <string name="watering_period_unit">Every %d days</string>
+    <string name="watering_period_unit_dialog">days</string>
+    <string name="watering_d_day_plus_format">D+%02d</string>
+    <string name="watering_d_day_minus_format">D-%02d</string>
+    <string name="watering_alarm">Reminder Time</string>
+    <string name="watering_icon_description">Watering recorded</string>
+
+    <string name="message_input_required_field">Please fill in all required fields.</string>
+    <string name="message_no_more_picture">No more images can be added.</string>
+    <string name="message_input_picture_or_content">Please add a photo or content.</string>
+    <string name="message_photo_image_permission">Permission is required to access your gallery.</string>
+    <string name="message_photo_camera_permission">Permission is required to use the camera.</string>
+    <string name="message_delete_confirm">Are you sure you want to delete?\nRelated diary entries will also be deleted and cannot be recovered.</string>
+    <string name="message_not_ready">Coming Soon</string>
+    <string name="message_save_failed">Failed to save.</string>
+    <string name="exact_alarm_permission_title">Alarm Permission Required</string>
+    <string name="exact_alarm_permission_message">Exact alarm permission is required for accurate watering reminders.\nPlease allow it in Settings.</string>
+
+    <string name="diary_list_empty_with_plantName">No diary entries for %s yet</string>
+    <string name="diary_list_empty">No diary entries found</string>
+    <string name="diary_content_hint">Enter content here.</string>
+    <string name="diary_content_empty">No content recorded.</string>
+    <string name="message_discard_confirm">Your unsaved content will be discarded.</string>
+    <string name="message_diary_delete_confirm">Delete this diary entry?\nThis cannot be undone.</string>
+
+    <string name="harvested">Harvested</string>
+    <string name="harvest">Harvest</string>
+    <string name="cancel_harvest">Cancel Harvest</string>
+    <string name="harvest_date">Harvest Date</string>
+    <string name="harvest_date_format">Harvested: %s</string>
+    <string name="harvest_memo">Harvest Note</string>
+    <string name="harvest_memo_hint">You can add a harvest note here.</string>
+    <string name="message_harvest_confirm">Mark as harvested?\nHarvested plants will be removed from watering management.</string>
+    <string name="tab_my_garden">My Garden</string>
+    <string name="tab_harvested">Harvested</string>
+
+    <string name="export">Export Diary</string>
+    <string name="diary_export_title">Export Diary</string>
+    <string name="diary_export_notice_title">Please check before exporting 📋</string>
+    <string name="diary_export_notice_body">📁 Save Location\nFiles > Downloads > GardenLog\n\n💾 Note\nFiles will remain on your device\neven after uninstalling the app.</string>
+    <string name="diary_export_include_first_page">Include first page (plant details)</string>
+    <string name="diary_export_start_date">Start Date</string>
+    <string name="diary_export_end_date">End Date</string>
+    <string name="diary_export_button">Export as PDF</string>
+    <string name="diary_export_success">PDF saved. (Downloads/GardenLog)</string>
+    <string name="diary_export_fail">Export failed.</string>
+    <string name="diary_export_no_diary">No diary entries in the selected date range.</string>
+    <string name="diary_export_loading">Generating PDF…</string>
+    <string name="file_size_mb_format">%.1f MB</string>
+    <string name="file_size_kb_format">%d KB</string>
+    <string name="day_format">%d</string>
+</resources>
