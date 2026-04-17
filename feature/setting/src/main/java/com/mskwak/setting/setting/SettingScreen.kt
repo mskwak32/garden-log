@@ -28,7 +28,7 @@ import com.mskwak.setting.R
 @Composable
 fun SettingScreen(
     viewModel: SettingViewModel = hiltViewModel(),
-    onNavigateToExportedDiaryList: () -> Unit = {}
+    navigate: (SettingEffect.Navigation) -> Unit = {}
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -55,10 +55,6 @@ fun SettingScreen(
                     }
                 }
 
-                SettingEffect.NavigateToExportedDiaryList -> {
-                    onNavigateToExportedDiaryList()
-                }
-
                 SettingEffect.OpenFeedbackForm -> {
                     val intent =
                         Intent(Intent.ACTION_VIEW, Constants.USER_FEEDBACK_FORM_URL.toUri())
@@ -68,6 +64,8 @@ fun SettingScreen(
                         Toast.makeText(context, noBrowserMessage, Toast.LENGTH_SHORT).show()
                     }
                 }
+
+                is SettingEffect.Navigation -> navigate(effect)
             }
         }
     }
@@ -105,6 +103,10 @@ private fun Content(
                     onClick = { onEvent(SettingEvent.FeedbackClick) }
                 )
             }
+            SettingItem(
+                label = stringResource(R.string.setting_privacy_policy),
+                onClick = { onEvent(SettingEvent.PrivacyPolicyClick) }
+            )
         }
     }
 }

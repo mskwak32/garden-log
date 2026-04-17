@@ -7,4 +7,5 @@ object Constants {
     const val LAST_WATERING_TEXT_CRITERION = 7
     const val MAX_WATERING_PERIOD = 400
     const val USER_FEEDBACK_FORM_URL = "https://forms.gle/yagJqtSLh6CMd9R3A"
+    const val PRIVACY_POLICY_URL = "https://mskwak32.github.io/garden-diary-privacy"
 }

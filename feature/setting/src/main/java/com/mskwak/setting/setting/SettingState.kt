@@ -15,10 +15,15 @@ sealed interface SettingEvent : ViewEvent {
     data object RateAppClick : SettingEvent
     data object ExportedDiaryListClick : SettingEvent
     data object FeedbackClick : SettingEvent
+    data object PrivacyPolicyClick : SettingEvent
 }
 
 sealed interface SettingEffect : ViewEffect {
+    sealed interface Navigation : SettingEffect {
+        data object ToExportedDiaryList : Navigation
+        data object ToPrivacyPolicy : Navigation
+    }
+
     data object OpenPlayStore : SettingEffect
-    data object NavigateToExportedDiaryList : SettingEffect
     data object OpenFeedbackForm : SettingEffect
 }

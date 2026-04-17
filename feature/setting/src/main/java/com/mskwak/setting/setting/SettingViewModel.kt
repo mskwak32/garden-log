@@ -37,8 +37,9 @@ class SettingViewModel @Inject constructor(
         val event = viewEvent as? SettingEvent ?: return
         when (event) {
             SettingEvent.RateAppClick -> setEffect(SettingEffect.OpenPlayStore)
-            SettingEvent.ExportedDiaryListClick -> setEffect(SettingEffect.NavigateToExportedDiaryList)
+            SettingEvent.ExportedDiaryListClick -> setEffect(SettingEffect.Navigation.ToExportedDiaryList)
             SettingEvent.FeedbackClick -> setEffect(SettingEffect.OpenFeedbackForm)
+            SettingEvent.PrivacyPolicyClick -> setEffect(SettingEffect.Navigation.ToPrivacyPolicy)
         }
     }
 }

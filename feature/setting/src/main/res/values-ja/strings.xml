@@ -12,6 +12,7 @@
     <string name="setting_exported_diary">出力済み日記</string>
     <string name="setting_feedback">ご意見・ご要望</string>
     <string name="setting_no_browser">ブラウザが見つかりません。</string>
+    <string name="setting_privacy_policy">プライバシーポリシー</string>
 
     <string name="exported_diary_title">出力済み日記</string>
     <string name="exported_diary_empty">出力済みの日記がありません。</string>

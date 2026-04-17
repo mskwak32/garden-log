@@ -12,6 +12,7 @@
     <string name="setting_exported_diary">Exported Diaries</string>
     <string name="setting_feedback">Send Feedback</string>
     <string name="setting_no_browser">No browser found.</string>
+    <string name="setting_privacy_policy">Privacy Policy</string>
 
     <string name="exported_diary_title">Exported Diaries</string>
     <string name="exported_diary_empty">No exported diaries.</string>
