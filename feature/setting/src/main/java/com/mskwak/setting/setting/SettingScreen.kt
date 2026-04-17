@@ -43,11 +43,6 @@ fun SettingScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                SettingEffect.OpenUpdateLog -> {
-                    val intent = Intent(Intent.ACTION_VIEW, Constants.APP_UPDATE_LOG_URL.toUri())
-                    context.startActivity(intent)
-                }
-
                 SettingEffect.OpenPlayStore -> {
                     if (BuildConfig.DEBUG) {
                         Toast.makeText(
@@ -95,10 +90,6 @@ private fun Content(
             SettingItem(
                 label = stringResource(R.string.setting_version),
                 value = state.versionName
-            )
-            SettingItem(
-                label = stringResource(R.string.setting_update_content),
-                onClick = { onEvent(SettingEvent.UpdateContentClick) }
             )
             SettingItem(
                 label = stringResource(R.string.setting_app_estimation),
