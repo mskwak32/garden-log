@@ -1,7 +1,6 @@
 [versions]
 compileSdk = "36"
 minSdk = "29"
-targetSdk = "36"
 agp = "9.1.0"
 kotlin = "2.3.20"
 coreKtx = "1.18.0"
