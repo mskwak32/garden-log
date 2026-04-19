@@ -82,6 +82,15 @@ class UseCaseModule {
         return WateringNowUseCase(plantRepository, setWateringAlarmUseCase, addWateringLogUseCase)
     }
 
+    @Provides
+    fun provideCancelTodayWateringUseCase(
+        plantRepository: PlantRepository,
+        wateringLogRepository: WateringLogRepository,
+        setWateringAlarmUseCase: SetWateringAlarmUseCase
+    ): CancelTodayWateringUseCase {
+        return CancelTodayWateringUseCase(plantRepository, wateringLogRepository, setWateringAlarmUseCase)
+    }
+
     /* Plant UseCases */
     @Provides
     fun provideGetPlantsWithSortOrderUseCase(

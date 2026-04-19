@@ -25,4 +25,12 @@ internal class WateringLogRepositoryImpl @Inject constructor(
     ): List<LocalDate> {
         return wateringLogDao.getWateringDatesByRange(plantId, startDate, endDate)
     }
+
+    override suspend fun deleteWateringLog(plantId: Int, date: LocalDate) {
+        wateringLogDao.deleteWateringLog(plantId, date)
+    }
+
+    override suspend fun getLatestWateringDateBefore(plantId: Int, date: LocalDate): LocalDate? {
+        return wateringLogDao.getLatestWateringDateBefore(plantId, date)
+    }
 }

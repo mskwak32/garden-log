@@ -46,6 +46,8 @@ class FirebaseAnalyticsLogger @Inject constructor(
             is GardenEvent.Harvest -> firebaseAnalytics.logEvent("harvest", null)
 
             is GardenEvent.CancelHarvest -> firebaseAnalytics.logEvent("cancel_harvest", null)
+
+            is GardenEvent.CancelWatering -> firebaseAnalytics.logEvent("cancel_watering", null)
         }
     }
 }

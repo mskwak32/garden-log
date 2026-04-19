@@ -2,6 +2,11 @@ package com.mskwak.plant.plant_detail
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -210,12 +215,17 @@ private fun Content(
             }
 
             Spacer(Modifier.height(16.dp))
-            WateringBox(
+            WateringSection(
                 memo = state.memo,
                 isHarvested = state.isHarvested,
+                wateringStatus = state.wateringStatus,
+                wateringAnimationKey = wateringAnimationKey,
                 onEvent = { event ->
                     if (event is PlantDetailEvent.OnWateringClicked) {
                         wateringAnimationKey++
+                    }
+                    if (event is PlantDetailEvent.OnCancelWateringClicked) {
+                        wateringAnimationKey = 0
                     }
                     onEvent(event)
                 }
@@ -486,12 +496,27 @@ private fun WateringInfo(
 }
 
 @Composable
-private fun WateringBox(
+private fun WateringSection(
     modifier: Modifier = Modifier,
     memo: String?,
     isHarvested: Boolean,
+    wateringStatus: WateringStatus,
+    wateringAnimationKey: Int,
     onEvent: (PlantDetailEvent) -> Unit
 ) {
+    // 진입 시 TODAY_DONE이면 initialState=true → 애니메이션 없이 즉시 표시
+    val cancelButtonState = remember {
+        MutableTransitionState(wateringStatus == WateringStatus.TODAY_DONE)
+    }
+    // 화면 내 물주기 클릭 시 애니메이션 트리거
+    LaunchedEffect(wateringAnimationKey) {
+        if (wateringAnimationKey > 0) cancelButtonState.targetState = true
+    }
+    // 취소 후 상태 복원 (TODAY_DONE → 다른 상태)
+    LaunchedEffect(wateringStatus) {
+        if (wateringStatus != WateringStatus.TODAY_DONE) cancelButtonState.targetState = false
+    }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -505,28 +530,22 @@ private fun WateringBox(
     ) {
         // 수확 후에는 물주기 버튼 숨김
         if (!isHarvested) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
-                    .clickableWithoutRipple {
-                        onEvent(PlantDetailEvent.OnWateringClicked)
-                    }
-                    .padding(vertical = 10.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    imageVector = IconPack.WaterDropWhite,
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onTertiary)
+            Row(modifier = Modifier.fillMaxWidth()) {
+                WateringButton(
+                    modifier = Modifier.weight(1f),
+                    onEvent = onEvent
                 )
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    text = stringResource(R.string.watering),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onTertiary
-                )
+                AnimatedVisibility(
+                    visibleState = cancelButtonState,
+                    enter = expandHorizontally(expandFrom = Alignment.End) + fadeIn(),
+                    exit = shrinkHorizontally(shrinkTowards = Alignment.End) + fadeOut()
+                ) {
+                    // padding(start)을 AnimatedVisibility 안으로 넣어야 gap도 함께 shrink됨
+                    WateringCancelButton(
+                        modifier = Modifier.padding(start = 8.dp),
+                        onEvent = onEvent
+                    )
+                }
             }
             Spacer(Modifier.height(10.dp))
         }
@@ -542,6 +561,54 @@ private fun WateringBox(
                     RoundedCornerShape(10.dp)
                 )
                 .padding(10.dp)
+        )
+    }
+}
+
+@Composable
+private fun WateringButton(
+    modifier: Modifier = Modifier,
+    onEvent: (PlantDetailEvent) -> Unit
+) {
+    Row(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+            .clickableWithoutRipple { onEvent(PlantDetailEvent.OnWateringClicked) }
+            .padding(vertical = 10.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Image(
+            imageVector = IconPack.WaterDropWhite,
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onTertiary)
+        )
+        Spacer(Modifier.width(4.dp))
+        Text(
+            text = stringResource(R.string.watering),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onTertiary
+        )
+    }
+}
+
+@Composable
+private fun WateringCancelButton(
+    modifier: Modifier = Modifier,
+    onEvent: (PlantDetailEvent) -> Unit
+) {
+    Box(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.errorContainer, RoundedCornerShape(15.dp))
+            .clickableWithoutRipple { onEvent(PlantDetailEvent.OnCancelWateringClicked) }
+            .padding(horizontal = 8.dp, vertical = 10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.cancel),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onErrorContainer
         )
     }
 }
@@ -790,7 +857,7 @@ private fun PreviewContent() {
         plantName = "바질",
         createdAt = LocalDate.now(),
         dDays = 1,
-        wateringStatus = WateringStatus.UPCOMING,
+        wateringStatus = WateringStatus.TODAY_DONE,
         lastWateringDate = LocalDate.now().minusDays(3),
         wateringAlarmTime = LocalTime.of(9, 0),
         isWateringActive = true,

@@ -11,4 +11,7 @@ interface WateringLogRepository {
         startDate: LocalDate,
         endDate: LocalDate
     ): List<LocalDate>
+
+    suspend fun deleteWateringLog(plantId: Int, date: LocalDate)
+    suspend fun getLatestWateringDateBefore(plantId: Int, date: LocalDate): LocalDate?
 }
