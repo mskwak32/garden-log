@@ -44,6 +44,7 @@ sealed interface PlantDetailEvent : ViewEvent {
     data object OnHarvestClicked : PlantDetailEvent
     data class OnHarvestConfirmed(val date: LocalDate) : PlantDetailEvent
     data object OnCancelHarvestClicked : PlantDetailEvent
+    data object OnCancelWateringClicked : PlantDetailEvent
     data object OnExportClicked : PlantDetailEvent
 }
 

@@ -27,6 +27,9 @@ sealed class GardenEvent {
 
     /** 수확 취소 */
     data object CancelHarvest : GardenEvent()
+
+    /** 물주기 취소 */
+    data object CancelWatering : GardenEvent()
 }
 
 enum class WateringSource { DETAIL, LIST }

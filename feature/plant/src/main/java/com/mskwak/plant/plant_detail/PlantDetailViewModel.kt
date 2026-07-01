@@ -12,6 +12,7 @@ import com.mskwak.domain.usecase.diary.GetDiariesByPlantIdUseCase
 import com.mskwak.domain.usecase.plant.DeletePlantUseCase
 import com.mskwak.domain.usecase.plant.GetPlantUseCase
 import com.mskwak.domain.usecase.plant.HarvestPlantUseCase
+import com.mskwak.domain.usecase.watering.CancelTodayWateringUseCase
 import com.mskwak.domain.usecase.watering.GetWateringDaysUseCase
 import com.mskwak.domain.usecase.watering.UpdateWateringAlarmActivationUseCase
 import com.mskwak.domain.usecase.watering.WateringNowUseCase
@@ -42,6 +43,7 @@ class PlantDetailViewModel @AssistedInject constructor(
     private val deletePlantUseCase: DeletePlantUseCase,
     private val plantRepository: PlantRepository,
     private val harvestPlantUseCase: HarvestPlantUseCase,
+    private val cancelTodayWateringUseCase: CancelTodayWateringUseCase,
     private val analyticsLogger: AnalyticsLogger
 ) : BaseViewModel<PlantDetailState, PlantDetailEvent, PlantDetailEffect>() {
 
@@ -143,6 +145,10 @@ class PlantDetailViewModel @AssistedInject constructor(
                 cancelHarvest()
             }
 
+            is PlantDetailEvent.OnCancelWateringClicked -> {
+                cancelWatering()
+            }
+
             is PlantDetailEvent.OnExportClicked -> {
                 setEffect(PlantDetailEffect.Navigation.ToExportDiary)
             }
@@ -192,6 +198,13 @@ class PlantDetailViewModel @AssistedInject constructor(
         viewModelScope.launch {
             harvestPlantUseCase.cancelHarvest(plantId)
             analyticsLogger.log(GardenEvent.CancelHarvest)
+        }
+    }
+
+    private fun cancelWatering() {
+        viewModelScope.launch {
+            cancelTodayWateringUseCase(plantId)
+            analyticsLogger.log(GardenEvent.CancelWatering)
         }
     }
 

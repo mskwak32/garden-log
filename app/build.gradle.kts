@@ -25,7 +25,6 @@ android {
     defaultConfig {
         applicationId = "com.mskwak.gardendailylog"
         minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 16
         versionName = "2.7"
 
