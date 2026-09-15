@@ -504,7 +504,7 @@ private fun WateringSection(
     wateringAnimationKey: Int,
     onEvent: (PlantDetailEvent) -> Unit
 ) {
-    // 진입 시 TODAY_DONE이면 initialState=true → 애니메이션 없이 즉시 표시
+    // 최초 진입 완료 상태는 즉시 보이고, 이후 상태 변경은 기존 전환을 유지한다.
     val cancelButtonState = remember {
         MutableTransitionState(wateringStatus == WateringStatus.TODAY_DONE)
     }
@@ -512,9 +512,9 @@ private fun WateringSection(
     LaunchedEffect(wateringAnimationKey) {
         if (wateringAnimationKey > 0) cancelButtonState.targetState = true
     }
-    // 취소 후 상태 복원 (TODAY_DONE → 다른 상태)
+    // DB 복원과 취소 모두 상태 전환 애니메이션으로 반영한다.
     LaunchedEffect(wateringStatus) {
-        if (wateringStatus != WateringStatus.TODAY_DONE) cancelButtonState.targetState = false
+        cancelButtonState.targetState = wateringStatus == WateringStatus.TODAY_DONE
     }
 
     Column(
