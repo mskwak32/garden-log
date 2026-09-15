@@ -25,7 +25,7 @@ fun Plant.toPlantListItemUiModel(
     val wateringDays = getWateringDays(this)
     val (status, dDay) = when {
         lastWateringDate == today -> {
-            WateringStatus.TODAY_DONE to 0
+            WateringStatus.TODAY_DONE to wateringDays.days
         }
 
         !wateringDays.hasPeriod -> {
