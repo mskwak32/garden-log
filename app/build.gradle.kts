@@ -25,8 +25,8 @@ android {
     defaultConfig {
         applicationId = "com.mskwak.gardendailylog"
         minSdk = libs.versions.minSdk.get().toInt()
-        versionCode = 17
-        versionName = "2.8"
+        versionCode = 18
+        versionName = "2.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         base.archivesName = "${rootProject.name} $versionName($versionCode)"
