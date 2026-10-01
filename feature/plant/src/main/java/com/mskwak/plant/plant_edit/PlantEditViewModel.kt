@@ -2,6 +2,7 @@ package com.mskwak.plant.plant_edit
 
 import android.app.Application
 import android.net.Uri
+import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import com.mskwak.analytics.AnalyticsLogger
 import com.mskwak.analytics.GardenEvent
@@ -15,18 +16,22 @@ import com.mskwak.domain.usecase.picture.SavePictureUseCase
 import com.mskwak.domain.usecase.plant.AddPlantUseCase
 import com.mskwak.domain.usecase.plant.GetPlantUseCase
 import com.mskwak.domain.usecase.plant.UpdatePlantUseCase
+import com.mskwak.domain.usecase.watering.WateringUpdateResult
 import com.mskwak.plant.R
 import com.mskwak.plant.util.canScheduleExactAlarms
 import com.mskwak.plant.util.cleanupCameraCache
 import com.mskwak.plant.util.createCameraUri
 import com.mskwak.plant.util.readBytesFromUri
+import com.mskwak.plant.util.wateringErrorResource
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -43,19 +48,25 @@ class PlantEditViewModel @AssistedInject constructor(
 ) : BaseViewModel<PlantEditState, PlantEditEvent, PlantEditEffect>() {
 
     private var plantId: Int? = navKey.plantId
+    private var originalPlant: Plant? = null
     private var originalPicture: Picture? = null
     private var newPicture: Picture? = null
     private var loadJob: Job? = null
 
     init {
         val screenName = if (navKey.plantId != null) "plant_edit" else "plant_add"
+        // 기존 식물은 원본을 읽기 전 기본값으로 저장하지 못하게 한다.
+        setState {
+            copy(
+                isEditMode = navKey.plantId != null,
+                isSaveEnabled = navKey.plantId == null
+            )
+        }
         analyticsLogger.log(GardenEvent.ScreenView(screenName))
         plantId?.let { loadJob = loadPlant(it) }
     }
 
-    override fun setInitialState(): PlantEditState = PlantEditState(
-        isEditMode = plantId != null
-    )
+    override fun setInitialState(): PlantEditState = PlantEditState(isSaveEnabled = false)
 
     override fun handleEvents(viewEvent: ViewEvent) {
         val event = viewEvent as? PlantEditEvent ?: return
@@ -141,6 +152,7 @@ class PlantEditViewModel @AssistedInject constructor(
             }
 
             is PlantEditEvent.OnSaveClicked -> {
+                if (!viewState.value.isSaveEnabled) return
                 setState { copy(isSaveEnabled = false) }
                 savePlant()
             }
@@ -167,12 +179,15 @@ class PlantEditViewModel @AssistedInject constructor(
 
     private fun loadPlant(plantId: Int): Job {
         return viewModelScope.launch {
-            getPlantUseCase(plantId).collect { plant ->
-                plant ?: return@collect
+            try {
+                // 입력 도중 DB 갱신으로 편집 내용을 덮어쓰지 않도록 최초 값만 읽는다.
+                val plant = getPlantUseCase(plantId).first { it != null } ?: return@launch
+                originalPlant = plant
                 originalPicture = plant.picture
                 setState {
                     copy(
                         isEditMode = true,
+                        isSaveEnabled = true,
                         plantImagePath = plant.picture?.path,
                         plantName = plant.name,
                         createdDate = plant.createdDate,
@@ -183,6 +198,11 @@ class PlantEditViewModel @AssistedInject constructor(
                         isWateringAlarmActive = plant.wateringAlarm.isActive
                     )
                 }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to load plant")
+                setEffect(PlantEditEffect.ShowSnackbar(R.string.message_plant_load_failed))
             }
         }
     }
@@ -197,11 +217,6 @@ class PlantEditViewModel @AssistedInject constructor(
 
         viewModelScope.launch {
             try {
-                // 새 사진으로 교체된 경우, 기존 원본 사진 삭제
-                if (newPicture != null && originalPicture != null) {
-                    deletePictureUseCase(originalPicture!!)
-                }
-
                 val currentPicture = if (newPicture != null) newPicture else originalPicture
 
                 val plant = Plant(
@@ -219,26 +234,50 @@ class PlantEditViewModel @AssistedInject constructor(
                         }
                     ),
                     picture = currentPicture,
-                    memo = state.memo.ifBlank { null }
+                    memo = state.memo.ifBlank { null },
+                    harvestDate = originalPlant?.harvestDate,
+                    harvestMemo = originalPlant?.harvestMemo
                 )
 
-                if (plantId != null) {
-                    updatePlantUseCase(plant)
+                // 날짜와 이력의 일관성은 Repository 저장 경계에서 검증한다.
+                val result = if (plantId != null) {
+                    val saved = updatePlantUseCase(plant)
                     analyticsLogger.log(GardenEvent.UpdatePlant)
+                    saved
                 } else {
-                    addPlantUseCase(plant)
+                    val saved = addPlantUseCase(plant)
                     analyticsLogger.log(
                         GardenEvent.AddPlant(
                             wateringInterval = state.wateringPeriod,
                             alarmEnabled = state.isWateringAlarmActive
                         )
                     )
+                    saved
+                }
+                // 알람 예약이 실패해도 저장된 식물을 다시 등록하도록 유도하지 않는다.
+                if (result == WateringUpdateResult.ALARM_FAILED) {
+                    Toast.makeText(application, R.string.message_watering_alarm_failed, Toast.LENGTH_LONG).show()
                 }
 
+                val replacedPicture = if (newPicture != null) originalPicture else null
+                // 저장한 사진은 식물 소유로 넘겨 취소 시 정리 대상에서 제외한다.
+                newPicture = null
+                if (replacedPicture != null) {
+                    try {
+                        deletePictureUseCase(replacedPicture)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        // 파일 정리 실패를 이미 완료된 DB 저장 실패로 안내하지 않는다.
+                        Timber.e(e, "Failed to clean up replaced picture")
+                    }
+                }
                 setEffect(PlantEditEffect.Navigation.SaveComplete)
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Timber.e(e, "Failed to save plant")
-                setEffect(PlantEditEffect.ShowSnackbar(R.string.message_save_failed))
+                setEffect(PlantEditEffect.ShowSnackbar(e.wateringErrorResource()))
             } finally {
                 setState { copy(isSaveEnabled = true) }
             }

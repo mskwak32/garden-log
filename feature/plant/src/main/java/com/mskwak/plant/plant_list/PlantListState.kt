@@ -25,6 +25,7 @@ sealed interface PlantListEvent : ViewEvent {
 }
 
 sealed interface PlantListEffect : ViewEffect {
+    data class ShowSnackbar(val messageResId: Int) : PlantListEffect
     sealed interface Navigation : PlantListEffect {
         data class ToPlantDetail(val plantId: Int) : Navigation
         data object ToAddPlant : Navigation

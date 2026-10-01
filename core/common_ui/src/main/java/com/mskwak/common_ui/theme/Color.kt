@@ -220,3 +220,5 @@ val surfaceContainerHighestDarkHighContrast = Color(0xFF444842)
 
 val DimColor = Color(0x7518181C)
 val SkyBlue = Color(0xFF81CFE2)
+val WateringBlue = Color(0xFF53A0FF)
+val WateringBlueText = Color(0xFF2265AD)

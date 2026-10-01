@@ -99,4 +99,19 @@
     <string name="file_size_mb_format">%.1f MB</string>
     <string name="file_size_kb_format">%d KB</string>
     <string name="day_format">%d日</string>
+    <string name="watering_calendar">水やりカレンダー</string>
+    <string name="watering_no_record">記録なし</string>
+    <string name="watering_cancel_record">水やりを取り消す</string>
+    <string name="watering_retry">再試行</string>
+    <string name="watering_month_format">yyyy年M月</string>
+    <string name="watering_record_accessibility">%1$s、水やり</string>
+    <string name="watering_previous_month">前の月</string>
+    <string name="watering_next_month">次の月</string>
+    <string name="message_watering_load_failed">水やり記録を読み込めませんでした。\n再試行してください。</string>
+    <string name="message_watering_alarm_failed">水やり記録は保存されましたが、アラームを設定できませんでした。\n設定を確認してください。</string>
+    <string name="message_watering_outside_range">水やり日は植えた日から今日までを選択してください。</string>
+    <string name="message_watering_harvested">収穫済みの植物の水やり記録は変更できません。</string>
+    <string name="message_created_future">植えた日は今日より後に設定できません。</string>
+    <string name="message_created_after_watering">植えた日は最も古い水やり記録より後に変更できません。</string>
+    <string name="message_plant_load_failed">植物の情報を読み込めませんでした。画面を開き直してください。</string>
 </resources>

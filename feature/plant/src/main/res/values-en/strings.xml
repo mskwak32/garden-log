@@ -99,4 +99,19 @@
     <string name="file_size_mb_format">%.1f MB</string>
     <string name="file_size_kb_format">%d KB</string>
     <string name="day_format">%d</string>
+    <string name="watering_calendar">Watering calendar</string>
+    <string name="watering_no_record">No records</string>
+    <string name="watering_cancel_record">Cancel watering</string>
+    <string name="watering_retry">Retry</string>
+    <string name="watering_month_format">MMMM yyyy</string>
+    <string name="watering_record_accessibility">%1$s, watered</string>
+    <string name="watering_previous_month">Previous month</string>
+    <string name="watering_next_month">Next month</string>
+    <string name="message_watering_load_failed">Unable to load watering records.\nPlease retry.</string>
+    <string name="message_watering_alarm_failed">Watering was saved, but the alarm could not be scheduled.\nCheck alarm settings.</string>
+    <string name="message_watering_outside_range">Choose a watering date between the planting date and today.</string>
+    <string name="message_watering_harvested">Watering records for harvested plants cannot be changed.</string>
+    <string name="message_created_future">The planting date cannot be after today.</string>
+    <string name="message_created_after_watering">The planting date cannot be after the earliest watering record.</string>
+    <string name="message_plant_load_failed">Unable to load plant details. Open this screen again.</string>
 </resources>

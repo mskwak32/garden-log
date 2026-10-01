@@ -9,6 +9,15 @@ import java.time.LocalDate
 
 @Dao
 interface WateringLogDao {
+    @Query("SELECT date FROM watering_log WHERE plantId = :plantId ORDER BY date")
+    fun observeWateringDates(plantId: Int): kotlinx.coroutines.flow.Flow<List<LocalDate>>
+
+    @Query("SELECT date FROM watering_log WHERE plantId = :plantId ORDER BY date")
+    suspend fun getWateringDates(plantId: Int): List<LocalDate>
+
+    @Query("SELECT MAX(date) FROM watering_log WHERE plantId = :plantId")
+    suspend fun getLatestWateringDate(plantId: Int): LocalDate?
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertWateringLog(entity: WateringLogEntity)
 

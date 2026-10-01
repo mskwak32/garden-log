@@ -5,13 +5,21 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.MapColumn
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.mskwak.database.entity.PlantEntity
+import com.mskwak.database.entity.PlantWithWatering
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 @Dao
 interface PlantDao {
+    @Query("SELECT * FROM plant")
+    suspend fun getAllPlants(): List<PlantEntity>
+
+    @Query("UPDATE plant SET lastWateringDate = :date WHERE id = :plantId")
+    suspend fun updateLastWateringDate(plantId: Int, date: LocalDate)
+
     @Insert
     suspend fun insertPlant(plantEntity: PlantEntity): Long
 
@@ -20,6 +28,18 @@ interface PlantDao {
 
     @Delete
     suspend fun deletePlant(plantEntity: PlantEntity)
+
+    @Transaction
+    @Query("SELECT * FROM plant")
+    fun observePlantsWithWatering(): Flow<List<PlantWithWatering>>
+
+    @Transaction
+    @Query("SELECT * FROM plant WHERE id = :id")
+    fun observePlantWithWatering(id: Int): Flow<PlantWithWatering?>
+
+    @Transaction
+    @Query("SELECT * FROM plant WHERE id = :id")
+    suspend fun getPlantWithWatering(id: Int): PlantWithWatering?
 
     @Query("SELECT * FROM plant")
     fun getPlants(): Flow<List<PlantEntity>>

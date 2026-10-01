@@ -1,6 +1,7 @@
 package com.mskwak.plant.plant_list
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +37,7 @@ fun PlantListScreen(
     navigate: (PlantListEffect.Navigation) -> Unit
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     Content(
         state = state,
@@ -45,6 +48,9 @@ fun PlantListScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is PlantListEffect.Navigation -> navigate(effect)
+                is PlantListEffect.ShowSnackbar -> {
+                    Toast.makeText(context, effect.messageResId, Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

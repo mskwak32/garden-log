@@ -21,10 +21,10 @@ data class PlantListItemUiModel(
 fun Plant.toPlantListItemUiModel(
     getWateringDays: (Plant) -> WateringDays
 ): PlantListItemUiModel {
-    val today = LocalDate.now()
     val wateringDays = getWateringDays(this)
     val (status, dDay) = when {
-        lastWateringDate == today -> {
+        // 심은 날짜 대체값이나 미래 이력으로 오늘 완료를 추정하지 않는다.
+        isWateredToday -> {
             WateringStatus.TODAY_DONE to wateringDays.days
         }
 

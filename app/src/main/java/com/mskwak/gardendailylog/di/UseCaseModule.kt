@@ -74,22 +74,23 @@ class UseCaseModule {
     }
 
     @Provides
-    fun provideWateringNowUseCase(
+    fun provideUpdateWateringLogUseCase(
+        wateringLogRepository: WateringLogRepository,
         plantRepository: PlantRepository,
-        setWateringAlarmUseCase: SetWateringAlarmUseCase,
-        addWateringLogUseCase: AddWateringLogUseCase
-    ): WateringNowUseCase {
-        return WateringNowUseCase(plantRepository, setWateringAlarmUseCase, addWateringLogUseCase)
-    }
+        setWateringAlarmUseCase: SetWateringAlarmUseCase
+    ) = UpdateWateringLogUseCase(wateringLogRepository, plantRepository, setWateringAlarmUseCase)
 
     @Provides
-    fun provideCancelTodayWateringUseCase(
-        plantRepository: PlantRepository,
-        wateringLogRepository: WateringLogRepository,
-        setWateringAlarmUseCase: SetWateringAlarmUseCase
-    ): CancelTodayWateringUseCase {
-        return CancelTodayWateringUseCase(plantRepository, wateringLogRepository, setWateringAlarmUseCase)
-    }
+    fun provideGetWateringDatesUseCase(wateringLogRepository: WateringLogRepository) =
+        GetWateringDatesUseCase(wateringLogRepository)
+
+    @Provides
+    fun provideWateringNowUseCase(updateWateringLogUseCase: UpdateWateringLogUseCase) =
+        WateringNowUseCase(updateWateringLogUseCase)
+
+    @Provides
+    fun provideCancelTodayWateringUseCase(updateWateringLogUseCase: UpdateWateringLogUseCase) =
+        CancelTodayWateringUseCase(updateWateringLogUseCase)
 
     /* Plant UseCases */
     @Provides

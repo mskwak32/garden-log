@@ -17,6 +17,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -39,8 +42,11 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.hilt)
     ksp(libs.hilt.compiler)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
     implementation(libs.timber)
     implementation(libs.kotlin.serialization)
 
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
 }

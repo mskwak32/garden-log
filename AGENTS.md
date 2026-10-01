@@ -41,7 +41,7 @@ Extend `BaseViewModel<UiState, Event, Effect>` from `core/common_ui`.
 
 Hilt. `@HiltViewModel(assistedFactory = VM.Factory::class)` + `@AssistedInject constructor`.
 - UseCase: `app/di/UseCaseModule.kt` (`@Provides`)
-- Repository: `data/di/RepositoryModule.kt` (`@Binds`)
+- Repository: `data/di/RepositoryModule.kt` (`@Binds`); alarm repository: `app/di/RepositoryModule.kt`
 - DB: `core/database/di/DatabaseModule.kt`
 
 ## Navigation 3
@@ -76,14 +76,14 @@ entry<FooNavKey> {
 ## Tech Stack
 
 - Kotlin 2.3.20, JVM 17
-- Compose BOM 2026.03.00, Material 3
-- AGP 9.1.0, SDK 36/minSdk 29
+- Compose BOM 2026.03.01, Material 3
+- AGP 9.1.1, compileSdk 37/minSdk 29
 - Hilt 2.59.2, KSP
-- Room 2.8.4 (DB v6, migration required)
-- Navigation 3 1.1.0-beta01
+- Room 2.8.4 (DB v8; migrations required for schema changes)
+- Navigation 3 1.1.0
 - Retrofit 3.0.0, OkHttp 5.3.2, Kotlin Serialization
 - Coil 3.4.0, Lottie 6.7.1
-- Firebase BOM 34.11.0 (Analytics, Crashlytics — disabled in Debug)
+- Firebase BOM 34.12.0 (Analytics, Crashlytics — disabled in Debug)
 
 ## Conventions
 
@@ -98,5 +98,5 @@ entry<FooNavKey> {
 
 ## Database
 
-`garden.db` (Room v6) — `PlantEntity`, `DiaryEntity`, `PictureEntity`, `DiaryPictureCrossRef`
+`garden.db` (Room v8) — `PlantEntity`, `DiaryEntity`, `PictureEntity`, `DiaryPictureCrossRef`, `WateringLogEntity`
 Migrations: `core/database/migration/`, schema export enabled

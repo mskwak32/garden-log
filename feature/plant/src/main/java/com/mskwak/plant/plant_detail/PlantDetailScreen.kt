@@ -1,6 +1,8 @@
 package com.mskwak.plant.plant_detail
 
 import android.content.res.Configuration
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandHorizontally
@@ -56,6 +58,8 @@ fun PlantDetailScreen(
     navigate: (PlantDetailEffect.Navigation) -> Unit
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    if (state.isWateringDateDialogOpen) PlantDetailWateringDateDialog(state, viewModel::setEvent)
     var showExactAlarmPermissionDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showHarvestDialog by remember { mutableStateOf(false) }
@@ -95,6 +99,7 @@ fun PlantDetailScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is PlantDetailEffect.Navigation -> navigate(effect)
+                is PlantDetailEffect.ShowSnackbar -> Toast.makeText(context, effect.message, Toast.LENGTH_LONG).show()
                 is PlantDetailEffect.ShowExactAlarmPermissionDialog -> {
                     showExactAlarmPermissionDialog = true
                 }
@@ -219,7 +224,6 @@ private fun Content(
                 memo = state.memo,
                 isHarvested = state.isHarvested,
                 wateringStatus = state.wateringStatus,
-                wateringAnimationKey = wateringAnimationKey,
                 onEvent = { event ->
                     if (event is PlantDetailEvent.OnWateringClicked) {
                         wateringAnimationKey++
@@ -448,8 +452,8 @@ private fun WateringInfo(
                     )
                 }
 
-                if (lastWateringDate != null) {
-                    val lastWateringText = run {
+                run {
+                    val lastWateringText = if (lastWateringDate == null) stringResource(R.string.watering_no_record) else run {
                         val today = LocalDate.now()
                         when (val daysBetween = ChronoUnit.DAYS.between(lastWateringDate, today)) {
                             0L -> stringResource(R.string.today)
@@ -501,17 +505,13 @@ private fun WateringSection(
     memo: String?,
     isHarvested: Boolean,
     wateringStatus: WateringStatus,
-    wateringAnimationKey: Int,
     onEvent: (PlantDetailEvent) -> Unit
 ) {
     // 최초 진입 완료 상태는 즉시 보이고, 이후 상태 변경은 기존 전환을 유지한다.
     val cancelButtonState = remember {
         MutableTransitionState(wateringStatus == WateringStatus.TODAY_DONE)
     }
-    // 화면 내 물주기 클릭 시 애니메이션 트리거
-    LaunchedEffect(wateringAnimationKey) {
-        if (wateringAnimationKey > 0) cancelButtonState.targetState = true
-    }
+
     // DB 복원과 취소 모두 상태 전환 애니메이션으로 반영한다.
     LaunchedEffect(wateringStatus) {
         cancelButtonState.targetState = wateringStatus == WateringStatus.TODAY_DONE
@@ -528,9 +528,17 @@ private fun WateringSection(
             )
             .padding(16.dp)
     ) {
-        // 수확 후에는 물주기 버튼 숨김
-        if (!isHarvested) {
-            Row(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier.size(48.dp)
+                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
+                    .clickable { onEvent(PlantDetailEvent.OnWateringCalendarClicked) },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Calendar, contentDescription = stringResource(R.string.watering_calendar), tint = MaterialTheme.colorScheme.onPrimary)
+            }
+            if (!isHarvested) {
+                Spacer(Modifier.width(8.dp))
                 WateringButton(
                     modifier = Modifier.weight(1f),
                     onEvent = onEvent
@@ -547,8 +555,8 @@ private fun WateringSection(
                     )
                 }
             }
-            Spacer(Modifier.height(10.dp))
         }
+        Spacer(Modifier.height(10.dp))
 
         Text(
             text = memo ?: "${stringResource(R.string.memo)}:",
@@ -574,8 +582,10 @@ private fun WateringButton(
         modifier = modifier
             .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(10.dp))
             .clickableWithoutRipple { onEvent(PlantDetailEvent.OnWateringClicked) }
+            .heightIn(min = 48.dp)
             .padding(vertical = 10.dp),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             imageVector = IconPack.WaterDropWhite,

@@ -143,7 +143,11 @@ fun PlantEditScreen(
             initialSelectedDateMillis = state.createdDate
                 .atStartOfDay(ZoneId.of("UTC"))
                 .toInstant()
-                .toEpochMilli()
+                .toEpochMilli(),
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean =
+                    Instant.ofEpochMilli(utcTimeMillis).atZone(ZoneId.of("UTC")).toLocalDate() <= LocalDate.now()
+            }
         )
         DatePickerDialog(
             onDismissRequest = { showCreatedDatePicker = false },
@@ -175,7 +179,13 @@ fun PlantEditScreen(
             initialSelectedDateMillis = state.lastWateringDate
                 .atStartOfDay(ZoneId.of("UTC"))
                 .toInstant()
-                .toEpochMilli()
+                .toEpochMilli(),
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    val date = Instant.ofEpochMilli(utcTimeMillis).atZone(ZoneId.of("UTC")).toLocalDate()
+                    return date >= state.createdDate && date <= LocalDate.now()
+                }
+            }
         )
         DatePickerDialog(
             onDismissRequest = { showLastWateringDatePicker = false },
@@ -337,6 +347,7 @@ private fun Content(
             // 물주기 섹션
             WateringSection(
                 lastWateringDate = state.lastWateringDate,
+                showLastWateringDate = !state.isEditMode,
                 wateringPeriod = state.wateringPeriod,
                 wateringAlarmTime = state.wateringAlarmTime,
                 isWateringAlarmActive = state.isWateringAlarmActive,
@@ -433,6 +444,7 @@ private fun PlantPhotoSection(
 @Composable
 private fun WateringSection(
     lastWateringDate: LocalDate,
+    showLastWateringDate: Boolean,
     wateringPeriod: Int,
     wateringAlarmTime: LocalTime,
     isWateringAlarmActive: Boolean,
@@ -462,15 +474,16 @@ private fun WateringSection(
 
         Spacer(Modifier.height(16.dp))
 
-        // 마지막 물준 날짜
-        FieldRow(
-            label = stringResource(R.string.watering_last_date),
-            value = lastWateringDate.toDateString(),
-            onClick = { onEvent(PlantEditEvent.OnLastWateringDateClicked) }
-        )
+        if (showLastWateringDate) {
+            FieldRow(
+                label = stringResource(R.string.watering_last_date),
+                value = lastWateringDate.toDateString(),
+                onClick = { onEvent(PlantEditEvent.OnLastWateringDateClicked) }
+            )
 
-        Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(12.dp))
 
+        }
         // 물주기 간격
         FieldRow(
             label = stringResource(R.string.watering_period),

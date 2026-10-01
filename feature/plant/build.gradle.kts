@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.telephoto.zoomable.coil3)
 
     testImplementation(libs.bundles.test)
+    testImplementation(libs.junit)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.bundles.androidTest)

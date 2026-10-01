@@ -99,4 +99,19 @@
     <string name="file_size_mb_format">%.1f MB</string>
     <string name="file_size_kb_format">%d KB</string>
     <string name="day_format">%d일</string>
+    <string name="watering_calendar">물주기 달력</string>
+    <string name="watering_no_record">기록 없음</string>
+    <string name="watering_cancel_record">물주기 취소</string>
+    <string name="watering_retry">다시 시도</string>
+    <string name="watering_month_format">yyyy년 M월</string>
+    <string name="watering_record_accessibility">%1$s, 물주기</string>
+    <string name="watering_previous_month">이전 달</string>
+    <string name="watering_next_month">다음 달</string>
+    <string name="message_watering_load_failed">물주기 기록을 불러오지 못했습니다.\n다시 시도해 주세요.</string>
+    <string name="message_watering_alarm_failed">물주기 기록은 저장했지만 알람을 예약하지 못했습니다.\n알람 설정을 확인해 주세요.</string>
+    <string name="message_watering_outside_range">물주기 날짜는 심은 날짜부터 오늘까지 선택해 주세요.</string>
+    <string name="message_watering_harvested">수확한 식물의 물주기 기록은 변경할 수 없습니다.</string>
+    <string name="message_created_future">심은 날짜는 오늘 이후로 설정할 수 없습니다.</string>
+    <string name="message_created_after_watering">심은 날짜는 가장 오래된 물주기 기록 이후로 변경할 수 없습니다.</string>
+    <string name="message_plant_load_failed">식물 정보를 불러오지 못했습니다. 다시 화면을 열어 주세요.</string>
 </resources>
