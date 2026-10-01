@@ -26,6 +26,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -172,6 +173,8 @@ fun PlantDetailWateringDateDialog(
                                                 else Color.Transparent,
                                                 CircleShape
                                             )
+                                            // 배경 모양만 지정하면 리플은 사각형으로 남으므로 같은 모양으로 제한
+                                            .clip(CircleShape)
                                             .clickable(enabled = selectable) {
                                                 onEvent(PlantDetailEvent.OnWateringDateSelected(date))
                                             }

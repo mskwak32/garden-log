@@ -168,7 +168,7 @@ private fun NumberPickerWheel(
                 ) {
                     Text(
                         text = displayFormatter(itemValue),
-                        fontSize = if (itemValue == value) 20.sp else 16.sp,
+                        fontSize = if (itemValue == value) 21.sp else 17.sp,
                         color = if (itemValue == value) {
                             MaterialTheme.colorScheme.onSurface
                         } else {

@@ -3,10 +3,12 @@
 package com.mskwak.common_ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import com.mskwak.common_ui.R
 
 val notoSansKr = FontFamily(
@@ -31,19 +33,26 @@ val notoSansJp = FontFamily(
 val baseline = Typography()
 
 fun appTypography(fontFamily: FontFamily) = Typography(
-    displayLarge = baseline.displayLarge.copy(fontFamily = fontFamily),
-    displayMedium = baseline.displayMedium.copy(fontFamily = fontFamily),
-    displaySmall = baseline.displaySmall.copy(fontFamily = fontFamily),
-    headlineLarge = baseline.headlineLarge.copy(fontFamily = fontFamily),
-    headlineMedium = baseline.headlineMedium.copy(fontFamily = fontFamily),
-    headlineSmall = baseline.headlineSmall.copy(fontFamily = fontFamily),
-    titleLarge = baseline.titleLarge.copy(fontFamily = fontFamily),
-    titleMedium = baseline.titleMedium.copy(fontFamily = fontFamily),
-    titleSmall = baseline.titleSmall.copy(fontFamily = fontFamily),
-    bodyLarge = baseline.bodyLarge.copy(fontFamily = fontFamily),
-    bodyMedium = baseline.bodyMedium.copy(fontFamily = fontFamily),
-    bodySmall = baseline.bodySmall.copy(fontFamily = fontFamily),
-    labelLarge = baseline.labelLarge.copy(fontFamily = fontFamily),
-    labelMedium = baseline.labelMedium.copy(fontFamily = fontFamily),
-    labelSmall = baseline.labelSmall.copy(fontFamily = fontFamily),
+    displayLarge = baseline.displayLarge.enlarged(fontFamily),
+    displayMedium = baseline.displayMedium.enlarged(fontFamily),
+    displaySmall = baseline.displaySmall.enlarged(fontFamily),
+    headlineLarge = baseline.headlineLarge.enlarged(fontFamily),
+    headlineMedium = baseline.headlineMedium.enlarged(fontFamily),
+    headlineSmall = baseline.headlineSmall.enlarged(fontFamily),
+    titleLarge = baseline.titleLarge.enlarged(fontFamily),
+    titleMedium = baseline.titleMedium.enlarged(fontFamily),
+    titleSmall = baseline.titleSmall.enlarged(fontFamily),
+    bodyLarge = baseline.bodyLarge.enlarged(fontFamily),
+    bodyMedium = baseline.bodyMedium.enlarged(fontFamily),
+    bodySmall = baseline.bodySmall.enlarged(fontFamily),
+    labelLarge = baseline.labelLarge.enlarged(fontFamily),
+    labelMedium = baseline.labelMedium.enlarged(fontFamily),
+    labelSmall = baseline.labelSmall.enlarged(fontFamily),
+)
+
+// 기본 스타일의 자간·굵기를 유지하고 글자 크기와 행 높이만 1sp 확대
+private fun TextStyle.enlarged(fontFamily: FontFamily): TextStyle = copy(
+    fontFamily = fontFamily,
+    fontSize = (fontSize.value + 1).sp,
+    lineHeight = (lineHeight.value + 1).sp
 )
