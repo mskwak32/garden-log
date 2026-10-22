@@ -59,5 +59,4 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.bundles.androidTest)
-    androidTestImplementation(platform(libs.compose.bom))
 }
