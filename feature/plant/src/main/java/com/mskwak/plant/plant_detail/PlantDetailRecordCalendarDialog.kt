@@ -43,8 +43,12 @@ import com.mskwak.common_ui.icon.ArrowBackIosBlack
 import com.mskwak.common_ui.icon.ArrowForwardIosBlack
 import com.mskwak.common_ui.theme.GardenLogTheme
 import com.mskwak.common_ui.theme.SkyBlue
+import com.mskwak.common_ui.theme.TaskBrown
+import com.mskwak.common_ui.theme.TaskBrownLight
+import com.mskwak.common_ui.theme.TaskBrownText
 import com.mskwak.common_ui.theme.WateringBlue
 import com.mskwak.common_ui.theme.WateringBlueText
+import com.mskwak.domain.model.PlantTaskType
 import com.mskwak.plant.R
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -53,18 +57,20 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
+/**
+ * 물주기·할일 공용 기록 달력. [PlantDetailState.calendarTarget]에 따라 표시 이력과 저장 동작이 바뀐다.
+ */
 @Composable
-fun PlantDetailWateringDateDialog(
+fun PlantDetailRecordCalendarDialog(
     state: PlantDetailState,
     onEvent: (PlantDetailEvent) -> Unit
 ) {
-    val busy = state.isWateringSaving
+    val busy = state.isCalendarSaving
     AlertDialog(
         // DB 저장 결과가 정해질 때까지 닫기와 선택 변경을 막는다.
         onDismissRequest = {
-            if (!busy) onEvent(PlantDetailEvent.OnWateringCalendarClosed)
+            if (!busy) onEvent(PlantDetailEvent.OnCalendarClosed)
         },
-        title = { Text(stringResource(R.string.watering_calendar)) },
         text = { CalendarContent(state, onEvent) },
         confirmButton = { SaveButton(state, onEvent) },
         dismissButton = { DismissButton(state, onEvent) }
@@ -84,8 +90,8 @@ private fun CalendarContent(state: PlantDetailState, onEvent: (PlantDetailEvent)
 @Composable
 private fun DismissButton(state: PlantDetailState, onEvent: (PlantDetailEvent) -> Unit) {
     TextButton(
-        enabled = !state.isWateringSaving,
-        onClick = { onEvent(PlantDetailEvent.OnWateringCalendarClosed) }
+        enabled = !state.isCalendarSaving,
+        onClick = { onEvent(PlantDetailEvent.OnCalendarClosed) }
     ) {
         Text(stringResource(if (state.isHarvested) R.string.close else R.string.cancel))
     }
@@ -96,18 +102,15 @@ private fun MonthHeader(state: PlantDetailState, onEvent: (PlantDetailEvent) -> 
     val arrowColor = if (isSystemInDarkTheme()) Color.White else Color.Black
     val today = state.today
     // 조회 범위에는 기존 범위 밖 이력과 수확일도 포함한다.
-    val first = minOf(
-        state.createdAt ?: today,
-        state.wateringDates.minOrNull() ?: today,
-        state.harvestDate ?: today
-    )
-    val last = maxOf(
-        today,
-        state.wateringDates.maxOrNull() ?: today,
-        state.harvestDate ?: today,
-        state.createdAt ?: today
-    )
-    val busy = state.isWateringSaving
+    val rangeDates = if (state.calendarTarget is CalendarTarget.Task) {
+        listOfNotNull(state.createdAt, today) + state.taskLogDates
+    } else {
+        listOfNotNull(state.createdAt, state.harvestDate, today) +
+            state.wateringDates + state.plantTaskLogs.keys
+    }
+    val first = rangeDates.min()
+    val last = rangeDates.max()
+    val busy = state.isCalendarSaving
     val locale = Locale.getDefault()
     val previous = stringResource(R.string.watering_previous_month)
     val next = stringResource(R.string.watering_next_month)
@@ -118,13 +121,9 @@ private fun MonthHeader(state: PlantDetailState, onEvent: (PlantDetailEvent) -> 
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         TextButton(
-            enabled = !busy && state.wateringMonth > YearMonth.from(first),
+            enabled = !busy && state.calendarMonth > YearMonth.from(first),
             onClick = {
-                onEvent(
-                    PlantDetailEvent.OnWateringMonthChanged(
-                        state.wateringMonth.minusMonths(1)
-                    )
-                )
+                onEvent(PlantDetailEvent.OnCalendarMonthChanged(state.calendarMonth.minusMonths(1)))
             }
         ) {
             Icon(
@@ -135,7 +134,7 @@ private fun MonthHeader(state: PlantDetailState, onEvent: (PlantDetailEvent) -> 
             )
         }
         Text(
-            state.wateringMonth.format(
+            state.calendarMonth.format(
                 DateTimeFormatter.ofPattern(
                     stringResource(R.string.watering_month_format),
                     locale
@@ -143,13 +142,9 @@ private fun MonthHeader(state: PlantDetailState, onEvent: (PlantDetailEvent) -> 
             )
         )
         TextButton(
-            enabled = !busy && state.wateringMonth < YearMonth.from(last),
+            enabled = !busy && state.calendarMonth < YearMonth.from(last),
             onClick = {
-                onEvent(
-                    PlantDetailEvent.OnWateringMonthChanged(
-                        state.wateringMonth.plusMonths(1)
-                    )
-                )
+                onEvent(PlantDetailEvent.OnCalendarMonthChanged(state.calendarMonth.plusMonths(1)))
             }
         ) {
             Icon(
@@ -181,10 +176,11 @@ private fun WeekdayHeader() {
 @Composable
 private fun CalendarGrid(state: PlantDetailState, onEvent: (PlantDetailEvent) -> Unit) {
     val today = state.today
-    val busy = state.isWateringSaving
+    val busy = state.isCalendarSaving
+    val isTaskMode = state.calendarTarget is CalendarTarget.Task
     // 일요일부터 시작하는 그리드에 월 첫날 앞의 빈 칸을 맞춘다.
-    val offset = state.wateringMonth.atDay(1).dayOfWeek.value % 7
-    val count = state.wateringMonth.lengthOfMonth()
+    val offset = state.calendarMonth.atDay(1).dayOfWeek.value % 7
+    val count = state.calendarMonth.lengthOfMonth()
     repeat((offset + count + 6) / 7) { week ->
         Row(Modifier.fillMaxWidth()) {
             repeat(7) { day ->
@@ -194,21 +190,27 @@ private fun CalendarGrid(state: PlantDetailState, onEvent: (PlantDetailEvent) ->
                     contentAlignment = Alignment.Center
                 ) {
                     if (number in 1..count) {
-                        val date = state.wateringMonth.atDay(number)
-                        val recorded = date in state.wateringDates
-                        val chosen = date == state.selectedWateringDate
+                        val date = state.calendarMonth.atDay(number)
+                        val recorded = date in state.calendarRecordDates
+                        // 물주기 달력은 그날의 할일 완료 이력을 함께 보여준다.
+                        val taskCount = if (isTaskMode) {
+                            if (recorded) 1 else 0
+                        } else {
+                            state.plantTaskLogs[date]?.size ?: 0
+                        }
+                        val chosen = date == state.calendarSelectedDate
                         // 기존 범위 밖 기록은 취소를 위해 선택하고, 수확 식물은 조회만 허용한다.
-                        val selectable = !busy && !state.isWateringLoading && (
-                            state.isHarvested || recorded || state.createdAt?.let {
-                                date in it..today
-                            } == true
-                        )
+                        val selectable = !busy && !state.isCalendarLoading && (
+                            state.isHarvested || recorded || taskCount > 0 ||
+                                state.createdAt?.let { date in it..today } == true
+                            )
                         DateCell(
                             date = date,
-                            recorded = recorded,
+                            hasWatering = !isTaskMode && recorded,
+                            taskCount = taskCount,
                             chosen = chosen,
                             selectable = selectable,
-                            onSelect = { onEvent(PlantDetailEvent.OnWateringDateSelected(date)) }
+                            onSelect = { onEvent(PlantDetailEvent.OnCalendarDateSelected(date)) }
                         )
                     }
                 }
@@ -220,19 +222,24 @@ private fun CalendarGrid(state: PlantDetailState, onEvent: (PlantDetailEvent) ->
 @Composable
 private fun DateCell(
     date: LocalDate,
-    recorded: Boolean,
+    hasWatering: Boolean,
+    taskCount: Int,
     chosen: Boolean,
     selectable: Boolean,
     onSelect: () -> Unit
 ) {
-    val blue = if (isSystemInDarkTheme()) SkyBlue else WateringBlue
-    val description = if (recorded) {
-        stringResource(
-            R.string.watering_record_accessibility,
-            date.toString()
-        )
+    val isDark = isSystemInDarkTheme()
+    val blue = if (isDark) SkyBlue else WateringBlue
+    val brown = if (isDark) TaskBrownLight else TaskBrown
+    val wateringDescription = if (hasWatering) {
+        stringResource(R.string.watering_record_accessibility, date.toString())
     } else {
         date.toString()
+    }
+    val description = if (taskCount > 0) {
+        stringResource(R.string.task_record_accessibility, wateringDescription, taskCount)
+    } else {
+        wateringDescription
     }
     Column(
         modifier = Modifier
@@ -269,12 +276,14 @@ private fun DateCell(
                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
             }
         )
-        Box(
-            Modifier.size(4.dp).background(
-                if (recorded) blue else Color.Transparent,
-                CircleShape
-            )
-        )
+        // 점이 없어도 같은 높이를 유지해 날짜 숫자 위치가 흔들리지 않게 한다.
+        Row(
+            modifier = Modifier.height(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            if (hasWatering) Box(Modifier.size(4.dp).background(blue, CircleShape))
+            if (taskCount > 0) Box(Modifier.size(4.dp).background(brown, CircleShape))
+        }
     }
 }
 
@@ -283,61 +292,94 @@ private fun ColumnScope.RecordStatus(
     state: PlantDetailState,
     onEvent: (PlantDetailEvent) -> Unit
 ) {
-    val selectedRecorded = state.selectedWateringDate in state.wateringDates
-    val blue = if (isSystemInDarkTheme()) SkyBlue else WateringBlue
-    val blueText = if (isSystemInDarkTheme()) SkyBlue else WateringBlueText
-    if (state.isWateringLoading) {
+    val isDark = isSystemInDarkTheme()
+    val blue = if (isDark) SkyBlue else WateringBlue
+    val blueText = if (isDark) SkyBlue else WateringBlueText
+    val brown = if (isDark) TaskBrownLight else TaskBrown
+    val brownText = if (isDark) TaskBrownLight else TaskBrownText
+    val selectedDate = state.calendarSelectedDate
+    val target = state.calendarTarget
+
+    if (state.isCalendarLoading) {
         CircularProgressIndicator(
             Modifier.align(Alignment.CenterHorizontally).size(24.dp)
         )
-    }
-    // 선택 날짜의 실제 이력이 있을 때만 물주기 표시를 노출한다.
-    if (selectedRecorded && !state.isWateringLoading) {
-        Row(
-            modifier = Modifier.padding(top = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(Modifier.size(6.dp).background(blue, CircleShape))
-            Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.watering), color = blueText)
+    } else {
+        // 선택 날짜의 실제 이력만 표시한다.
+        val titles = if (target is CalendarTarget.Task) {
+            listOfNotNull(target.title.takeIf { selectedDate in state.taskLogDates })
+        } else {
+            if (selectedDate in state.wateringDates) {
+                RecordLabel(text = stringResource(R.string.watering), dotColor = blue, textColor = blueText)
+            }
+            state.plantTaskLogs[selectedDate].orEmpty()
+        }
+        titles.forEach { title ->
+            RecordLabel(text = title, dotColor = brown, textColor = brownText)
         }
     }
-    state.wateringError?.let {
+
+    if (state.isCalendarLoadFailed) {
         Text(
-            text = stringResource(it),
+            text = stringResource(
+                if (target is CalendarTarget.Task) R.string.message_task_load_failed
+                else R.string.message_watering_load_failed
+            ),
             color = MaterialTheme.colorScheme.error,
             modifier = Modifier.padding(top = 8.dp)
         )
-    }
-    if (state.wateringError == R.string.message_watering_load_failed) {
-        TextButton(onClick = { onEvent(PlantDetailEvent.OnWateringRetry) }) {
+        TextButton(onClick = { onEvent(PlantDetailEvent.OnCalendarRetry) }) {
             Text(stringResource(R.string.watering_retry))
+        }
+    } else {
+        state.calendarError?.let {
+            Text(
+                text = stringResource(it),
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
     }
 }
 
 @Composable
+private fun RecordLabel(text: String, dotColor: Color, textColor: Color) {
+    Row(
+        modifier = Modifier.padding(top = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(Modifier.size(6.dp).background(dotColor, CircleShape))
+        Spacer(Modifier.width(8.dp))
+        Text(text, color = textColor)
+    }
+}
+
+@Composable
 private fun SaveButton(state: PlantDetailState, onEvent: (PlantDetailEvent) -> Unit) {
-    val busy = state.isWateringSaving
-    val selectedRecorded = state.selectedWateringDate in state.wateringDates
+    val busy = state.isCalendarSaving
+    val selectedRecorded = state.calendarSelectedDate in state.calendarRecordDates
     val canAdd = state.createdAt?.let {
-        state.selectedWateringDate in it..state.today
+        state.calendarSelectedDate in it..state.today
     } == true
+    val isTaskMode = state.calendarTarget is CalendarTarget.Task
     // 수확 식물에는 조회와 닫기만 제공하고 기록 변경 동선은 숨긴다.
     if (!state.isHarvested) {
         TextButton(
-            enabled = !busy && !state.isWateringLoading &&
-                state.wateringError != R.string.message_watering_load_failed &&
+            enabled = !busy && !state.isCalendarLoading && !state.isCalendarLoadFailed &&
                 (selectedRecorded || canAdd),
-            onClick = { onEvent(PlantDetailEvent.OnWateringDateSaved) }
+            onClick = { onEvent(PlantDetailEvent.OnCalendarSaveClicked) }
         ) {
             if (busy) {
                 CircularProgressIndicator(Modifier.size(18.dp))
             } else {
                 Text(
                     stringResource(
-                        if (selectedRecorded) R.string.watering_cancel_record
-                        else R.string.watering
+                        when {
+                            isTaskMode && selectedRecorded -> R.string.task_cancel_complete
+                            isTaskMode -> R.string.complete
+                            selectedRecorded -> R.string.watering_cancel_record
+                            else -> R.string.watering
+                        }
                     )
                 )
             }
@@ -346,18 +388,7 @@ private fun SaveButton(state: PlantDetailState, onEvent: (PlantDetailEvent) -> U
 }
 
 @Composable
-@Preview(showBackground = true, name = "Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(showBackground = true, name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
-private fun Preview() {
-    val today = LocalDate.of(2026, 10, 15)
-    val state = PlantDetailState(
-        createdAt = today.minusMonths(1),
-        wateringMonth = YearMonth.from(today),
-        selectedWateringDate = today,
-        wateringDates = setOf(today.minusDays(7), today.minusDays(3), today),
-        isWateringLoading = false,
-        today = today
-    )
+private fun PreviewDialogFrame(state: PlantDetailState) {
     GardenLogTheme {
         // 별도 창 없이 실제 다이얼로그의 내부 컴포넌트를 직접 렌더링
         Surface(
@@ -366,11 +397,6 @@ private fun Preview() {
             color = MaterialTheme.colorScheme.surfaceContainerHigh
         ) {
             Column(Modifier.padding(24.dp)) {
-                Text(
-                    text = stringResource(R.string.watering_calendar),
-                    style = MaterialTheme.typography.headlineSmall
-                )
-                Spacer(Modifier.height(16.dp))
                 CalendarContent(state, onEvent = {})
                 Spacer(Modifier.height(16.dp))
                 Row(
@@ -383,4 +409,44 @@ private fun Preview() {
             }
         }
     }
+}
+
+@Composable
+@Preview(showBackground = true, name = "Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+private fun PreviewWatering() {
+    val today = LocalDate.of(2026, 10, 15)
+    PreviewDialogFrame(
+        PlantDetailState(
+            createdAt = today.minusMonths(1),
+            calendarTarget = CalendarTarget.Watering,
+            calendarMonth = YearMonth.from(today),
+            calendarSelectedDate = today,
+            wateringDates = setOf(today.minusDays(7), today.minusDays(3), today),
+            plantTaskLogs = mapOf(
+                today to listOf("비료 주기", "분갈이"),
+                today.minusDays(5) to listOf("가지치기")
+            ),
+            isWateringLoading = false,
+            today = today
+        )
+    )
+}
+
+@Composable
+@Preview(showBackground = true, name = "Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+private fun PreviewTask() {
+    val today = LocalDate.of(2026, 10, 15)
+    PreviewDialogFrame(
+        PlantDetailState(
+            createdAt = today.minusMonths(1),
+            calendarTarget = CalendarTarget.Task(1, "비료 주기", PlantTaskType.REPEAT),
+            calendarMonth = YearMonth.from(today),
+            calendarSelectedDate = today.minusDays(7),
+            taskLogDates = setOf(today.minusDays(14), today.minusDays(7)),
+            isTaskLogLoading = false,
+            today = today
+        )
+    )
 }

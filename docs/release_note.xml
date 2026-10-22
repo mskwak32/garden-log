@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<release version="2.5">
+<release version="2.10">
     <ko-KR>
-        안정화 코드 적용
+        새 기능: 할일 일정
+        - 식물마다 분갈이, 영양제 주기 같은 할일을 1회성 또는 반복 일정으로 등록할 수 있어요.
+        - 완료한 할일은 달력, 일기 상세, PDF 내보내기에 함께 표시돼요.
+
+        개선 사항
+        - PDF 날짜가 사용 언어에 맞게 표시돼요.
     </ko-KR>
     <en-US>
-        Stability improvements applied
+        New: Plant tasks
+        - Add one-time or repeating tasks for each plant, such as repotting or feeding.
+        - Completed tasks appear in the calendar, diary details, and PDF exports.
+
+        Improvements
+        - Dates in PDF exports now follow your language.
     </en-US>
     <ja-JP>
-        安定性向上のための修正を適用
+        新機能：タスク
+        - 植え替えや肥料など、植物ごとのタスクを1回限りまたは繰り返しで登録できます。
+        - 完了したタスクはカレンダー、日記の詳細、PDFエクスポートに表示されます。
+
+        改善
+        - PDFの日付が使用言語に合わせて表示されます。
     </ja-JP>
 </release>

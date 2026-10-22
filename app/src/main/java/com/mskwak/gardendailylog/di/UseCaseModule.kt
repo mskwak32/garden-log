@@ -10,6 +10,7 @@ import com.mskwak.domain.usecase.export.GetExportedFilesUseCase
 import com.mskwak.domain.usecase.picture.DeletePictureUseCase
 import com.mskwak.domain.usecase.picture.SavePictureUseCase
 import com.mskwak.domain.usecase.plant.*
+import com.mskwak.domain.usecase.task.*
 import com.mskwak.domain.usecase.watering.*
 import dagger.Module
 import dagger.Provides
@@ -114,13 +115,17 @@ class UseCaseModule {
         plantRepository: PlantRepository,
         diaryRepository: DiaryRepository,
         pictureRepository: PictureRepository,
-        setWateringAlarmUseCase: SetWateringAlarmUseCase
+        plantTaskRepository: PlantTaskRepository,
+        setWateringAlarmUseCase: SetWateringAlarmUseCase,
+        setPlantTaskAlarmUseCase: SetPlantTaskAlarmUseCase
     ): DeletePlantUseCase {
         return DeletePlantUseCase(
             plantRepository,
             diaryRepository,
             pictureRepository,
-            setWateringAlarmUseCase
+            plantTaskRepository,
+            setWateringAlarmUseCase,
+            setPlantTaskAlarmUseCase
         )
     }
 
@@ -145,10 +150,90 @@ class UseCaseModule {
     @Provides
     fun provideHarvestPlantUseCase(
         plantRepository: PlantRepository,
-        setWateringAlarmUseCase: SetWateringAlarmUseCase
+        plantTaskRepository: PlantTaskRepository,
+        setWateringAlarmUseCase: SetWateringAlarmUseCase,
+        setPlantTaskAlarmUseCase: SetPlantTaskAlarmUseCase
     ): HarvestPlantUseCase {
-        return HarvestPlantUseCase(plantRepository, setWateringAlarmUseCase)
+        return HarvestPlantUseCase(
+            plantRepository,
+            plantTaskRepository,
+            setWateringAlarmUseCase,
+            setPlantTaskAlarmUseCase
+        )
     }
+
+    /* Task UseCases */
+    @Provides
+    fun provideGetNextDueDateUseCase() = GetNextDueDateUseCase()
+
+    @Provides
+    fun provideGetTaskRemainDaysUseCase(getNextDueDateUseCase: GetNextDueDateUseCase) =
+        GetTaskRemainDaysUseCase(getNextDueDateUseCase)
+
+    @Provides
+    fun provideGetPlantTasksUseCase(plantTaskRepository: PlantTaskRepository) =
+        GetPlantTasksUseCase(plantTaskRepository)
+
+    @Provides
+    fun provideGetNearestTaskDueDatesUseCase(
+        plantTaskRepository: PlantTaskRepository,
+        getNextDueDateUseCase: GetNextDueDateUseCase
+    ) = GetNearestTaskDueDatesUseCase(plantTaskRepository, getNextDueDateUseCase)
+
+    @Provides
+    fun provideSetPlantTaskAlarmUseCase(
+        plantTaskRepository: PlantTaskRepository,
+        plantRepository: PlantRepository,
+        plantTaskAlarmRepository: PlantTaskAlarmRepository,
+        getNextDueDateUseCase: GetNextDueDateUseCase
+    ) = SetPlantTaskAlarmUseCase(
+        plantTaskRepository,
+        plantRepository,
+        plantTaskAlarmRepository,
+        getNextDueDateUseCase
+    )
+
+    @Provides
+    fun provideAddPlantTaskUseCase(
+        plantTaskRepository: PlantTaskRepository,
+        setPlantTaskAlarmUseCase: SetPlantTaskAlarmUseCase
+    ) = AddPlantTaskUseCase(plantTaskRepository, setPlantTaskAlarmUseCase)
+
+    @Provides
+    fun provideUpdatePlantTaskUseCase(
+        plantTaskRepository: PlantTaskRepository,
+        setPlantTaskAlarmUseCase: SetPlantTaskAlarmUseCase
+    ) = UpdatePlantTaskUseCase(plantTaskRepository, setPlantTaskAlarmUseCase)
+
+    @Provides
+    fun provideDeletePlantTaskUseCase(
+        plantTaskRepository: PlantTaskRepository,
+        setPlantTaskAlarmUseCase: SetPlantTaskAlarmUseCase
+    ) = DeletePlantTaskUseCase(plantTaskRepository, setPlantTaskAlarmUseCase)
+
+    @Provides
+    fun provideUpdatePlantTaskLogUseCase(
+        plantTaskRepository: PlantTaskRepository,
+        setPlantTaskAlarmUseCase: SetPlantTaskAlarmUseCase
+    ) = UpdatePlantTaskLogUseCase(plantTaskRepository, setPlantTaskAlarmUseCase)
+
+    @Provides
+    fun provideUpdatePlantTaskAlarmActivationUseCase(
+        plantTaskRepository: PlantTaskRepository,
+        setPlantTaskAlarmUseCase: SetPlantTaskAlarmUseCase
+    ) = UpdatePlantTaskAlarmActivationUseCase(plantTaskRepository, setPlantTaskAlarmUseCase)
+
+    @Provides
+    fun provideGetTaskLogDatesUseCase(plantTaskRepository: PlantTaskRepository) =
+        GetTaskLogDatesUseCase(plantTaskRepository)
+
+    @Provides
+    fun provideGetPlantTaskLogsUseCase(plantTaskRepository: PlantTaskRepository) =
+        GetPlantTaskLogsUseCase(plantTaskRepository)
+
+    @Provides
+    fun provideGetPlantTaskLogsByRangeUseCase(plantTaskRepository: PlantTaskRepository) =
+        GetPlantTaskLogsByRangeUseCase(plantTaskRepository)
 
     /* Config UseCases */
     @Provides

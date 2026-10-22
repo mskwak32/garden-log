@@ -21,6 +21,13 @@ android {
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
     }
+    sourceSets {
+        // 마이그레이션 테스트에서 Room 스키마 JSON을 읽기 위해 연결
+        getByName("test").assets.srcDir("$projectDir/schemas")
+    }
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -43,4 +50,6 @@ dependencies {
     implementation(libs.kotlin.serialization)
 
     testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.room.testing)
 }

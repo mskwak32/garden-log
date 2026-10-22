@@ -23,5 +23,6 @@ data class DiaryPdf(
     val date: LocalDate,
     val content: String,
     val imagePaths: List<String>,
-    val hasWateringRecord: Boolean = false
+    val hasWateringRecord: Boolean = false,
+    val taskTitles: List<String> = emptyList()
 )

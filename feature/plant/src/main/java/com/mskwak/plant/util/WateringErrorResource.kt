@@ -11,3 +11,9 @@ fun Exception.wateringErrorResource(): Int = when ((this as? WateringValidationE
     WateringValidationReason.CREATED_AFTER_WATERING_DATE -> R.string.message_created_after_watering
     null -> R.string.message_save_failed
 }
+
+fun Exception.taskErrorResource(): Int = when ((this as? WateringValidationException)?.reason) {
+    WateringValidationReason.OUTSIDE_RANGE -> R.string.message_task_outside_range
+    WateringValidationReason.HARVESTED -> R.string.message_task_harvested
+    else -> R.string.message_save_failed
+}

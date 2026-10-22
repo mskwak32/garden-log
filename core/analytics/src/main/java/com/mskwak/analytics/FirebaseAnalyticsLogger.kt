@@ -48,6 +48,32 @@ class FirebaseAnalyticsLogger @Inject constructor(
             is GardenEvent.CancelHarvest -> firebaseAnalytics.logEvent("cancel_harvest", null)
 
             is GardenEvent.CancelWatering -> firebaseAnalytics.logEvent("cancel_watering", null)
+
+            is GardenEvent.AddTask -> firebaseAnalytics.logEvent(
+                "add_task",
+                Bundle().apply {
+                    putString("type", event.type)
+                    putString("alarm_enabled", event.alarmEnabled.toString())
+                }
+            )
+
+            is GardenEvent.CompleteTask -> firebaseAnalytics.logEvent(
+                "complete_task",
+                Bundle().apply {
+                    putString("type", event.type)
+                }
+            )
+
+            is GardenEvent.CancelTask -> firebaseAnalytics.logEvent("cancel_task", null)
+
+            is GardenEvent.DeleteTask -> firebaseAnalytics.logEvent("delete_task", null)
+
+            is GardenEvent.TaskAlarmToggle -> firebaseAnalytics.logEvent(
+                "task_alarm_toggle",
+                Bundle().apply {
+                    putString("enabled", event.enabled.toString())
+                }
+            )
         }
     }
 }

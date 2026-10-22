@@ -13,7 +13,9 @@ data class PlantListItemUiModel(
     val dDay: Int,
     val status: WateringStatus,
     val createdAt: LocalDate,
-    val harvestDate: LocalDate? = null
+    val harvestDate: LocalDate? = null,
+    // 가장 이른 할일까지 남은 일수. 할일이 없거나 수확한 식물은 null
+    val taskRemainDays: Int? = null
 ) {
     val isHarvested: Boolean get() = harvestDate != null
 }

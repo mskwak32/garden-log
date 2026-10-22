@@ -59,10 +59,37 @@ fun PlantDetailScreen(
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    if (state.isWateringDateDialogOpen) PlantDetailWateringDateDialog(state, viewModel::setEvent)
+    if (state.calendarTarget != null) PlantDetailRecordCalendarDialog(state, viewModel::setEvent)
+    state.taskDialog?.let {
+        PlantDetailTaskDialog(state = it, isSaving = state.isTaskSaving, onEvent = viewModel::setEvent)
+    }
     var showExactAlarmPermissionDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showHarvestDialog by remember { mutableStateOf(false) }
+    var taskToComplete by remember { mutableStateOf<PlantDetailEffect.ShowOneTimeTaskCompleteDialog?>(null) }
+    var taskIdToDelete by remember { mutableStateOf<Int?>(null) }
+
+    taskToComplete?.let { target ->
+        PlantDetailTaskCompleteDialog(
+            onConfirm = {
+                taskToComplete = null
+                viewModel.setEvent(
+                    PlantDetailEvent.OnOneTimeTaskCompleteConfirmed(target.taskId, target.date)
+                )
+            },
+            onDismiss = { taskToComplete = null }
+        )
+    }
+
+    taskIdToDelete?.let { taskId ->
+        PlantDetailTaskDeleteDialog(
+            onConfirm = {
+                taskIdToDelete = null
+                viewModel.setEvent(PlantDetailEvent.OnTaskDeleteConfirmed(taskId))
+            },
+            onDismiss = { taskIdToDelete = null }
+        )
+    }
 
     if (showExactAlarmPermissionDialog) {
         ExactAlarmPermissionDialog(
@@ -110,6 +137,14 @@ fun PlantDetailScreen(
 
                 is PlantDetailEffect.ShowHarvestConfirmDialog -> {
                     showHarvestDialog = true
+                }
+
+                is PlantDetailEffect.ShowOneTimeTaskCompleteDialog -> {
+                    taskToComplete = effect
+                }
+
+                is PlantDetailEffect.ShowTaskDeleteConfirmDialog -> {
+                    taskIdToDelete = effect.taskId
                 }
             }
         }
@@ -234,6 +269,19 @@ private fun Content(
                     onEvent(event)
                 }
             )
+
+            // 수확 전에만 할일 카드와 추가 버튼 표시
+            if (!state.isHarvested) {
+                state.tasks.forEach { task ->
+                    // 중간 카드가 사라져도 카드별 취소 버튼 애니메이션 상태가 섞이지 않게 한다.
+                    key(task.id) {
+                        Spacer(Modifier.height(16.dp))
+                        PlantDetailTaskCard(task = task, onEvent = onEvent)
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+                PlantDetailAddTaskButton(onClick = { onEvent(PlantDetailEvent.OnAddTaskClicked) })
+            }
 
             // 수확된 경우 수확 메모 표시
             if (state.isHarvested && state.harvestMemo != null) {

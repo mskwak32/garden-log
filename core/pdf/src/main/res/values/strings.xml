@@ -6,4 +6,5 @@
     <string name="pdf_label_memo">메모</string>
     <string name="pdf_label_harvest_date">수확일</string>
     <string name="pdf_label_harvest_memo">수확 메모</string>
+    <string name="pdf_date_format">yyyy년 MM월 dd일</string>
 </resources>

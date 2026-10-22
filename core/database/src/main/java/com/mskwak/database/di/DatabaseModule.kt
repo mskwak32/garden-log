@@ -25,7 +25,8 @@ class DatabaseModule {
                 MIGRATION_4_5,
                 MIGRATION_5_6,
                 MIGRATION_6_7,
-                MIGRATION_7_8
+                MIGRATION_7_8,
+                MIGRATION_8_9
             )
             .build()
     }
@@ -45,4 +46,8 @@ class DatabaseModule {
     @Provides
     @Singleton
     fun provideWateringLogDao(gardenDatabase: GardenDatabase) = gardenDatabase.wateringLogDao()
+
+    @Provides
+    @Singleton
+    fun providePlantTaskDao(gardenDatabase: GardenDatabase) = gardenDatabase.plantTaskDao()
 }

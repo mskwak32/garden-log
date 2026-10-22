@@ -13,7 +13,8 @@ data class DiaryDetailState(
     val picturePaths: List<String> = emptyList(),
     val memo: String = "",
     val isHarvested: Boolean = false,
-    val isWatered: Boolean = false
+    val isWatered: Boolean = false,
+    val taskTitles: List<String> = emptyList()
 ) : ViewState
 
 sealed interface DiaryDetailEvent : ViewEvent {

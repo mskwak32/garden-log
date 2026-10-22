@@ -1,240 +1,341 @@
-> 최종 기준: 기존 데이터의 일괄 보정·첫 실행 안내·시작 시 전체 알람 재예약·자정 자동 갱신은 사용하지 않는다. 아래 초기 구현/검증 기록은 당시 상태이며, 후속 단순화 결과가 우선한다. 에뮬레이터 UI 테스트는 추가로 수행하지 않는다.
+# 식물별 커스텀 할일 일정 기능 계획
 
-# 물주기 날짜 선택 기능 계획
+> 상태: 계획 확정 단계 (구현 전). `[결정]`은 사용자 확인 완료, `[제안]`은 기본안으로 진행할 예정이지만 확인이 필요한 항목, `[미결]`은 사용자 답변이 필요한 항목.
 
-## 상태와 목적
+## 1. 목표
 
-- 상태: 사용자 구현 요청에 따라 기능 구현 및 자동 검증 완료. 연결 기기/에뮬레이터가 없어 실제 화면과 기존 데이터 보정의 수동 확인은 남아 있다.
-- 확정 계획을 기준으로 기능 코드와 필요한 테스트를 구현했다. 커밋은 수행하지 않았다.
-- 식물 상세에서 날짜를 선택하여 해당 날짜의 물주기를 기록하거나 취소한다.
-- 기존 오늘 물주기/취소 기능과 날짜별 이력, 마지막 물주기 날짜, 알람의 일관성을 유지한다.
+- 식물마다 물주기 외에 사용자 정의 할일 일정(이하 "할일")을 여러 개 등록한다.
+- 할일은 **1회성**과 **반복성** 두 종류다.
+- 완료 기록은 물주기처럼 날짜별 이력으로 남기고, 물주기 기록이 보이는 곳에 함께 표시한다.
+- 할일 색상은 종류와 관계없이 **갈색** 하나만 쓴다.
+- 할일을 삭제하거나 1회성 할일을 완료해도 **완료 이력은 DB에 남긴다**. 그래야 달력과 PDF에 계속 표시된다.
+- 화면을 텍스트로만 채우지 않고 적절히 아이콘을 쓴다.
 
-## 요구사항과 확인이 필요한 해석
+## 2. 표시 위치 [결정]
 
-- 물주기 버튼 왼쪽에 같은 primary 배경색의 둥근 버튼을 배치하고 안에 달력 아이콘을 넣는다. 배경 없는 아이콘 버튼으로 만들지 않는다. `core/common_ui/src/main/java/com/mskwak/common_ui/icon/Calendar.kt`를 사용한다.
-- 달력 버튼으로 날짜 선택 다이얼로그를 연다. (D1 확정)
-- 심은 날짜(`createdDate`)부터 오늘까지 양 끝 날짜를 포함하여 선택할 수 있다. 범위 밖 신규 기록은 금지한다. 기존 범위 밖 기록의 조회/취소는 D8 예외를 적용한다. (D2/D3 확정)
-- 기본 선택 날짜는 오늘이다. 수확한 식물은 수확일을 기본 선택하며 달력은 조회 전용이다.
-- 이전/다음 월 이동을 지원하며 연도는 표시만 하고 직접 선택하지 않는다.
-- 물주기 이력이 있는 날짜를 달력에 표시한다.
-- 선택 날짜에 이력이 없으면 '물주기', 있으면 '물주기 취소' 버튼을 표시한다. 최초 이력도 취소할 수 있다. 다이얼로그를 닫는 '취소' 버튼과 기록 취소를 구분한다.
-- 신규 등록의 필수 마지막 물준 날짜를 최초 물주기 이력으로 함께 저장한다. 최초 이력을 포함한 모든 이력은 취소할 수 있다. 오늘 이력이 있으면 상세의 오늘 취소 버튼을 표시하고, 취소 후 오늘 이력이 없으면 숨긴다.
-- 닫기용 '취소' 버튼과 기록 변경 버튼을 구분한다.
-- 취소 버튼으로 닫으면 데이터를 변경하지 않는다.
-- 기록 변경 버튼으로 선택 날짜의 기록을 추가/삭제하고 UI를 닫는다. DB 저장 성공 후 닫으며 실패하면 선택을 유지한다.
-
-## 구현 전 코드에서 확인한 사항
-
-- 상세 UI: `feature/plant/src/main/java/com/mskwak/plant/plant_detail/PlantDetailScreen.kt`, `PlantDetailState.kt`, `PlantDetailViewModel.kt`.
-- `WateringNowUseCase`는 오늘 이력을 추가하고 `lastWateringDate`를 오늘로 변경한다.
-- `CancelTodayWateringUseCase`는 오늘 이력을 삭제하고 오늘 이전 최신 이력으로 복원한다. 없으면 `createdDate`를 사용한다.
-- 두 UseCase는 알람이 활성화되어 있으면 `SetWateringAlarmUseCase`로 다시 예약한다.
-- `WateringLogRepository` / `WateringLogDao`는 날짜별 추가/삭제/존재 확인, 기간 조회, 특정 날짜 이전 최신 기록 조회를 지원한다.
-- `(plantId, date)` 고유 인덱스와 INSERT IGNORE로 같은 날짜 중복 기록을 방지한다.
-- 실제 `GardenDatabase`는 v8이다. AGENTS.md도 실제 코드에 맞춰 v8로 수정했다.
-- v7→v8 마이그레이션은 기존 `lastWateringDate`를 이력으로 추가했다. 현재 `AddPlantUseCase` / `UpdatePlantUseCase`와 `PlantRepositoryImpl`은 마지막 날짜를 저장하지만 물주기 이력을 추가하거나 동기화하지 않는다.
-- 식물 편집 화면에서 마지막 물주기 날짜를 직접 변경할 수 있다. 달력 이력과 서로 다른 값이 생길 수 있다. 구현에서는 확정한 D5에 따라 기존 식물 편집의 해당 입력을 제거한다.
-- 목록/상세의 오늘 완료 상태는 이력 존재 여부가 아니라 `lastWateringDate == 오늘`로 판정한다. 빈 이력의 대체 날짜가 오늘이면 실제 기록 없이도 완료로 표시될 수 있다.
-- `WateringAlarmReceiver`는 알림 표시와 다음 알람 예약만 수행하며 물주기를 기록하지 않는다. 오늘 물주기 실행 진입점은 목록과 상세이다.
-- 수확한 식물의 상세에서는 기존 물주기 버튼을 숨긴다.
-- 사용자가 수정 중인 `Calendar.kt`는 보존하며, 이번 계획 작성에서 변경하지 않는다.
-
-## 구현 전 오늘 물주기 취소 동작
-
-1. 오늘 날짜의 `watering_log`를 삭제한다. 과거 날짜를 선택해서 취소하는 기능은 아직 없다.
-2. 오늘 이전 이력 중 가장 최근 날짜를 조회한다. 있으면 `lastWateringDate`를 해당 날짜로 변경한다.
-3. 남은 이전 이력이 없으면 `lastWateringDate`를 심은 날짜(`createdDate`)로 변경한다. 심은 날짜의 물주기 이력을 새로 만들지는 않는다.
-4. 화면은 갱신된 마지막 날짜로 최근 물주기 표시와 D-day/오늘 완료 상태를 계산한다. “물주기 기록 없음” 상태는 표현하지 않는다.
-5. 활성 알람은 심은 날짜 또는 복원된 마지막 날짜에 주기를 더하여 다시 예약한다. 계산된 시각이 과거이면 주기를 반복해서 더해 현재 시각 이상으로 맞춘다. 주기가 0이면 새 알람을 예약하지 않는다.
-
-- 주의: 마지막 이력을 취소했을 때 심은 날짜가 오늘이면 `lastWateringDate == 오늘`이므로 기록이 없어도 `TODAY_DONE` 상태가 유지된다.
-- 주의: 삭제와 식물 갱신은 현재 별도 호출이며 하나의 DB 트랜잭션이 아니다. 위 내용은 정상 완료 시 동작이다.
-- 위 내용은 현재 코드의 동작이다. 확정한 D4 정책에서는 알람 기준은 유지하되 실제 이력에 따라 화면 표시와 오늘 완료 판정을 수정한다.
-
-## 사용자 결정 사항
-
-| 번호 | 결정 | 확정 정책 | 설명 |
+| 위치 | 파일 | 현재 | 할일 반영 |
 |---|---|---|---|
-| D1 확정 | 다이얼로그 / 별도 화면 | 다이얼로그 | 날짜 하나를 선택해 처리하는 짧은 작업이며 상세 맥락을 유지한다. 별도 화면은 넓은 공간과 이력 목록 등 향후 확장에 유리하지만 이동/뒤로가기 설계가 추가된다. |
-| D2 확정 | 오늘 포함 여부 | 오늘까지 허용 | 기본 오늘 선택 요구와 일치한다. 수확한 식물은 D6에 따라 수확일을 기본 선택한다. |
-| D3 확정 | 선택 가능한 가장 이른 날짜 | 심은 날짜(`createdDate`)부터 오늘까지 | `createdDate`는 앱 등록일이 아니라 사용자가 입력하는 심은 날짜이다. 심기 이전 기록을 막아 의미를 명확히 한다. 기존 범위 밖 이력은 D8, 심은 날짜 수정은 D5a 정책을 적용한다. |
-| D4 확정 | 이력이 없을 때 마지막 날짜/알람 기준 | 알람 기준은 심은 날짜, 화면은 '물주기 기록 없음' | `lastWateringDate`는 기존처럼 심은 날짜로 복원한다. 실제 이력 유무를 별도로 조회하여 화면에 반영하고 오늘 완료/취소 여부는 오늘의 실제 기록으로 판정한다. 대체 날짜를 물주기 이력으로 추가하지 않는다. |
-| D5 확정 | 식물 등록/편집의 마지막 날짜와 이력 관계 | 등록 시 필수 입력 날짜를 이력으로 저장하고 기존 식물은 달력에서만 기록 관리 | 식물 등록과 이력 저장은 하나의 트랜잭션으로 처리한다. 기존 식물 편집의 마지막 물준 날짜 입력을 제거한다. 기존 데이터는 실제 이력을 기준으로 정규화하며 누락 이력은 자동 생성하지 않는다. |
-| D5b 확정 | 최초 이력 취소 허용 | 모든 물주기 이력에 동일한 취소 규칙 적용 | 최초 이력도 취소 가능하다. 전체 이력이 없어지면 D4에 따라 기록 없음 표시와 심은 날짜 기준 알람 계산을 적용한다. |
-| D5a 확정 | 심은 날짜 수정 | 기존 물주기 기록보다 이후로 변경하는 저장을 차단하고 이유 안내 | 변경할 심은 날짜보다 이전의 물주기 기록이 하나라도 있으면 차단한다. 가장 오래된 기록과 같은 날짜는 허용한다. 기록이 없으면 이 조건으로 차단하지 않는다. 기존 기록을 삭제하지 않는다. |
-| D6 확정 | 수확한 식물의 기록 관리 | 조회만 허용, 추가/취소 금지 | 달력 기본 선택은 수확일이다. 상세의 오늘 물주기와 취소 버튼은 숨기고 달력 조회 진입점은 유지한다. 저장 경계에서도 수확 여부를 검증한다. |
-| D7 확정 | 저장 후 닫는 시점 | DB 저장 성공 후 닫기, 저장 중 닫기/중복 조작 차단 | DB 실패는 선택을 유지한다. DB 성공 후 알람 실패는 기록 저장 성공과 구분해 안내한다. |
-| D8 확정 | 기존 범위 밖 이력 정정 | 표시와 취소만 허용, 범위 밖 신규 추가 금지 | 기존 심은 날짜 이전/미래 이력을 자동 삭제하지 않으면서 사용자가 정리할 수 있도록 달력에서 예외적으로 선택/취소를 허용한다. D3의 신규 기록 범위는 유지한다. 수확한 식물은 취소도 금지한다. |
-| D9 확정 | 미래의 심은 날짜 입력 | 신규 등록 및 심은 날짜 변경 시 오늘 이후 금지 | 심은 날짜가 미래이면 선택 범위가 비게 된다. 기존 미래 날짜 식물은 날짜 정정을 안내하고 다른 항목 편집은 허용한다. |
+| 식물 상세 | `plant_detail/PlantDetailScreen.kt` | 물주기 정보·버튼 박스 | 할일 카드 + 추가 버튼 |
+| 물주기 달력 다이얼로그 | `plant_detail/PlantDetailWateringDateDialog.kt` | 파란 점, 선택 날짜의 "물주기" 행 | 갈색 점 1개 + 할일 제목 행. 할일별 달력으로도 재사용 |
+| PDF 내보내기 | `core/pdf/.../PdfDataSourceImpl.kt` | 날짜 옆 물방울 | 사진 다음, 본문 앞에 `● 제목` 목록 |
+| 일기 상세 | `diary_detail/DiaryDetailScreen.kt` | 날짜 옆 물방울 | 날짜 아래, 본문 위에 `● 제목` 목록 |
+| 일기 작성/수정 | `diary_edit/DiaryEditScreen.kt` | 날짜 필드 물방울 | 반영 안 함 |
+| 식물 목록 | `plant_list/PlantListItem.kt` | 물주기 아이콘 + D-day | 할일 D-day 2번째 줄 추가 |
+| 알림 | `app/.../alarm/*` | 물주기 알림, 부팅 재등록 | 할일 알림 추가 |
 
-D1~D9 및 D5a/D5b는 확정이다. 기술 구현 방식은 최종 코드 점검에서 구체화하며 제품 정책 변경이 필요하면 사용자에게 알린다.
+## 3. 계산 규칙
 
-## 과거 범위 검토
+### 3.1 할일 종류 [결정]
 
-- `createdDate`는 “심은 날짜”이며 실제 앱 등록 시각이 아니다. 식물을 나중에 앱에 등록했다면 심은 날짜 이후의 과거 물주기를 기록할 수 있어야 한다.
-- 현재 D-day/알람 계산은 마지막 물주기 날짜를 기준으로 하므로 심은 날짜 이전이라고 즉시 계산이 깨지지는 않는다. 다만 빈 이력 삭제 시 심은 날짜로 복원하면 삭제한 기록보다 기준 날짜가 이후로 이동할 수 있다.
-- 달력 월 이동은 심은 날짜/오늘과 기존 범위 밖 이력을 포함하는 월 범위에서 제한한다. 수확한 식물은 수확일과 기존 이력을 조회 범위에 포함한다. 추가 가능한 날짜 범위와 조회 범위를 구분한다. 매우 오래된 기존 날짜의 알람 계산은 반복 비용과 날짜 연산 경계를 점검한다.
-- 선택 범위는 심은 날짜부터 오늘까지로 확정했다. 신규 등록의 마지막 물준 날짜에도 같은 범위 검증을 적용한다. 이미 저장된 범위 밖 기록을 자동 삭제하지 않는다. 기존 범위 밖 기록은 조회/취소만 허용한다. 수확한 식물에는 조회만 허용한다.
-- D5a 확정: 심은 날짜 변경을 저장할 때 변경 날짜보다 이전의 물주기 기록이 하나라도 있으면 저장을 차단하고 이유를 안내한다. 가장 오래된 물주기 기록과 같은 날짜는 허용한다. 기록이 없으면 이 조건으로 차단하지 않는다.
-- 실제 변경 시에만 이 규칙을 적용한다. 이미 범위 밖 기록이 있는 기존 식물에서 심은 날짜를 그대로 두고 다른 항목을 수정하는 경우까지 막지 않는다. 기존 범위 밖 기록은 삭제하지 않고 조회/취소 동선으로 정리한다.
-- UI 안내와 함께 저장 경계에서도 최신 기록을 기준으로 검증한다. 동시 기록 변경으로 검증과 저장 사이에 불일치가 생기지 않도록 data 계층에서 처리한다. 기존 물주기 기록·일기·사진은 이 정책으로 삭제하지 않는다.
+| 항목 | 1회성 (`ONE_TIME`) | 반복성 (`REPEAT`) |
+|---|---|---|
+| 날짜 필드 의미 | 예정일 | 시작일(첫 예정일) |
+| 반복 주기 | 없음 | 1 ~ `Constants.MAX_WATERING_PERIOD`일 |
+| 완료 버튼 | 확인 다이얼로그 → 오늘 날짜로 이력 저장 → 카드 사라짐 | 오늘 날짜로 이력 저장 → D-day 갱신 |
+| 달력 완료 | 선택 날짜로 완료(확인 다이얼로그) → 카드 사라짐 | 선택 날짜 완료 추가/취소 |
+| 취소 버튼 | 없음 | 물주기와 같음: **오늘 완료 이력이 있을 때** 노출 |
+| 수정 시 종류 변경 | 불가 | 불가 |
 
-## 구현 설계 초안
+- 1회성은 완료하면 할일이 사라지므로 완료를 되돌릴 수 없다. 완료 이력은 물주기 달력과 PDF에서 조회만 가능하다.
 
-### 날짜 선택 UI와 상태
+### 3.2 다음 예정일 [결정]
 
-- `PlantDetailWateringDateDialog.kt`로 분리하고 기존 상세 ViewModel에 연결한다. 별도 화면/Navigation 경로는 추가하지 않는다.
-- 월 헤더(연도·월, 이전/다음), 요일, 날짜 그리드, 기록 표시, 선택 표시, 버튼으로 구성한다.
-- 연도 선택 금지 및 날짜별 기록 표시 요구를 만족하도록 전용 Compose 달력 구성을 우선 검토한다. 기존 DatePicker 채택 여부는 실제 API와 요구사항 충족 여부를 확인한 후 정한다.
-- 기록 여부와 선택 상태를 동시에 구분하고 색상 외 표시/접근성 설명도 제공한다.
-- 달력 하단에는 선택 날짜나 '물주기 기록 있음/없음' 문구를 표시하지 않는다. 선택 날짜에 기록이 있을 때만 파란 점과 '물주기'를 표시하고, 기록이 없으면 해당 표시를 숨긴다.
-- 달력 날짜의 기록 점도 파란색으로 통일한다. 기존 WaterDropBlue의 `#53A0FF`를 점에 사용하고, 글자는 밝은 배경에서 읽기 쉬운 짙은 파란색을 사용한다. 어두운 테마에서는 기존 SkyBlue `#81CFE2` 계열을 적용한다. 상세의 달력/물주기 버튼 배경은 기존 primary 색상을 유지한다.
-- 상태: 열림 여부, 표시 월, 선택 날짜, 월별 기록 날짜 집합, 조회 중, 저장 중, 오류.
-- 이벤트: 열기/닫기, 월 변경, 날짜 선택, 기록 추가/취소, 재시도.
-- 월별 범위 조회를 재사용하거나 일반 목적 조회 UseCase를 추가한다. PDF용 이름의 UseCase를 UI에 직접 결합하지 않는다.
-- 빠른 월 이동 시 이전 조회 응답이 현재 월을 덮어쓰지 않도록 취소 또는 요청 식별을 적용한다.
-- 조회 완료 전 기록 변경 버튼을 비활성화하고 저장 중 중복 실행을 차단한다.
-- 실패 시 미조회 상태를 '이력 없음'으로 취급하지 않는다.
-- 문자열은 기존 리소스를 검색해 재사용하고 추가 항목은 한국어/영어/일본어 리소스에 반영한다.
+- 1회성: `nextDue = date`
+- 반복성: `latest` = 해당 할일의 최신 완료 이력 날짜
+  - `latest == null` 또는 `latest < date` → `nextDue = date`
+  - 그 외 → `nextDue = latest + periodDays`
+  - 수정 다이얼로그의 날짜 초기값은 현재 `nextDue`이다. 날짜를 **변경했을 때만** `date`를 갱신한다.
+  - 시작일 이전 날짜로 완료하면(`latest < date`) 예정일은 시작일 그대로다.
+- 달력에서 과거 날짜를 추가해도 `latest`보다 이전이면 예정일은 바뀌지 않는다.
 
-### 신규 등록 버그 수정과 이력 취소
+### 3.3 D-day 표기 [결정]
 
-- 현재 신규 등록은 입력한 마지막 물준 날짜를 식물 필드에만 저장한다. 해당 날짜의 이력을 함께 저장하여 완료 표시와 실제 이력이 불일치하는 버그를 수정한다.
-- 신규 등록의 마지막 물준 날짜는 필수 입력으로 유지하고 심은 날짜부터 오늘까지 검증한다.
-- 식물 생성과 최초 이력 생성을 하나의 트랜잭션으로 처리하고 저장 후 알람을 예약한다.
-- 최초 이력과 이후 이력에 동일한 추가/취소 규칙을 적용한다. 보호 표식이나 최초 이력 참조는 추가하지 않는다.
-- 모든 기록을 취소하면 D4에 따라 화면에는 기록 없음, 알람/D-day 기준에는 심은 날짜를 사용한다. 실제 오늘 이력이 없으므로 오늘 완료 상태와 취소 버튼은 해제한다.
-- D5a에 따라 심은 날짜는 가장 오래된 남은 실제 기록보다 이후로 변경할 수 없다. 이력이 없으면 이 조건으로 제한하지 않는다.
-- 기존 데이터는 이력이 비어 있거나 lastWateringDate와 최신 이력이 다를 수 있다. 저장된 날짜만으로 등록 때 입력한 날짜와 취소 후 대체 날짜를 구별할 수 없으므로 자동 복원은 하지 않는 것으로 확정했다. 이미 취소한 기록을 추측하여 되살리지 않는다.
-- 기존 식물 편집에서 마지막 물준 날짜 입력을 제거하고 상세 달력에서만 기록을 관리한다. 신규 등록에서는 해당 입력을 필수로 유지한다.
-- 기존 식물의 이름/사진/주기 등 편집 저장 시 오래된 화면 상태의 lastWateringDate로 최신 값을 덮어쓰지 않는다. 저장 경계에서 최신 이력 기준 값을 보존한다. 빈 이력 식물의 심은 날짜 변경 시에는 계산 기준도 새 심은 날짜로 갱신한다.
+물주기 문자열(`watering_d_day_minus_format` / `plus_format`)을 재사용한다.
+- 상세 카드: `nextDue > today` → `D-n`, `== today` → `D-0`, `< today` → `D+n`
+- 식물 목록: 물주기 표기와 같이 오늘이면 "오늘"로 표시한다.
 
-### 날짜 지정 기록 변경과 데이터 일관성
+### 3.4 날짜 제약 [결정]
 
-- 날짜를 받는 추가/취소 UseCase를 설계하고 오늘용 경로도 공통 처리로 연결한다. 기존 목록/상세 실행 진입점을 공통 처리로 연결하고 알림의 재예약 동작을 확인한다.
-- UI뿐 아니라 도메인 경계에서도 확정된 날짜 제한을 검증한다.
-- 과거 기록 추가 시 더 최근의 마지막 물주기 날짜를 과거로 되돌리지 않는다.
-- 기록 삭제 후 남아 있는 전체 이력의 최댓값을 사용한다. 임의 날짜 삭제에 기존의 “삭제 날짜 이전 최신 기록” 조회를 그대로 적용하면 이후 기록을 놓친다.
-- 오래된 기록 삭제는 더 최근의 마지막 물주기 날짜를 변경하지 않는다. 없는 기록 삭제는 변경 없음으로 처리하고, 중복 추가도 마지막 날짜를 잘못 덮어쓰지 않는다.
-- 조회 시 실제 이력의 최댓값을 사용하고, 이력이 없으면 심은 날짜를 계산 기준으로 사용한다. 기존 DB의 별도 날짜를 일괄 보정하지 않는다.
-- D4 확정: 이력이 없으면 `lastWateringDate`는 심은 날짜로 유지하여 기존 알람/D-day 계산 기준을 보존한다. 최근 물주기 날짜 표시에는 '물주기 기록 없음'을 사용한다.
-- 실제 최신 이력 날짜(`LocalDate?`)와 오늘 이력 존재 여부를 UI 상태에 반영한다. 기존 DB 필드를 nullable로 바꾸지 않아도 기록 없음 표시를 구현할 수 있다.
-- 목록/상세의 오늘 완료와 달력 표시는 실제 이력을 기준으로 판정한다. 오늘 취소 버튼은 실제 오늘 이력이 있을 때만 표시한다. 심은 날짜가 오늘이어도 오늘 기록이 없으면 완료로 표시하지 않는다. 대체 날짜를 이력으로 자동 추가하지 않는다.
-- 전체 최신 날짜 조회를 DAO/Repository에 추가하고 빈 이력 처리는 D4 정책을 따른다.
-- 날짜별 이력 변경과 식물의 마지막 날짜 갱신은 data 계층에서 Room 트랜잭션으로 묶는다. 사진 처리까지 포함하는 전체 식물 갱신 대신 마지막 날짜 전용 갱신을 사용한다.
-- DB 저장 이후 활성 알람을 변경된 기준으로 재예약한다. DB 성공/알람 실패를 구분하여 이미 저장된 기록을 실패로 오인하거나 반대로 토글하지 않도록 처리한다.
-- 최신 날짜가 달라지지 않는 과거 변경에도 달력 이력은 갱신해야 한다. Plant Flow만으로 갱신을 기대하지 않는다.
-- 기존 알람 시간·주기 계산 규칙을 유지하고 권한 부재/알람 실패 처리 경로를 확인한다.
-- 조회·저장은 `LocalDate` 기준으로 처리한다. 밀리초 기반 날짜 선택 API를 채택할 경우 해당 API의 날짜 표현 규약에 맞춰 변환해 시간대에 따른 날짜 이동을 방지한다.
-- 조회 시작 및 데이터 변경 시 현재 날짜로 계산하고 저장 직전에도 날짜 범위를 검증한다. 자정 자동 갱신은 하지 않는다.
-- 현재 정책은 최초 이력 보호 필드가 필요 없어 기존 v8 스키마로 구현할 수 있다. 기존 데이터 보정에 버전 마이그레이션이 필요한지는 구현 설계에서 결정한다. 스키마 변경이 없는 DAO 쿼리 추가만으로 버전을 올리지 않는다.
+- 등록/수정 날짜(예정일·시작일): 과거·미래 모두 허용. 과거면 바로 `D+n`이다.
+- 완료 날짜: 물주기와 같이 **식물 심은 날 ~ 오늘** 범위만 추가할 수 있다. 범위 밖 기존 이력은 취소만 가능하다.
+- 수확한 식물: 할일 카드와 추가 버튼을 숨기고, 완료·수정을 막는다. 알람은 중지하고 수확 취소 시 복원한다. 달력 이력은 유지한다.
 
-### 기존 데이터 보정 — 확정
+## 4. 데이터 설계 (Room v8 → v9)
 
-- 실제 watering_log 이력을 기준으로 한다. 비어 있으면 기록 없음으로 표시하며, 저장된 lastWateringDate만으로 이력을 자동 생성하지 않는다.
-- 이력이 있으면 최신 실제 이력 날짜를 lastWateringDate 계산 기준으로 사용한다. 이력이 없으면 심은 날짜를 계산 기준으로 사용한다. 기존 이력/일기/사진은 삭제하지 않는다.
-- 조회 시 날짜 계산만 수행하며 기존 식물의 날짜를 일괄 수정하지 않는다. 기록/식물 변경 시 해당 식물의 계산 기준만 트랜잭션으로 갱신한다.
-- 이전 버전에서 등록/편집으로 입력했지만 이력에 저장되지 않은 날짜는 사용자가 달력에서 다시 기록한다. 첫 실행 변경 안내는 표시하지 않는다.
-- 기존의 심은 날짜 이전 또는 미래 이력은 자동 삭제하지 않는다. 달력에서 범위 밖 기존 기록을 예외적으로 선택해 조회/취소할 수 있다. 범위 밖 신규 추가는 금지하고 수확한 식물은 조회만 허용한다.
-- 날짜 계산은 Repository 조회 경로에서 일관되게 적용한다. 별도 보정 초기화는 필요하지 않다.
+### 4.1 `plant_task` (진행 중인 할일) [결정]
 
-## 구현 순서
+| 컬럼 | 타입 | 설명 |
+|---|---|---|
+| `id` | INTEGER PK AUTOINCREMENT | |
+| `plantId` | INTEGER NOT NULL | index |
+| `title` | TEXT NOT NULL | 최대 20자 |
+| `content` | TEXT NULL | 내용(선택) |
+| `type` | TEXT NOT NULL | `ONE_TIME` / `REPEAT` |
+| `date` | TEXT NOT NULL | 1회성: 예정일, 반복성: 기준 예정일 |
+| `periodDays` | INTEGER NULL | 반복성만 |
+| `alarm_time`, `alarm_isActive` | TEXT, INTEGER | `@Embedded(prefix = "alarm_") AlarmEntity` 재사용 |
+| `createdAt` | TEXT NOT NULL | 정렬(생성순) |
 
-1. 완료: D1~D9와 UI 시안을 최종 점검하고 구현 준비 완료를 알린다.
-2. 신규 등록/편집, 오늘 물주기(목록·상세)와 알림 재예약, PDF/일기 표시까지 이력 관련 경로를 점검하고 확정된 D5 보정의 실행 시점과 초기화/알람 순서를 설계한다.
-3. 신규 등록의 원자적 이력 저장, 원자적 기록 추가/삭제와 최신 날짜 계산, 날짜 지정 UseCase 및 DI를 구현한다.
-4. 상세 State/Event/Effect/ViewModel에 월 조회·날짜 선택·저장·실패 처리를 연결한다.
-5. 달력 UI/아이콘/문자열을 연결하고 기존 오늘 동작과 애니메이션의 연동을 확인한다.
-6. 아래 검증을 수행하고 결과 및 남은 제한을 이 문서에 기록한다.
+- 1회성 완료와 할일 삭제는 모두 **행 삭제**다. 완료/보관 플래그는 두지 않는다.
 
-## 검증 및 완료 기준
+### 4.2 `plant_task_log` (완료 이력) [결정]
 
-- 확정된 날짜 범위, 초기 선택, 월 이동/연도 표시, 기록 표시, 버튼 전환이 일치한다.
-- 심은 날짜 변경은 가장 오래된 물주기 기록보다 이후이면 차단하고, 같은 날짜/이전 날짜는 허용한다. 기록 없음과 심은 날짜를 변경하지 않은 저장도 검증한다.
-- 취소/바깥 터치/뒤로가기로 닫을 때 데이터가 변경되지 않는다. 저장 중에는 닫기와 날짜/월 변경, 중복 저장을 차단한다. DB 실패 시 선택을 유지한다. DB 성공 후 알람 실패는 저장 완료와 구분해 안내한다.
-- 도메인 또는 데이터의 적절한 단일 계층에서 신규 등록 이력 생성, 최초 이력 취소, 과거 기록 추가/삭제, 최신/오래된 기록 삭제, 마지막 기록 삭제 후 빈 상태, 중복 추가, 없는 기록 삭제와 금지 날짜를 검증한다. 같은 사례를 여러 계층에서 중복하지 않는다.
-- 실제 Room 트랜잭션의 롤백과 최신 날짜 조회는 data 계층의 Repository 또는 DB 통합 테스트에서 필요한 최소 사례로 검증한다. 규칙을 data 계층에서 이미 검증했다면 같은 정상 사례를 다시 추가하지 않는다.
-- 월 조회 경합 및 저장 실패/중복 클릭은 ViewModel의 의미 있는 상태 전이만 검증한다. DB 저장 성공 후 알람 실패도 저장 실패와 구분한다.
-- 수확한 식물은 수확일 기본 선택 및 조회 전용을 검증한다. 기존 범위 밖 이력 조회/취소와 범위 밖 추가 차단, 미래 심은 날짜 차단도 검증한다.
-- UI는 기기/에뮬레이터에서 월 경계·윤년·연도 전환·긴 번역·작은 화면·접근성을 확인한다.
-- 기존 오늘 물주기/취소, 목록/상세 상태, 일기/PDF 물주기 표시, 활성 알람 재예약에 회귀가 없어야 한다. 빈 이력에서 대체 날짜가 오늘인 경우를 포함해 완료 상태와 실제 기록의 일치를 검증한다.
-- 변경 모듈의 필요한 테스트와 `./gradlew assembleDebug`를 수행한다. 전체 테스트나 instrumented 테스트는 고유한 위험을 확인할 필요가 있을 때만 추가한다.
-- 최초 이력이 오늘이어도 상세와 달력에서 취소할 수 있다. 취소 후 오늘 완료 표시와 오늘 취소 버튼이 해제되어야 한다.
-- 기존 데이터 보정 전용 자동 테스트는 작성하지 않는다(사용자 결정). 개발용 DB에서 보정 전후 실제 이력/일기/사진 보존, 누락 이력의 자동 생성 없음, 마지막 날짜 정규화를 수동 확인한다. 보정 중단 후 재실행 결과도 확인한다. 실제 스키마 마이그레이션이 추가로 필요해지면 검증 범위는 다시 검토한다.
+| 컬럼 | 타입 | 설명 |
+|---|---|---|
+| `id` | INTEGER PK AUTOINCREMENT | |
+| `plantId` | INTEGER NOT NULL | 달력·PDF·일기 상세 조회 기준 |
+| `taskId` | INTEGER NULL | 원본 할일. FK 없음. 할일 삭제 후에도 값 유지(AUTOINCREMENT라 재사용 없음) |
+| `title` | TEXT NOT NULL | 완료 시점 제목 스냅샷 |
+| `date` | TEXT NOT NULL | 완료 날짜 |
 
-## 결정 기록
+- 인덱스: `(plantId, date)`, UNIQUE `(taskId, date)`.
+- FK·CASCADE 없음. 할일을 삭제해도 이력은 남는다.
+- 할일 제목을 수정해도 과거 이력 제목은 바뀌지 않는다(이력은 그 시점 기록).
 
-- D1 확정: 다이얼로그 사용.
-- D2 확정: 오늘까지 선택 허용.
-- D3 확정: 심은 날짜부터 오늘까지 양 끝 날짜 포함.
-- D4 확정: 빈 이력의 알람 기준은 심은 날짜를 유지하고 화면에는 '물주기 기록 없음'을 표시한다. 오늘 완료 여부는 실제 오늘 기록으로 판정한다.
-- D5a 확정: 심은 날짜보다 이전인 물주기 기록이 생기는 날짜 변경은 저장을 차단하고 이유를 안내한다. 기록 삭제는 하지 않는다.
-- D5 신규 등록 확정: 필수 입력한 마지막 물준 날짜를 최초 이력으로 함께 저장한다.
-- D5b 최종 확정: 최초 이력도 취소 허용. 이전의 최초 이력 취소 금지 정책을 대체한다. 전체 이력이 없어지면 기록 없음 표시와 심은 날짜 기준 계산을 적용한다.
-- D5 편집 동선 확정: 기존 식물 편집의 마지막 물준 날짜 입력을 제거하고 상세 달력으로 통합한다. 신규 등록의 필수 입력은 유지한다.
-- D5 최종 확정: 조회 시 실제 최신 이력 또는 기록 없음/심은 날짜 기준을 사용한다. 누락 이력 자동 생성, 일괄 날짜 보정, 첫 실행 안내, 시작 시 전체 알람 재예약은 하지 않는다.
-- D6 확정: 수확한 식물은 조회만 허용하고 기본 선택은 수확일. 물주기 추가/취소 금지.
-- D7 확정: DB 저장 성공 후 닫기, 저장 중 닫기/중복 조작 차단, DB 실패 시 선택 유지.
-- D8 확정: 기존 범위 밖 이력은 조회/취소만 허용하며 수확한 식물은 조회 전용.
-- D9 확정: 신규 등록/심은 날짜 수정 시 미래 날짜 금지. 기존 미래 날짜는 정정 안내.
-- UI 확정: 물주기 버튼과 같은 배경색의 버튼 안에 달력 아이콘을 배치.
-- UI 시안 확정: 달력 하단은 선택 날짜에 기록이 있을 때만 파란 점과 물주기 표시. 날짜 및 기록 있음/없음 문구는 제외한다.
-- 테스트 범위 확정: 기존 데이터 보정 전용 자동 테스트는 제외하고 개발용 DB 수동 확인으로 대체한다.
-- 최종 점검 완료: 추가 사용자 정책 결정 사항 없음. 이후 사용자 구현 요청을 받아 아래 구현 결과까지 진행했다.
-- 모든 제품 정책과 UI 확정 후 구현 준비를 알렸으며, 사용자 구현 요청 이후 코드 수정과 테스트를 진행했다.
+### 4.3 마이그레이션
 
-## 구현 결과 및 검증 (2026-10-01)
+- `core/database/migration/Migration_8_9.kt`: 두 테이블과 인덱스 생성. 인덱스 이름은 Room 규칙(`index_plant_task_plantId`, `index_plant_task_log_plantId_date`, `index_plant_task_log_taskId_date`).
+- `GardenDatabase` version 9, entities·`plantTaskDao()` 추가. `DatabaseModule`에 `MIGRATION_8_9`, DAO provider 추가.
+- 스키마 `9.json`은 빌드 결과를 커밋한다.
 
-- 상세 달력 버튼/다이얼로그, 선택 날짜의 파란 점과 물주기 표시, 수확 조회 전용, 범위 밖 기존 이력 취소 동선을 구현했다.
-- 신규 등록 이력 저장, 날짜 지정 추가/취소 및 식물 날짜 갱신을 Room 트랜잭션으로 처리한다. 최초 이력도 취소 가능하다.
-- 기존 식물 편집의 마지막 물준 날짜 입력을 제거하고, 심은 날짜 변경 제한과 최신 물주기 값 보존을 적용했다.
-- 실제 이력 기준 오늘 완료/기록 없음 표시, 자정 날짜 재평가, 저장·조회 실패 안내를 적용했다.
-- 기존 데이터는 이력을 생성/삭제하지 않고 마지막 날짜만 정규화한다. 앱 초기 보정 이후 활성 알람을 재예약하며 변경 안내를 한 번 표시한다.
-- 저장 후 알람 실패는 저장 성공과 구분한다. 신규 등록에서도 알람 실패로 저장을 재시도하여 식물이 중복 생성되지 않도록 했다.
-- DB 스키마는 v8 유지. 새 보호 필드/마이그레이션은 추가하지 않았다.
-- 추가 테스트: 실제 Room Repository 7개, UI 상태 변환 회귀 2개. 보정 전용 자동 테스트는 제외했다.
-- 검증 통과: `./gradlew :data:testDebugUnitTest :feature:plant:testDebugUnitTest assembleDebug --console=plain` 및 `git diff --check`.
-- 이전 경로를 참조한 생성 캐시 문제는 `./gradlew clean`으로 해결한 뒤 재검증했다.
-- 초기 자동 검증 시에는 연결 기기가 없었다. 이후 에뮬레이터 화면 검증은 아래 결과를 참조한다. 실제 알람 권한·예약 동작, 작은 화면/긴 번역/TalkBack, 윤년·연도 전환 및 실패 주입 상황은 별도 확인이 필요하다.
-- 사용자가 작성한 Calendar.kt는 수정하지 않았으며 기존 스테이징 상태를 유지했다. 커밋하지 않았다.
+### 4.4 식물 삭제·수확 연동
 
+- `DeletePlantUseCase`: 할일·이력 삭제, 할일 알람 전부 취소.
+- 참고(범위 외): 식물 삭제 시 `watering_log`가 지워지지 않는 기존 문제는 이번 작업에서 다루지 않는다.
+- `HarvestPlantUseCase.harvest`: 할일 알람을 물리적으로만 취소(DB `alarm_isActive` 유지).
+- `HarvestPlantUseCase.cancelHarvest`: 활성 할일 알람 재등록.
 
-## 에뮬레이터 화면 검증 (2026-10-01)
+## 5. 레이어별 구현 목록
 
-- 실행 환경: Android 에뮬레이터 `emulator-5554`, 1080×2400 화면. Debug APK를 기존 데이터 유지 방식으로 설치했다. 알람은 사용자 요청에 따라 이번 화면 검증에서 제외했다.
-- 테스트용 식물을 신규 등록하고 최초 물주기 기록이 달력에 실제 표시되는 것을 확인했다.
-- 최초 기록 취소 후 `기록 없음` 표시, 오늘 취소 버튼 숨김, 심은 날짜 기준 D-day 계산을 확인했다.
-- 심은 날짜 이전과 오늘 이후의 신규 물주기 날짜 선택이 차단되는 것을 확인했다. 월 이동 후 과거 날짜를 추가하면 저장 후 다이얼로그가 닫히고 상세 날짜가 갱신되었다.
-- 오늘 물주기 추가/취소 후 이전 과거 기록으로 마지막 물준 날짜가 복원되었다.
-- 기존 식물 편집에서 마지막 물준 날짜 입력이 제거되었다. 가장 오래된 기록보다 늦은 심은 날짜 저장은 이유를 안내하고 차단했으며 원래 날짜는 유지되었다.
-- 수확일을 9월 28일로 설정한 뒤 달력 기본 선택이 해당 수확일인 것을 확인했다. 기록 날짜를 선택하면 파란 점과 `물주기`만 표시되며 추가·취소 없이 `닫기`만 제공되었다.
-- 밝은/어두운 테마에서 기록 표시와 선택 표시를 확인했다. 원래 밝은 테마로 복원했다.
-- 첫 실행 변경 안내를 확인했고 재실행에서는 반복 표시되지 않았다. 확인한 동작에서 AndroidRuntime 오류 로그는 없었다.
-- 테스트용 기록과 식물은 화면에서 삭제했다. 테스트 전후 DB 비교에서 기존 식물·물주기 기록·일기·사진 메타데이터와 연결 정보가 모두 동일했다. 테스트용 데이터가 남지 않은 것도 확인했다.
-- 미검증: 실제 알람 전달/권한/재예약, 저장 실패·알람 실패 주입, 저장 중 빠른 중복 조작, 자정 경계, 범위 밖 기존 기록, 작은 화면·긴 번역·TalkBack, 윤년·연도 전환. 이번 결과는 확인한 화면과 정상 동작 범위에 한정한다.
+### 5.1 domain
 
+- `model/PlantTask.kt`
+  - `PlantTask(id, plantId, title, content, type, date, periodDays, alarm, createdAt, latestDoneDate, isDoneToday)`
+  - `enum class PlantTaskType { ONE_TIME, REPEAT }`
+  - `PlantTaskLog(plantId, taskId: Int?, title, date)`
+- `repository/PlantTaskRepository.kt`
+  - `observeTasks(plantId)`: 생성순, 최신 완료일 포함
+  - `observeAllTasks()`: 식물 목록용(plantId별 할일)
+  - `getTask`, `addTask(): Int`, `updateTask(task, isDateChanged)`, `deleteTask(taskId)`
+  - `setTaskLog(taskId, date, isDone): Boolean`: 물주기 `setWateringLog`와 같은 목표 상태 적용 방식. 1회성 `isDone=true`면 이력 추가와 행 삭제를 한 트랜잭션에서 처리. 수확·범위 검증 포함
+  - `observeTaskLogs(taskId)`: 할일별 달력
+  - `observePlantTaskLogs(plantId)`: 물주기 달력
+  - `getTaskTitlesByDate(plantId, date)`: 일기 상세
+  - `getPlantTaskLogsByRange(plantId, start, end)`: PDF
+  - `getActiveAlarmTaskIds()`, `updateAlarmActivation(taskId, isActive)`, `deleteByPlantId(plantId)`
+- `repository/PlantTaskAlarmRepository.kt`: `setAlarm(taskId, dateTime)`, `cancelAlarm(taskId)`
+- `usecase/task/`
+  - `GetPlantTasksUseCase`, `GetNextDueDateUseCase`(3.2, 순수 함수), `GetTaskDaysUseCase`(D-day·지남)
+  - `GetNearestTaskDueDatesUseCase`: `Flow<Map<plantId, LocalDate>>`. 식물별 할일 `nextDue` 중 가장 이른 날짜(지난 일정 포함). 할일이 없는 식물은 제외
+  - `AddPlantTaskUseCase`, `UpdatePlantTaskUseCase`, `DeletePlantTaskUseCase` (알람 재설정/취소 포함)
+  - `UpdatePlantTaskLogUseCase(taskId, date, isDone)`: 결과 `WateringUpdateResult` 재사용(CHANGED/UNCHANGED/ALARM_FAILED). 이름 공용화는 구현 시 판단
+  - `CompleteTodayTaskUseCase`, `CancelTodayTaskUseCase`: 오늘 날짜 래퍼
+  - `SetPlantTaskAlarmUseCase`: `SetWateringAlarmUseCase`의 주기 건너뛰기 로직 재사용. 1회성은 예정 시각이 지났으면 등록하지 않음. 수확한 식물이면 등록하지 않음
+  - `UpdatePlantTaskAlarmActivationUseCase`
+  - `GetTaskLogsUseCase(taskId)`, `GetPlantTaskLogsUseCase(plantId)`, `GetTaskTitlesByDateUseCase`, `GetPlantTaskLogsForExportUseCase`
+- `model/ExportRequest.kt`: `DiaryExport.taskTitles: List<String> = emptyList()`
 
-## 구현 재검토 (2026-10-01)
+### 5.2 core/database
 
-- 사용자 요청에 따라 첫 실행 변경 안내와 MainActivity의 전체 활성 알람 재예약 코드를 제거했다. 보정은 Repository 접근 전에 내부에서 수행한다. 이미 예약된 알람의 보정 결과 반영은 다음 기록/설정 변경 시 적용된다.
-- 상세 ViewModel의 30초 반복 확인은 제거했다. Repository의 자정 갱신을 기존 식물 구독에서 받아 오늘 날짜와 상태를 갱신한다.
-- 추가 오류 메시지는 문장 사이에 명시적 줄바꿈을 적용했다.
-- 이후 에뮬레이터 UI 테스트는 진행하지 않는다. 이전 검증 결과는 당시 구현 기준의 기록이며, 이번 수정 이후 에뮬레이터 검증은 하지 않았다.
+- `entity/PlantTaskEntity.kt`, `entity/PlantTaskLogEntity.kt`
+- `dao/PlantTaskDao.kt`: 할일 + 할일별 `MAX(date)` 조회, 이력 insert(IGNORE)/delete, 범위·날짜 조회, plantId 일괄 삭제
+- `GardenDatabaseConverter`: 필요 시 `PlantTaskType` 변환
+- `Migration_8_9.kt`, `GardenDatabase`, `DatabaseModule`
 
+### 5.3 data
 
-## 단순화 결과 (2026-10-01)
+- `mapper/DatabaseMapper.kt`, `mapper/ExportMapper.kt`(`taskTitles`)
+- `repository/PlantTaskRepositoryImpl.kt`: 수확 식물이면 `WateringValidationException(HARVESTED)`, 범위 밖 추가면 `OUTSIDE_RANGE`. 예외 이름 공용화는 구현 시 판단
+- `di/RepositoryModule.kt`: `@Binds`
 
-- 전체 식물의 저장 날짜를 일괄 보정하던 WateringDataInitializer와 초기화 의존성을 제거했다. 기존 DB를 조회할 때 날짜 보정을 위한 쓰기를 하지 않는다.
-- 실제 이력의 최신 날짜/기록 없음/오늘 완료 여부는 조회 결과에서 계산한다. 기록 또는 식물 수정 시 해당 식물의 저장 날짜 갱신과 트랜잭션은 유지한다. 위의 전체 보정 계획은 이 방식으로 대체한다.
-- Room 관계 조회로 식물·사진·이력을 함께 읽도록 묶었다. 목록은 식물별 재구독 대신 목록 구독 하나와 자정 갱신 하나를 사용한다. DB 스키마 변경은 없다.
-- 상세의 중복 완료 상태 계산과 임시 Plant 캐시를 제거했다. Plant 구독은 상태 표시를, 물주기 이력 구독은 달력 표시를 담당한다.
-- 편집 ViewModel의 중복 날짜 검증은 제거하고 Repository 저장 검증으로 모았다. UI 날짜 제한은 유지한다.
-- 목록의 이력 변경 반영을 확인하는 통합 테스트 한 개를 추가했다. 에뮬레이터 테스트는 하지 않는다.
-- 검증 통과: Room 통합 테스트 8개와 UI 상태 변환 테스트 2개, `assembleDebug`, `git diff --check`. 커밋하지 않았다.
+### 5.4 core/pdf
 
+- `DiaryPdf.taskTitles: List<String>`
+- `addDiaryPages`: 날짜(+물방울) → 사진 → **할일 목록** → 본문. 할일마다 갈색 원(`canvas.drawCircle`) + 제목 한 줄, `ensureSpace`로 페이지 넘김 처리.
+- 갈색은 PDF 내부 상수로 둔다.
+- PDF는 기존처럼 일기가 있는 날짜만 출력한다. 일기가 없는 날의 할일 완료는 PDF에 나오지 않는다.
 
-## 자정 갱신 제거 및 코드 정리 (2026-10-01)
+### 5.5 app (알람)
 
-- 사용자 요청에 따라 자정 타이머와 시간 관련 Flow를 제거했다. 조회 구독 시작 또는 데이터 변경으로 새 결과가 전달될 때 현재 날짜 기준으로 계산한다. 날짜가 바뀌었다는 이유만으로 별도 갱신하지 않는다.
-- 이력 없는 경우의 계산 기준, 범위 밖 기존 기록 삭제, 트랜잭션 의도 등 비자명한 처리에 간결한 주석을 추가하고 변경 코드의 포맷을 정리했다.
-- 검증 통과: 관련 테스트 10개, `assembleDebug`, `git diff --check`. 에뮬레이터 테스트와 커밋은 하지 않았다.
+- `alarm/PlantTaskAlarmReceiver.kt` (신규, `exported=false`, Manifest 등록)
+  - extra `taskId`. 수신 시 할일·식물 이름 조회 → 알림 → 다음 알람 재예약
+  - ID 충돌 방지: 물주기는 `requestCode = plantId`, `notify(plantId)`, summary 1000을 쓴다.
+    - PendingIntent는 receiver 컴포넌트가 달라 `requestCode = taskId`로도 충돌하지 않는다.
+    - 알림은 `notify(TAG_TASK, taskId, …)`로 tag를 분리하고, summary ID는 별도 값(2000)을 쓴다.
+  - 별도 채널 `plantTaskNotification`("할일 알림")
+  - 알림 문구: 제목 "{식물이름} 할일", 본문 "{할일 제목}"
+  - 탭하면 `MainActivity` 실행
+- `alarm/PlantTaskAlarmRepositoryImpl.kt`: `setAlarmClock`, exact alarm 권한 없으면 skip
+- `BootReceiver`: 활성 할일 알람 재등록
+- `di/RepositoryModule.kt`(app), `di/UseCaseModule.kt` 갱신
+
+### 5.6 core/common_ui
+
+- `theme/Color.kt`: `TaskBrown`(라이트, 예: `0xFF8D6E63`), `TaskBrownLight`(다크, 예: `0xFFBCAAA4`), `TaskBrownText`(라이트 텍스트, 예: `0xFF6D4C41`)
+- 아이콘: 9장 참고
+
+### 5.7 feature/plant — 식물 상세
+
+**화면 배치**
+```
+Header
+WateringInfo            (수확 전)
+WateringSection         (달력/물주기/취소 + 메모)
+TaskCard × N            (수확 전, 생성순)
+AddTaskButton           (수확 전)
+HarvestMemoBox
+DiarySection
+Harvest…
+```
+
+**TaskCard** — 할일 1개당 박스 1개. 기존 박스 스타일(`surfaceContainerLowest` + 1dp `surfaceContainerHighest` border, 15dp radius)
+```
+┌──────────────────────────────────────────┐
+│ [Gardening] 제목(Bold) D-3            [⋯] │ 1행: D-day는 제목 바로 오른쪽
+│ 내용 텍스트…                               │ 2행: 내용, 없으면 숨김
+│                                            │ ← 2·3행 사이 간격 확대(8dp)
+│ [Repeat] 7일마다 · 마지막 완료: 3일 전      │ 3행: 반복성 / 1회성은 [Event] 예정일: 2026.10.30
+│ [Alarm] 알림: 오전 9:00            [ ○ ]   │ 4행
+│ [📅] [ ✓ 완료                ] [취소]      │ 5행: 달력 / 완료 / 취소(반복성 오늘 완료 시)
+└──────────────────────────────────────────┘
+```
+- 1행 [결정]: `Row { Icon; Text(title, Modifier.weight(1f, fill = false), maxLines = 2, ellipsis); Spacer(6dp); Text(dDay); Spacer(Modifier.weight(1f)); MoreButton }`
+  - `fill = false`라서 제목이 짧으면 D-day가 제목 바로 뒤에 붙는다.
+  - 제목이 길면 제목만 2줄로 줄바꿈되고, D-day는 제목 오른쪽(세로 가운데)에 남는다. ⋯ 버튼은 오른쪽 끝에 고정된다.
+- 2행 내용과 3행 사이는 8dp, 나머지 행 사이는 4dp 간격을 둔다.
+- 3행 "마지막 완료" 문구는 물주기와 같은 규칙(오늘 / n일 전 / 날짜, 없으면 "기록 없음").
+- 5행은 `WateringSection`과 같은 구성이다. 달력 버튼(48dp) → 완료 버튼(`weight(1f)`) → 취소 버튼(`MutableTransitionState` expand/shrink 애니메이션).
+  - 달력·완료 버튼 색 [결정]: 물주기 버튼과 같은 `primary` 배경으로 통일한다(달력 아이콘 `onPrimary`, 완료 버튼 `onTertiary` — 물주기 버튼과 동일).
+  - 갈색은 점, 할일 아이콘, 달력·PDF·일기 상세 표시에만 쓴다.
+- 지난 할일(`D+n`)은 D-day를 error 색으로 표시한다(물주기 OVERDUE와 같음) [제안].
+- 1회성 완료 → `PlantDetailTaskCompleteDialog`("할일을 완료하시겠습니까?" / 취소·완료).
+
+**AddTaskButton**
+- 전체 너비, 연한 배경(`surfaceContainerLow`) + 1dp border(`outlineVariant`) + `+` 아이콘 + "할일 일정 추가". 진한 채움 배경은 쓰지 않는다.
+
+**생성/수정 다이얼로그 (`PlantDetailTaskDialog.kt`)**
+```
+할일 일정 추가 / 할일 일정 수정
+[제목 _______________ 0/20]       필수
+[내용 _______________]            선택, 여러 줄
+(●) 1회성   ( ) 반복성             수정 시 비활성
+[event]  예정일/시작일  2026.10.22  >    DatePickerDialog
+[repeat] 반복 주기      7일         >    반복성만, 주기 휠("없음" 제외)
+[alarm]  알림 시간      오전 9:00   >    TimePicker
+                    [취소] [만들기]       ← 생성
+                    [삭제] [수정]         ← 수정 (삭제는 확인 다이얼로그)
+```
+- 입력 행은 `LabeledClickableField`를 재사용하고 앞에 아이콘을 둔다.
+- 반복 주기: `WateringPeriodDialog`에 "없음" 항목을 숨기는 파라미터를 추가해 재사용한다.
+- 제목이 공백이면 만들기/수정 비활성.
+- 생성 시 알림은 **꺼짐**, 시간 기본값 09:00. 카드 스위치로 켤 때 `canScheduleExactAlarms` → `ExactAlarmPermissionDialog` 흐름을 탄다.
+
+**달력 다이얼로그 재사용 (`PlantDetailWateringDateDialog.kt` → `PlantDetailRecordCalendarDialog.kt`)**
+- 다이얼로그 **제목을 제거**한다(물주기·할일 모두).
+- 상태에 `calendarTarget: CalendarTarget?`(`Watering` / `Task(taskId)`)을 두고, 같은 다이얼로그 컴포저블이 대상에 따라 데이터와 버튼을 바꾼다. 기존 `isWateringDateDialogOpen`, `wateringMonth`, `selectedWateringDate`, `isWateringSaving`, `wateringError`는 대상 공용 이름(`calendarMonth`, `calendarSelectedDate`, `isCalendarSaving`, `calendarError`)으로 정리한다.
+
+| 항목 | 물주기 달력 (`Watering`) | 할일 달력 (`Task`) |
+|---|---|---|
+| 진입 | 물주기 박스 달력 버튼 | 할일 카드 달력 버튼 |
+| 날짜 점 | 파란 점 + 갈색 점(그날 할일 이력이 1건 이상이면 1개) | 해당 할일 이력 갈색 점 |
+| 선택 날짜 상세 | `● 물주기`(파랑) + 할일 이력마다 `● 제목`(갈색) | `● 제목`(갈색) |
+| 저장 버튼 | 물주기 / 기록 취소 (기존) | 완료 / 완료 취소 |
+| 1회성 | - | "완료" → 확인 다이얼로그 → 완료되면 달력 닫힘, 카드 사라짐 |
+| 월 이동 범위 | 심은 날, 물주기·할일 이력, 수확일, 오늘 | 심은 날, 해당 할일 이력, 오늘 |
+
+- 할일 달력의 이력 구독은 달력이 열릴 때 `taskId`로 시작하고 닫힐 때 취소한다.
+- 접근성: 할일 기록이 있는 날짜의 contentDescription에 "할일 n건" 추가.
+
+**상태/이벤트 (`PlantDetailState.kt`)**
+- `model/PlantTaskUiModel.kt`: `id, title, content, type, dDay, isOverdue, latestDoneDate, dueDate, periodDays, alarmTime, isAlarmActive, isDoneToday`
+- State: `tasks`, `plantTaskLogs: Map<LocalDate, List<String>>`, `calendarTarget`, `taskLogDates: Set<LocalDate>`(할일 달력), `taskDialog: PlantTaskDialogState?`, `isTaskSaving`
+- Event: `OnAddTaskClicked`, `OnTaskMoreClicked(id)`, `OnTaskDialogDismissed`, `OnTaskTitleChanged`, `OnTaskContentChanged`, `OnTaskTypeChanged`, `OnTaskDateChanged`, `OnTaskPeriodChanged`, `OnTaskAlarmTimeChanged`, `OnTaskSaveClicked`, `OnTaskDeleteClicked`, `OnTaskDeleteConfirmed`, `OnTaskCompleteClicked(id)`, `OnOneTimeTaskCompleteConfirmed(id, date)`, `OnTaskCancelClicked(id)`, `OnTaskCalendarClicked(id)`, `ToggleTaskAlarm(id, isActive)`
+- Effect: `ShowOneTimeTaskCompleteDialog(id, date)`, `ShowTaskDeleteConfirmDialog(id)`, 기존 `ShowExactAlarmPermissionDialog` 재사용
+
+**신규 파일**
+- `plant_detail/PlantDetailTaskCard.kt` (TaskCard, AddTaskButton, 프리뷰)
+- `plant_detail/PlantDetailTaskDialog.kt`
+- `plant_detail/PlantDetailTaskCompleteDialog.kt`
+- `plant_detail/PlantDetailTaskDeleteDialog.kt`
+
+### 5.8 feature/plant — 식물 목록 [결정]
+
+- `PlantListViewModel`: `GetNearestTaskDueDatesUseCase`를 `combine`해서 `PlantListItemUiModel.taskDDay: Int?`, `taskStatus`를 채운다. 수확한 식물은 null.
+- `PlantListItem` 오른쪽 영역
+  - 할일 D-day가 없으면 기존 그대로(물방울 30dp + titleMedium).
+  - 있으면 2줄: `[물방울 20dp] D-3` / `[할일 아이콘 20dp] D-1`, 텍스트는 `titleSmall`. 할일 D-day가 지났으면 error 색.
+
+### 5.9 feature/plant — 일기 상세 [결정]
+
+- `DiaryDetailViewModel`: `GetTaskTitlesByDateUseCase(plantId, diary.createdDate)`로 `taskTitles`를 state에 채운다.
+- `DiaryDetailScreen`: 날짜 Row 아래, 본문 위에 글머리 목록으로 표시한다. 행마다 갈색 점(6dp) + 8dp 간격 + 제목(`bodyMedium`, `TaskBrownText`/다크 `TaskBrownLight`).
+
+### 5.10 feature/plant — 내보내기
+
+- `DiaryExportViewModel`: `GetPlantTaskLogsForExportUseCase`로 날짜별 제목 목록을 받아 `DiaryExport.taskTitles`에 채운다.
+
+### 5.11 analytics [제안]
+
+- `GardenEvent`: `AddTask(type, alarmEnabled)`, `CompleteTask(type, source)`, `CancelTask`, `DeleteTask`, `TaskAlarmToggle(enabled)`
+
+### 5.12 문자열
+
+`strings.xml` 기존 항목(`cancel`, `delete`, `edit`, `today`, `days_ago_format`, `watering_d_day_*_format`, `watering_no_record` 등)을 먼저 재사용한다. 신규 항목은 **ko / en / ja** 모두 추가한다.
+- feature/plant: 할일 일정 추가/수정, 제목, 내용, 1회성, 반복성, 예정일, 시작일, 반복 주기, `%d일마다`, 알림 시간, 만들기, 수정, 완료, 완료 취소, 마지막 완료, 1회성 완료 확인 문구, 삭제 확인 문구, 접근성 문구
+- app: 할일 알림 채널 이름, 알림 제목 포맷
+
+## 6. 테스트 계획 (필요한 층에서만)
+
+- domain 단위: `GetNextDueDateUseCase`(이력 없음 / 이력 ≥ 기준일 / 이력 < 기준일 / 지남), 할일 알람 다음 시각(주기 건너뛰기, 1회성 지난 시각 → null), 식물별 가장 이른 예정일
+- data Robolectric(`WateringPersistenceTest` 방식) `PlantTaskPersistenceTest`
+  - 1회성 완료 → 행 삭제 + 이력 유지
+  - 반복성 과거 날짜 완료/취소, 같은 날 중복 완료 무시
+  - 반복성 삭제 후 이력 유지(제목 스냅샷)
+  - 식물 삭제 시 할일·이력 삭제
+  - 수확 식물 완료 거부, 범위 밖 날짜 추가 거부
+- 마이그레이션 8→9: `MigrationTestHelper` 1건
+- UI: Compose Preview(카드 상태별, 다이얼로그 생성/수정, 달력 물주기/할일 모드, 목록 2줄, 일기 상세)
+
+## 7. 구현 순서
+
+1. DB: Entity, DAO, Migration 8→9, 스키마, 마이그레이션 테스트
+2. domain: 모델, Repository 인터페이스, UseCase + 단위 테스트
+3. data: RepositoryImpl, Mapper, DI + persistence 테스트
+4. app: 알람 receiver/repository, BootReceiver, Manifest, UseCaseModule
+5. common_ui: 색상, 아이콘
+6. 식물 상세: State/Event/ViewModel → TaskCard → 다이얼로그
+7. 달력 다이얼로그 공용화(제목 제거, 할일 모드)
+8. 식물 목록 2줄 D-day
+9. 일기 상세 할일 목록
+10. PDF
+11. 문자열 3개 언어, analytics
+12. `./gradlew test`, 실기기 확인(알림, 달력, PDF)
+
+## 8. 질문 답변 기록
+
+| # | 내용 | 결정 |
+|---|---|---|
+| Q1 | 완료 버튼 위치 | 5행. 물주기처럼 달력 버튼 + 완료 버튼 + 취소 버튼. 취소 노출 조건은 물주기와 같음 |
+| Q2 | 내용 입력 | 다이얼로그에 선택 입력 필드 추가 |
+| Q3 | 1회성 마지막 완료 행 | 예정일 표시(3행) |
+| Q4 | 과거 날짜 완료 | 할일별 달력에서 물주기처럼 추가/취소 |
+| Q5 | 일기 화면 표시 | 상세만. 날짜 아래, 본문 위, 갈색 점 글머리 목록 |
+| Q6 | 수확 식물 | 카드·추가 버튼 숨김, 알람 중지/복원, 이력 유지 |
+| Q7 | 종류 변경 | 불가 |
+| Q8 | PDF 위치 | 사진 다음, 본문 앞 |
+| Q9 | 달력 제목 | 제거 |
+| Q10 | 정렬 | 생성순 |
+| Q11 | 알림 | 생성 시 꺼짐. 알림 문구 "{식물이름} 할일" / "{제목}" |
+| Q12 | 식물 목록 | 가장 이른 할일 D-day를 2번째 줄에 표시. 할일 없으면 기존 표시 |
+| Q13 | 제목 길이 | 20자. 제목만 최대 2줄, D-day는 제목 오른쪽에 붙임 |
+
+## 9. 아이콘
+
+기존: 더보기(`MoreHorizBlack`), 알림(`AlarmBlack`), 달력(`Calendar`), 날짜(`EventBlack`), 추가(`AddWhite`, tint 처리).
+
+| 용도 | 아이콘 | 상태 |
+|---|---|---|
+| 할일 아이콘(카드 1행, 식물 목록) | `IconPack.Gardening` (사용자 제공 이미지를 벡터화, 다색) | 추가 완료 |
+| 완료 버튼 | `IconPack.Check` | 추가 완료 |
+| 반복 주기(카드 3행, 다이얼로그) | `IconPack.Repeat` | 추가 완료 |
+| 추가 버튼 | `AddWhite` tint로 대체 | 기존 |

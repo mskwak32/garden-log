@@ -30,7 +30,8 @@ fun DiaryExport.toDiaryPdf(): DiaryPdf = DiaryPdf(
     date = date,
     content = content,
     imagePaths = imagePaths,
-    hasWateringRecord = hasWateringRecord
+    hasWateringRecord = hasWateringRecord,
+    taskTitles = taskTitles
 )
 
 fun PdfFileInfo.toExportedFileInfo(): ExportedFileInfo = ExportedFileInfo(

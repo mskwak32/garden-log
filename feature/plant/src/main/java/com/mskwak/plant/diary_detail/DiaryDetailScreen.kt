@@ -1,11 +1,14 @@
 package com.mskwak.plant.diary_detail
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -26,6 +29,9 @@ import com.mskwak.common_ui.icon.ArrowBackBlack
 import com.mskwak.common_ui.icon.MoreHorizBlack
 import com.mskwak.common_ui.icon.WaterDropBlue
 import com.mskwak.common_ui.theme.GardenLogTheme
+import com.mskwak.common_ui.theme.TaskBrown
+import com.mskwak.common_ui.theme.TaskBrownLight
+import com.mskwak.common_ui.theme.TaskBrownText
 import com.mskwak.common_ui.ui_component.AppDropDownMenu
 import com.mskwak.common_ui.ui_component.PagerDotIndicator
 import com.mskwak.common_ui.ui_component.TextBadge
@@ -119,6 +125,11 @@ private fun Content(
                 }
             }
 
+            if (state.taskTitles.isNotEmpty()) {
+                Spacer(Modifier.height(12.dp))
+                TaskTitleList(titles = state.taskTitles)
+            }
+
             Spacer(Modifier.height(12.dp))
 
             // 일기 내용
@@ -139,6 +150,35 @@ private fun Content(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TaskTitleList(titles: List<String>) {
+    val isDark = isSystemInDarkTheme()
+    val dotColor = if (isDark) TaskBrownLight else TaskBrown
+    val textColor = if (isDark) TaskBrownLight else TaskBrownText
+    Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        titles.forEach { title ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .background(dotColor, CircleShape)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = textColor
                 )
             }
         }
@@ -269,7 +309,8 @@ private fun PreviewDiaryDetail() {
             state = DiaryDetailState(
                 plantName = "바질",
                 diaryDate = LocalDate.of(2025, 6, 10),
-                memo = "오늘은 바질이 많이 자랐다. 물을 줬더니 잎이 싱싱해 보인다."
+                memo = "오늘은 바질이 많이 자랐다. 물을 줬더니 잎이 싱싱해 보인다.",
+                taskTitles = listOf("분갈이", "영양제 주기")
             ),
             onEvent = {}
         )

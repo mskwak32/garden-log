@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateTo
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -23,6 +24,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,6 +37,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.mskwak.common_ui.IconPack
+import com.mskwak.common_ui.icon.Gardening
 import com.mskwak.common_ui.icon.WaterDropBlue
 import com.mskwak.common_ui.icon.WaterDropRed
 import com.mskwak.common_ui.icon.WaterDropWithBackground
@@ -187,35 +191,85 @@ private fun ForegroundCard(
         }
 
         if (!uiModel.isHarvested) {
-            Image(
-                imageVector = when (uiModel.status) {
-                    WateringStatus.OVERDUE -> IconPack.WaterDropRed
-                    WateringStatus.TODAY_DONE -> IconPack.WaterDropWithBackground
-                    else -> IconPack.WaterDropBlue
-                },
-                contentDescription = null,
-                modifier = Modifier.size(30.dp)
-            )
+            val wateringIcon = when (uiModel.status) {
+                WateringStatus.OVERDUE -> IconPack.WaterDropRed
+                WateringStatus.TODAY_DONE -> IconPack.WaterDropWithBackground
+                else -> IconPack.WaterDropBlue
+            }
+            val wateringText = when (uiModel.status) {
+                WateringStatus.TODAY, WateringStatus.TODAY_DONE -> {
+                    stringResource(R.string.today)
+                }
 
-            Spacer(Modifier.width(6.dp))
-            Text(
-                text = when (uiModel.status) {
-                    WateringStatus.TODAY, WateringStatus.TODAY_DONE -> {
-                        stringResource(R.string.today)
-                    }
+                WateringStatus.OVERDUE, WateringStatus.NO_PERIOD -> {
+                    stringResource(R.string.watering_d_day_plus_format, uiModel.dDay)
+                }
 
-                    WateringStatus.OVERDUE, WateringStatus.NO_PERIOD -> {
-                        stringResource(R.string.watering_d_day_plus_format, uiModel.dDay)
-                    }
+                WateringStatus.UPCOMING -> {
+                    stringResource(R.string.watering_d_day_minus_format, uiModel.dDay)
+                }
+            }
+            val taskRemainDays = uiModel.taskRemainDays
 
-                    WateringStatus.UPCOMING -> {
-                        stringResource(R.string.watering_d_day_minus_format, uiModel.dDay)
-                    }
-                },
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            if (taskRemainDays == null) {
+                Image(
+                    imageVector = wateringIcon,
+                    contentDescription = null,
+                    modifier = Modifier.size(30.dp)
+                )
+
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    text = wateringText,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    DDayLine(
+                        icon = wateringIcon,
+                        text = wateringText,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    DDayLine(
+                        icon = IconPack.Gardening,
+                        text = when {
+                            taskRemainDays == 0 -> stringResource(R.string.today)
+                            taskRemainDays > 0 -> {
+                                stringResource(R.string.watering_d_day_minus_format, taskRemainDays)
+                            }
+
+                            else -> {
+                                stringResource(R.string.watering_d_day_plus_format, -taskRemainDays)
+                            }
+                        },
+                        // 지난 할일은 error 색으로 강조
+                        color = if (taskRemainDays < 0) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        }
+                    )
+                }
+            }
         }
+    }
+}
+
+@Composable
+private fun DDayLine(icon: ImageVector, text: String, color: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(Modifier.width(4.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleSmall,
+            color = color
+        )
     }
 }
 
@@ -246,6 +300,26 @@ private fun PlantListItemPreview(
     GardenLogTheme {
         PlantListItem(
             uiModel = sampleData,
+            onEvent = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Light", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun PlantListItemTaskPreview() {
+    GardenLogTheme {
+        PlantListItem(
+            uiModel = PlantListItemUiModel(
+                plantId = 1,
+                name = "몬스테라",
+                imagePath = null,
+                dDay = 2,
+                status = WateringStatus.UPCOMING,
+                createdAt = LocalDate.now(),
+                taskRemainDays = -1
+            ),
             onEvent = {}
         )
     }

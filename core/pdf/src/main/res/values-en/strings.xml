@@ -6,4 +6,5 @@
     <string name="pdf_label_memo">Memo</string>
     <string name="pdf_label_harvest_date">Harvest Date</string>
     <string name="pdf_label_harvest_memo">Harvest Note</string>
+    <string name="pdf_date_format">MMM d, yyyy</string>
 </resources>

@@ -6,4 +6,5 @@
     <string name="pdf_label_memo">メモ</string>
     <string name="pdf_label_harvest_date">収穫日</string>
     <string name="pdf_label_harvest_memo">収穫メモ</string>
+    <string name="pdf_date_format">yyyy年MM月dd日</string>
 </resources>

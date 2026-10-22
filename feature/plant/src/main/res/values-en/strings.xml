@@ -114,4 +114,26 @@
     <string name="message_created_future">The planting date cannot be after today.</string>
     <string name="message_created_after_watering">The planting date cannot be after the earliest watering record.</string>
     <string name="message_plant_load_failed">Unable to load plant details. Open this screen again.</string>
+    <string name="task_add_title">Add Task</string>
+    <string name="task_title">Title</string>
+    <string name="task_content">Details</string>
+    <string name="task_type_one_time">One-time</string>
+    <string name="task_type_repeat">Repeating</string>
+    <string name="task_due_date">Due Date</string>
+    <string name="task_start_date">Start Date</string>
+    <string name="task_period">Repeat Interval</string>
+    <string name="task_create">Create</string>
+    <string name="task_cancel_complete">Undo Done</string>
+    <string name="task_title_counter_format">%1$d/%2$d</string>
+    <string name="task_repeat_summary_format">Every %1$d days · Last done: %2$s</string>
+    <string name="task_due_date_format">Due: %s</string>
+    <string name="task_alarm_format">Reminder: %s</string>
+    <string name="task_calendar">Task calendar</string>
+    <string name="task_record_accessibility">%1$s, tasks: %2$d</string>
+    <string name="message_task_complete_confirm">Mark this task as done?</string>
+    <string name="message_task_delete_confirm">Delete this task?\nCompletion records will be kept.</string>
+    <string name="message_task_load_failed">Unable to load task records.\nPlease try again.</string>
+    <string name="message_task_outside_range">Choose a completion date between the planting date and today.</string>
+    <string name="message_task_harvested">Tasks for harvested plants cannot be changed.</string>
+    <string name="message_task_alarm_failed">The task was saved, but the alarm could not be scheduled.\nCheck alarm settings.</string>
 </resources>

@@ -114,4 +114,26 @@
     <string name="message_created_future">심은 날짜는 오늘 이후로 설정할 수 없습니다.</string>
     <string name="message_created_after_watering">심은 날짜는 가장 오래된 물주기 기록 이후로 변경할 수 없습니다.</string>
     <string name="message_plant_load_failed">식물 정보를 불러오지 못했습니다. 다시 화면을 열어 주세요.</string>
+    <string name="task_add_title">할일 일정 추가</string>
+    <string name="task_title">제목</string>
+    <string name="task_content">내용</string>
+    <string name="task_type_one_time">1회성</string>
+    <string name="task_type_repeat">반복성</string>
+    <string name="task_due_date">예정일</string>
+    <string name="task_start_date">시작일</string>
+    <string name="task_period">반복 주기</string>
+    <string name="task_create">만들기</string>
+    <string name="task_cancel_complete">완료 취소</string>
+    <string name="task_title_counter_format">%1$d/%2$d</string>
+    <string name="task_repeat_summary_format">%1$d일마다 · 마지막 완료: %2$s</string>
+    <string name="task_due_date_format">예정일: %s</string>
+    <string name="task_alarm_format">알림: %s</string>
+    <string name="task_calendar">할일 달력</string>
+    <string name="task_record_accessibility">%1$s, 할일 %2$d건</string>
+    <string name="message_task_complete_confirm">할일을 완료하시겠습니까?</string>
+    <string name="message_task_delete_confirm">할일을 삭제하시겠습니까?\n완료 기록은 유지됩니다.</string>
+    <string name="message_task_load_failed">할일 기록을 불러오지 못했습니다.\n다시 시도해 주세요.</string>
+    <string name="message_task_outside_range">완료 날짜는 심은 날짜부터 오늘까지 선택해 주세요.</string>
+    <string name="message_task_harvested">수확한 식물의 할일은 변경할 수 없습니다.</string>
+    <string name="message_task_alarm_failed">할일은 저장했지만 알람을 예약하지 못했습니다.\n알람 설정을 확인해 주세요.</string>
 </resources>

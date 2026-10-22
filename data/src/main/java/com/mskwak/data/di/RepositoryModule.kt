@@ -33,5 +33,9 @@ internal abstract class RepositoryModule {
 
     @Binds
     @Singleton
+    abstract fun bindPlantTaskRepository(impl: PlantTaskRepositoryImpl): PlantTaskRepository
+
+    @Binds
+    @Singleton
     abstract fun bindExportRepository(impl: ExportRepositoryImpl): ExportRepository
 }

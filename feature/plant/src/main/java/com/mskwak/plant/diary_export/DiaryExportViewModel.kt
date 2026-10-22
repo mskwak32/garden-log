@@ -10,6 +10,7 @@ import com.mskwak.domain.usecase.diary.GetDiariesForExportUseCase
 import com.mskwak.domain.usecase.diary.GetDiaryDateRangeUseCase
 import com.mskwak.domain.usecase.export.GenerateExportUseCase
 import com.mskwak.domain.usecase.plant.GetPlantUseCase
+import com.mskwak.domain.usecase.task.GetPlantTaskLogsByRangeUseCase
 import com.mskwak.domain.usecase.watering.GetWateringDatesForExportUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -27,6 +28,7 @@ class DiaryExportViewModel @AssistedInject constructor(
     private val getDiaryDateRangeUseCase: GetDiaryDateRangeUseCase,
     private val getDiariesForExportUseCase: GetDiariesForExportUseCase,
     private val getWateringDatesForExportUseCase: GetWateringDatesForExportUseCase,
+    private val getPlantTaskLogsByRangeUseCase: GetPlantTaskLogsByRangeUseCase,
     private val generateExportUseCase: GenerateExportUseCase
 ) : BaseViewModel<DiaryExportState, DiaryExportEvent, DiaryExportEffect>() {
 
@@ -98,6 +100,10 @@ class DiaryExportViewModel @AssistedInject constructor(
                 val wateringDates =
                     getWateringDatesForExportUseCase(plantId, state.startDate, state.endDate)
 
+                val taskTitlesByDate = getPlantTaskLogsByRangeUseCase(
+                    plantId, state.startDate, state.endDate
+                ).groupBy({ it.date }, { it.title })
+
                 val plantDetail = if (state.includeFirstPage) {
                     PlantDetailExport(
                         name = plant.name,
@@ -119,7 +125,8 @@ class DiaryExportViewModel @AssistedInject constructor(
                             date = diary.createdDate,
                             content = diary.memo,
                             imagePaths = diary.pictureList?.map { it.path } ?: emptyList(),
-                            hasWateringRecord = diary.createdDate in wateringDates
+                            hasWateringRecord = diary.createdDate in wateringDates,
+                            taskTitles = taskTitlesByDate[diary.createdDate].orEmpty()
                         )
                     }
                 )

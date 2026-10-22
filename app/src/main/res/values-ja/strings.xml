@@ -4,6 +4,8 @@
     <string name="noti_watering_title">水やりリマインダー</string>
     <string name="noti_watering_message">%sに水をあげる時間です</string>
     <string name="noti_watering_channel_name">水やりリマインダー</string>
+    <string name="noti_task_channel_name">タスク通知</string>
+    <string name="noti_task_title">%1$sのタスク</string>
     <string name="permission_setting_action">権限設定</string>
     <string name="message_notification_permission">水やりリマインダーを使うには権限が必要です。</string>
     <string name="message_finish_app">もう一度押すと終了します。</string>

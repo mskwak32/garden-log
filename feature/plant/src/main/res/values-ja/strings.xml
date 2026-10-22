@@ -114,4 +114,26 @@
     <string name="message_created_future">植えた日は今日より後に設定できません。</string>
     <string name="message_created_after_watering">植えた日は最も古い水やり記録より後に変更できません。</string>
     <string name="message_plant_load_failed">植物の情報を読み込めませんでした。画面を開き直してください。</string>
+    <string name="task_add_title">タスクを追加</string>
+    <string name="task_title">タイトル</string>
+    <string name="task_content">内容</string>
+    <string name="task_type_one_time">1回のみ</string>
+    <string name="task_type_repeat">繰り返し</string>
+    <string name="task_due_date">予定日</string>
+    <string name="task_start_date">開始日</string>
+    <string name="task_period">繰り返し間隔</string>
+    <string name="task_create">作成</string>
+    <string name="task_cancel_complete">完了を取り消す</string>
+    <string name="task_title_counter_format">%1$d/%2$d</string>
+    <string name="task_repeat_summary_format">%1$d日ごと · 最終完了: %2$s</string>
+    <string name="task_due_date_format">予定日: %s</string>
+    <string name="task_alarm_format">通知: %s</string>
+    <string name="task_calendar">タスクカレンダー</string>
+    <string name="task_record_accessibility">%1$s、タスク%2$d件</string>
+    <string name="message_task_complete_confirm">タスクを完了しますか？</string>
+    <string name="message_task_delete_confirm">タスクを削除しますか？\n完了記録は保持されます。</string>
+    <string name="message_task_load_failed">タスクの記録を読み込めませんでした。\nもう一度お試しください。</string>
+    <string name="message_task_outside_range">完了日は植えた日から今日までを選択してください。</string>
+    <string name="message_task_harvested">収穫済みの植物のタスクは変更できません。</string>
+    <string name="message_task_alarm_failed">タスクは保存されましたが、アラームを設定できませんでした。\n設定を確認してください。</string>
 </resources>

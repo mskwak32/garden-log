@@ -6,8 +6,10 @@ import com.mskwak.analytics.GardenEvent
 import com.mskwak.analytics.WateringSource
 import com.mskwak.common_ui.ViewEvent
 import com.mskwak.common_ui.base.BaseViewModel
+import com.mskwak.domain.model.Plant
 import com.mskwak.domain.model.PlantListSortOrder
 import com.mskwak.domain.usecase.plant.GetPlantsWithSortOrderUseCase
+import com.mskwak.domain.usecase.task.GetNearestTaskDueDatesUseCase
 import com.mskwak.domain.usecase.watering.GetWateringDaysUseCase
 import com.mskwak.domain.usecase.watering.WateringNowUseCase
 import com.mskwak.domain.usecase.watering.WateringUpdateResult
@@ -22,11 +24,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 @HiltViewModel
 class PlantListViewModel @Inject constructor(
     private val getPlantsWithSortOrderUseCase: GetPlantsWithSortOrderUseCase,
     private val getWateringDaysUseCase: GetWateringDaysUseCase,
+    private val getNearestTaskDueDatesUseCase: GetNearestTaskDueDatesUseCase,
     private val wateringNowUseCase: WateringNowUseCase,
     private val analyticsLogger: AnalyticsLogger
 ) : BaseViewModel<PlantListState, PlantListEvent, PlantListEffect>() {
@@ -74,13 +79,21 @@ class PlantListViewModel @Inject constructor(
             combine(
                 _sortOrder.flatMapLatest { getPlantsWithSortOrderUseCase(it) },
                 _sortOrder,
-                _selectedTab
-            ) { plants, order, tab ->
-                Triple(plants, order, tab)
-            }.collect { (plants, order, tab) ->
+                _selectedTab,
+                getNearestTaskDueDatesUseCase()
+            ) { plants, order, tab, taskDueDates ->
+                PlantListSnapshot(plants, order, tab, taskDueDates)
+            }.collect { (plants, order, tab, taskDueDates) ->
+                val today = LocalDate.now()
                 val allUiModels = plants.map { plant ->
-                    plant.toPlantListItemUiModel {
+                    val uiModel = plant.toPlantListItemUiModel {
                         getWateringDaysUseCase(it)
+                    }
+                    val dueDate = taskDueDates[plant.id]
+                    if (dueDate == null || uiModel.isHarvested) {
+                        uiModel
+                    } else {
+                        uiModel.copy(taskRemainDays = ChronoUnit.DAYS.between(today, dueDate).toInt())
                     }
                 }
                 // 선택된 탭에 따라 수확 여부로 필터링
@@ -110,3 +123,10 @@ class PlantListViewModel @Inject constructor(
         }
     }
 }
+
+private data class PlantListSnapshot(
+    val plants: List<Plant>,
+    val order: PlantListSortOrder,
+    val tab: PlantListTab,
+    val taskDueDates: Map<Int, LocalDate>
+)

@@ -1,6 +1,8 @@
 package com.mskwak.gardendailylog.di
 
+import com.mskwak.domain.repository.PlantTaskAlarmRepository
 import com.mskwak.domain.repository.WateringAlarmRepository
+import com.mskwak.gardendailylog.alarm.PlantTaskAlarmRepositoryImpl
 import com.mskwak.gardendailylog.alarm.WateringAlarmRepositoryImpl
 import dagger.Binds
 import dagger.Module
@@ -16,4 +18,10 @@ internal abstract class RepositoryModule {
     abstract fun bindWateringAlarmRepository(
         impl: WateringAlarmRepositoryImpl
     ): WateringAlarmRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPlantTaskAlarmRepository(
+        impl: PlantTaskAlarmRepositoryImpl
+    ): PlantTaskAlarmRepository
 }

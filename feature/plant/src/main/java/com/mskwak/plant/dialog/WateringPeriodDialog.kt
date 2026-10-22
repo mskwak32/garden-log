@@ -48,7 +48,10 @@ import kotlinx.coroutines.flow.map
 fun WateringPeriodDialog(
     initialPeriod: Int,
     onDismiss: () -> Unit,
-    onConfirm: (Int) -> Unit
+    onConfirm: (Int) -> Unit,
+    title: String = stringResource(R.string.watering_period),
+    // 할일 반복 주기처럼 0일을 허용하지 않는 곳은 "없음" 항목을 숨긴다.
+    showNone: Boolean = true
 ) {
     var selectedPeriod by remember { mutableIntStateOf(initialPeriod) }
     val noneText = stringResource(R.string.none)
@@ -57,7 +60,7 @@ fun WateringPeriodDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = stringResource(R.string.watering_period),
+                text = title,
                 style = MaterialTheme.typography.titleMedium
             )
         },
@@ -69,7 +72,7 @@ fun WateringPeriodDialog(
             ) {
                 NumberPickerWheel(
                     value = selectedPeriod,
-                    range = 0..Constants.MAX_WATERING_PERIOD,
+                    range = (if (showNone) 0 else 1)..Constants.MAX_WATERING_PERIOD,
                     onValueChange = { selectedPeriod = it },
                     displayFormatter = { value ->
                         if (value == 0) noneText else value.toString()
@@ -168,7 +171,7 @@ private fun NumberPickerWheel(
                 ) {
                     Text(
                         text = displayFormatter(itemValue),
-                        fontSize = if (itemValue == value) 21.sp else 17.sp,
+                        fontSize = if (itemValue == value) 20.sp else 16.sp,
                         color = if (itemValue == value) {
                             MaterialTheme.colorScheme.onSurface
                         } else {

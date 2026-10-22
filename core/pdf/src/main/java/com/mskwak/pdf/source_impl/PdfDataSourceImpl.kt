@@ -9,6 +9,7 @@ import android.provider.MediaStore
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
+import android.text.TextUtils
 import com.mskwak.pdf.PdfDataSource
 import com.mskwak.pdf.R
 import com.mskwak.pdf.model.DiaryPdf
@@ -29,7 +30,6 @@ internal class PdfDataSourceImpl @Inject constructor(
         private const val FOLDER_NAME = "GardenLog"
         private const val RELATIVE_PATH = "Download/$FOLDER_NAME/"
         private val DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd")
-        private val DIARY_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
 
         // A4 @ 72 dpi (points)
         private const val PAGE_WIDTH = 595
@@ -52,6 +52,11 @@ internal class PdfDataSourceImpl @Inject constructor(
 
         // 페이지 하단 임계값: 남은 높이가 이 값 이하이면 다음 페이지로
         private const val PAGE_BOTTOM_THRESHOLD = 120f
+
+        // 할일 글머리 원
+        private const val TASK_DOT_COLOR = "#8D6E63"
+        private const val TASK_DOT_RADIUS = 3f
+        private const val TASK_DOT_GAP = 8f
 
         // 텍스트 크기
         private const val TITLE_TEXT_SIZE = 22f
@@ -170,6 +175,11 @@ internal class PdfDataSourceImpl @Inject constructor(
         private var page: PdfDocument.Page = newPage()
         private var canvas: Canvas = page.canvas
         private var y: Float = MARGIN
+        // 날짜 표기는 문자열 리소스와 같은 언어로 맞춘다
+        private val dateFormatter = DateTimeFormatter.ofPattern(
+            context.getString(R.string.pdf_date_format),
+            context.resources.configuration.locales[0]
+        )
 
         private fun newPage(): PdfDocument.Page {
             val pageInfo =
@@ -231,7 +241,7 @@ internal class PdfDataSourceImpl @Inject constructor(
 
             addRow(
                 context.getString(R.string.pdf_label_planting_date),
-                detail.plantingDate?.format(DIARY_DATE_FORMATTER)
+                detail.plantingDate?.format(dateFormatter)
             )
             if (detail.wateringCycle > 0) {
                 addRow(
@@ -242,7 +252,7 @@ internal class PdfDataSourceImpl @Inject constructor(
             addRow(context.getString(R.string.pdf_label_memo), detail.memo)
             addRow(
                 context.getString(R.string.pdf_label_harvest_date),
-                detail.harvestDate?.format(DIARY_DATE_FORMATTER)
+                detail.harvestDate?.format(dateFormatter)
             )
             addRow(context.getString(R.string.pdf_label_harvest_memo), detail.harvestMemo)
 
@@ -265,6 +275,10 @@ internal class PdfDataSourceImpl @Inject constructor(
                 textSize = CONTENT_TEXT_SIZE
                 isAntiAlias = true
             }
+            val taskDotPaint = Paint().apply {
+                color = Color.parseColor(TASK_DOT_COLOR)
+                isAntiAlias = true
+            }
             val waterDropDrawable = context.getDrawable(R.drawable.ic_water_drop_blue)
 
             diaries.forEach { diary ->
@@ -276,7 +290,7 @@ internal class PdfDataSourceImpl @Inject constructor(
                 y += 30f // spacingBefore
 
                 // 날짜 헤더 (+ 물주기 기록 있으면 물방울 아이콘)
-                val dateText = diary.date.format(DIARY_DATE_FORMATTER)
+                val dateText = diary.date.format(dateFormatter)
                 ensureSpace(datePaint.textSize + LINE_SPACING_EXTRA)
                 canvas.drawText(dateText, MARGIN, y + datePaint.textSize, datePaint)
                 if (diary.hasWateringRecord && waterDropDrawable != null) {
@@ -300,6 +314,12 @@ internal class PdfDataSourceImpl @Inject constructor(
                     drawImageRows(diary.imagePaths)
                 }
 
+                // 할일 목록 (한 줄씩, 긴 제목은 말줄임)
+                if (diary.taskTitles.isNotEmpty()) {
+                    drawTaskLines(diary.taskTitles, contentPaint, taskDotPaint)
+                    y += 8f
+                }
+
                 // 일기 내용
                 if (diary.content.isNotBlank()) {
                     drawMultilineText(diary.content, contentPaint)
@@ -308,6 +328,25 @@ internal class PdfDataSourceImpl @Inject constructor(
             }
 
             finish()
+        }
+
+        /**
+         * 할일 제목을 갈색 원 + 한 줄 텍스트로 그린다. 줄마다 페이지 넘김을 확인한다.
+         */
+        private fun drawTaskLines(titles: List<String>, paint: TextPaint, dotPaint: Paint) {
+            val lineHeight = paint.textSize + LINE_SPACING_EXTRA
+            val textLeft = MARGIN + TASK_DOT_RADIUS * 2 + TASK_DOT_GAP
+            val textWidth = CONTENT_WIDTH - (textLeft - MARGIN)
+            titles.forEach { title ->
+                ensureSpace(lineHeight)
+                val text = TextUtils.ellipsize(title, paint, textWidth, TextUtils.TruncateAt.END)
+                    .toString()
+                canvas.drawText(text, textLeft, y + paint.textSize, paint)
+                // 텍스트 글자 높이의 세로 중앙에 원을 맞춘다
+                val centerY = y + paint.textSize / 2f + 1f
+                canvas.drawCircle(MARGIN + TASK_DOT_RADIUS, centerY, TASK_DOT_RADIUS, dotPaint)
+                y += lineHeight
+            }
         }
 
         /**

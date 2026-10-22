@@ -9,6 +9,7 @@ import com.mskwak.domain.model.Diary
 import com.mskwak.domain.usecase.diary.DeleteDiaryUseCase
 import com.mskwak.domain.usecase.diary.GetDiaryUseCase
 import com.mskwak.domain.usecase.plant.GetPlantUseCase
+import com.mskwak.domain.usecase.task.GetPlantTaskLogsByRangeUseCase
 import com.mskwak.domain.usecase.watering.GetWateringLogExistsUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -25,6 +26,7 @@ class DiaryDetailViewModel @AssistedInject constructor(
     private val getPlantUseCase: GetPlantUseCase,
     private val deleteDiaryUseCase: DeleteDiaryUseCase,
     private val getWateringLogExistsUseCase: GetWateringLogExistsUseCase,
+    private val getPlantTaskLogsByRangeUseCase: GetPlantTaskLogsByRangeUseCase,
     private val analyticsLogger: AnalyticsLogger
 ) : BaseViewModel<DiaryDetailState, DiaryDetailEvent, DiaryDetailEffect>() {
 
@@ -60,6 +62,10 @@ class DiaryDetailViewModel @AssistedInject constructor(
                 val plant = getPlantUseCase(diary.plantId).filterNotNull().first()
                 // 일기 날짜에 물주기 기록이 있는지 조회
                 val isWatered = getWateringLogExistsUseCase(diary.plantId, diary.createdDate)
+                // 일기 날짜에 완료한 할일 제목 조회
+                val taskTitles = getPlantTaskLogsByRangeUseCase(
+                    diary.plantId, diary.createdDate, diary.createdDate
+                ).map { it.title }
                 setState {
                     copy(
                         plantName = plant.name,
@@ -67,7 +73,8 @@ class DiaryDetailViewModel @AssistedInject constructor(
                         picturePaths = diary.pictureList?.map { it.path } ?: emptyList(),
                         memo = diary.memo,
                         isHarvested = plant.isHarvested,
-                        isWatered = isWatered
+                        isWatered = isWatered,
+                        taskTitles = taskTitles
                     )
                 }
             }

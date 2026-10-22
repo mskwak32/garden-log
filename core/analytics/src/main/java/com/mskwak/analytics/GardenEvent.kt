@@ -30,6 +30,24 @@ sealed class GardenEvent {
 
     /** 물주기 취소 */
     data object CancelWatering : GardenEvent()
+
+    /** 할일 추가 */
+    data class AddTask(
+        val type: String,
+        val alarmEnabled: Boolean
+    ) : GardenEvent()
+
+    /** 할일 완료 */
+    data class CompleteTask(val type: String) : GardenEvent()
+
+    /** 할일 완료 취소 */
+    data object CancelTask : GardenEvent()
+
+    /** 할일 삭제 */
+    data object DeleteTask : GardenEvent()
+
+    /** 할일 알림 on/off */
+    data class TaskAlarmToggle(val enabled: Boolean) : GardenEvent()
 }
 
 enum class WateringSource { DETAIL, LIST }
